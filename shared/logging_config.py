@@ -189,7 +189,7 @@ def get_logger(name: str) -> logging.Logger:
         logger = get_logger(__name__)
         logger.info("Message")
     """
-    level = os.getenv("LOG_LEVEL", "INFO")
+    level = os.getenv("LOG_LEVEL", "DEBUG" if os.getenv("ENVIRONMENT") != "production" else "INFO")
     structured = os.getenv("ENVIRONMENT", "development") == "production"
     
     # Determine log file based on logger name

@@ -79,7 +79,7 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
             clearInterval(timer);
         };
     }, []);
-    
+
     // Track current subject for query invalidation
     const [currentSubject, setCurrentSubject] = useState<string>(() =>
         sessionStorage.getItem("selected_subject") || ""
@@ -120,7 +120,7 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
         refetchOnMount: true, // Only refetch when component mounts
         refetchInterval: contentV1Enabled && contentV1ProfileId && contentV1Started ? 5000 : false,
     });
-    
+
     const isContentV1 = gradingData?.mode === "content_v1";
     const v1Plan = gradingData?.learning_plan || {};
     const v1Steps = v1Plan?.steps || [];
@@ -130,21 +130,21 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
 
     const rawSubjects = isContentV1
         ? {
-              "Content V1 Journey": {
-                  grade_levels: {
-                      "Learning Path": {
-                          units: v1Steps.map((step: any, idx: number) => ({
-                              id: step?.id || `step_${idx + 1}`,
-                              name: step?.title || step?.topic || `Step ${idx + 1}`,
-                              mastery: idx < v1CurrentStep ? 100 : idx === v1CurrentStep ? Math.max(5, v1ProgressPct) : 0,
-                              questions_answered: idx < v1CurrentStep ? 1 : 0,
-                              questions_correct: idx < v1CurrentStep ? 1 : 0,
-                              last_practiced: null,
-                          })),
-                      },
-                  },
-              },
-          }
+            "Content V1 Journey": {
+                grade_levels: {
+                    "Learning Path": {
+                        units: v1Steps.map((step: any, idx: number) => ({
+                            id: step?.id || `step_${idx + 1}`,
+                            name: step?.title || step?.topic || `Step ${idx + 1}`,
+                            mastery: idx < v1CurrentStep ? 100 : idx === v1CurrentStep ? Math.max(5, v1ProgressPct) : 0,
+                            questions_answered: idx < v1CurrentStep ? 1 : 0,
+                            questions_correct: idx < v1CurrentStep ? 1 : 0,
+                            last_practiced: null,
+                        })),
+                    },
+                },
+            },
+        }
         : gradingData?.subjects || {};
 
     const selectedSubjectKey = normalizeSubjectKey(currentSubject);
@@ -171,7 +171,7 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
         isContentV1 && v1Steps.length
             ? v1Steps[Math.min(v1CurrentStep, v1Steps.length - 1)]?.id || `step_${Math.min(v1CurrentStep + 1, v1Steps.length)}`
             : currentSkill;
-    
+
     // Debug logging
     useEffect(() => {
         if (gradingData) {
@@ -187,7 +187,7 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
             });
         }
     }, [gradingData]);
-    
+
     // Debug current skill changes
     useEffect(() => {
         if (effectiveCurrentSkill) {
@@ -205,10 +205,10 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
             const containerTop = container.getBoundingClientRect().top;
             const elementTop = element.getBoundingClientRect().top;
             const offset = 0; // Position at the very top
-            
+
             // Calculate the target scroll position
             const scrollPosition = container.scrollTop + (elementTop - containerTop) - offset;
-            
+
             // Scroll to position
             container.scrollTo({
                 top: Math.max(0, scrollPosition),
@@ -228,7 +228,7 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
             if (skillChanged) {
                 isUserScrollingRef.current = false;
             }
-            
+
             // If we're transitioning from closed to open, we need to wait for the width transition (500ms)
             // If skill just changed, scroll immediately
             // Otherwise, wait a bit for content to render
@@ -379,7 +379,7 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                         <Accordion
                             type="single"
                             collapsible
-                            value={currentSkill || undefined}
+                            value={currentSkill ?? ""}
                             className="w-full space-y-3"
                             onClick={(e) => e.stopPropagation()} // Prevent handleContainerClick from intercepting accordion clicks
                         >
@@ -402,224 +402,224 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                                 Object.entries(subjects).map(([subjectName, subjectData]: [string, any]) => (
                                     Object.entries(subjectData.grade_levels || {}).map(([gradeLevel, gradeData]: [string, any]) => (
                                         gradeData.units.map((unit: any) => {
-                                const mastery = unit.mastery || 0;
-                                const normalizedStrength = mastery; // Already 0-100%
-                                const hasPractice = unit.questions_answered > 0;
+                                            const mastery = unit.mastery || 0;
+                                            const normalizedStrength = mastery; // Already 0-100%
+                                            const hasPractice = unit.questions_answered > 0;
 
-                                // Mastery level from API (or derive from percentage)
-                                const masteryLevelName = unit.mastery_level_name || (
-                                    mastery >= 85 ? "EXPERT" :
-                                    mastery >= 70 ? "MASTERED" :
-                                    mastery >= 50 ? "PROFICIENT" :
-                                    mastery >= 30 ? "FAMILIAR" : "ATTEMPTED"
-                                );
-                                const masteryLabel = ({
-                                    EXPERT: "Expert",
-                                    MASTERED: "Mastered",
-                                    PROFICIENT: "Proficient",
-                                    FAMILIAR: "Familiar",
-                                    ATTEMPTED: "Attempted",
-                                } as Record<string, string>)[masteryLevelName] || masteryLevelName;
+                                            // Mastery level from API (or derive from percentage)
+                                            const masteryLevelName = unit.mastery_level_name || (
+                                                mastery >= 85 ? "EXPERT" :
+                                                    mastery >= 70 ? "MASTERED" :
+                                                        mastery >= 50 ? "PROFICIENT" :
+                                                            mastery >= 30 ? "FAMILIAR" : "ATTEMPTED"
+                                            );
+                                            const masteryLabel = ({
+                                                EXPERT: "Expert",
+                                                MASTERED: "Mastered",
+                                                PROFICIENT: "Proficient",
+                                                FAMILIAR: "Familiar",
+                                                ATTEMPTED: "Attempted",
+                                            } as Record<string, string>)[masteryLevelName] || masteryLevelName;
 
-                                // Determine strength level for color based on mastery level
-                                const getStrengthColor = () => {
-                                    if (!hasPractice) return "gray";
-                                    if (masteryLevelName === "EXPERT") return "emerald";
-                                    if (masteryLevelName === "MASTERED") return "green";
-                                    if (masteryLevelName === "PROFICIENT") return "yellow";
-                                    if (masteryLevelName === "FAMILIAR") return "orange";
-                                    return "red";
-                                };
+                                            // Determine strength level for color based on mastery level
+                                            const getStrengthColor = () => {
+                                                if (!hasPractice) return "gray";
+                                                if (masteryLevelName === "EXPERT") return "emerald";
+                                                if (masteryLevelName === "MASTERED") return "green";
+                                                if (masteryLevelName === "PROFICIENT") return "yellow";
+                                                if (masteryLevelName === "FAMILIAR") return "orange";
+                                                return "red";
+                                            };
 
-                                const strengthColor = getStrengthColor();
-                                const accuracyPercent = unit.questions_answered > 0
-                                    ? Math.round((unit.questions_correct / unit.questions_answered) * 100)
-                                    : 0;
+                                            const strengthColor = getStrengthColor();
+                                            const accuracyPercent = unit.questions_answered > 0
+                                                ? Math.round((unit.questions_correct / unit.questions_answered) * 100)
+                                                : 0;
 
-                                const isCurrentSkill = unit.id === effectiveCurrentSkill;
-                                
-                                return (
-                                    <AccordionItem
-                                        key={unit.id}
-                                        value={unit.id}
-                                        id={`skill-${unit.id}`}
-                                        className="border-none"
-                                    >
-                                        <div
-                                            className={cn(
-                                                "grading-card-surface border-[4px] border-black dark:border-white transition-all duration-200 shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.2)]",
-                                                isCurrentSkill && "bg-[#FFE500] dark:bg-[#FFD93D] shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(0,0,0,1)] scale-[1.02]",
-                                                !isCurrentSkill && hasPractice && "bg-[#FFFDF5] dark:bg-[#000000]",
-                                                !isCurrentSkill && !hasPractice && "grading-card-muted",
-                                                hasPractice && "hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
-                                            )}
-                                            style={{ backgroundImage: "none" }}
-                                        >
-                                            <AccordionTrigger className="hover:no-underline px-4 py-3 [&>svg]:hidden cursor-pointer group">
-                                                <div className="flex flex-col gap-2 w-full">
-                                                    <div className="flex items-center justify-between w-full">
-                                                        <div className="flex flex-col items-start gap-1">
-                                                            <span className={cn(
-                                                                "font-black text-xs text-left tracking-tight",
-                                                                hasPractice ? "text-black dark:text-white" : "text-black/50 dark:text-white/50"
-                                                            )}>
-                                                                {unit.name}
-                                                            </span>
-                                                            <span className={cn(
-                                                                "text-[9px] font-bold",
-                                                                hasPractice ? "text-black/70 dark:text-white/70" : "text-black/40 dark:text-white/40"
-                                                            )}>
-                                                                {subjectName} • Grade {gradeLevel}
-                                                            </span>
-                                                        </div>
-                                                        <div className={cn(
-                                                            "px-2.5 py-0.5 border-[2px] border-black dark:border-white text-[10px] font-black",
-                                                            strengthColor === "gray" && "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white",
-                                                            strengthColor === "emerald" && "bg-[#4ADE80] text-black",
-                                                            strengthColor === "green" && "bg-[#4ADE80] text-black",
-                                                            strengthColor === "yellow" && "bg-[#FFD93D] text-black",
-                                                            strengthColor === "orange" && "bg-[#FF6B6B] text-white",
-                                                            strengthColor === "red" && "bg-[#FF6B6B] text-white"
-                                                        )}>
-                                                            {hasPractice ? masteryLabel : `${mastery.toFixed(0)}%`}
-                                                        </div>
-                                                    </div>
+                                            const isCurrentSkill = unit.id === effectiveCurrentSkill;
 
-                                                    {/* Progress bar */}
+                                            return (
+                                                <AccordionItem
+                                                    key={unit.id}
+                                                    value={unit.id}
+                                                    id={`skill-${unit.id}`}
+                                                    className="border-none"
+                                                >
                                                     <div
-                                                        className="grading-card-surface w-full bg-[#FFFDF5] dark:bg-[#000000] border-[2px] border-black dark:border-white h-3 overflow-hidden"
+                                                        className={cn(
+                                                            "grading-card-surface border-[4px] border-black dark:border-white transition-all duration-200 shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.2)]",
+                                                            isCurrentSkill && "bg-[#FFE500] dark:bg-[#FFD93D] shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(0,0,0,1)] scale-[1.02]",
+                                                            !isCurrentSkill && hasPractice && "bg-[#FFFDF5] dark:bg-[#000000]",
+                                                            !isCurrentSkill && !hasPractice && "grading-card-muted",
+                                                            hasPractice && "hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
+                                                        )}
                                                         style={{ backgroundImage: "none" }}
                                                     >
-                                                        <div
-                                                            className={cn(
-                                                                "h-full transition-all duration-300",
-                                                                strengthColor === "gray" && "bg-black/30 dark:bg-white/30",
-                                                                strengthColor === "emerald" && "bg-[#4ADE80]",
-                                                                strengthColor === "green" && "bg-[#4ADE80]",
-                                                                strengthColor === "yellow" && "bg-[#FFD93D]",
-                                                                strengthColor === "orange" && "bg-[#FF6B6B]",
-                                                                strengthColor === "red" && "bg-[#FF6B6B]"
-                                                            )}
-                                                            style={{ width: `${normalizedStrength}%` }}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </AccordionTrigger>
-                                            <AccordionContent>
-                                                <div className="px-4 pb-4 pt-2">
-                                                    <div className="grid grid-cols-2 gap-3">
-                                                        {/* Accuracy Card */}
-                                                        <div
-                                                            className={cn(
-                                                                "grading-card-surface aspect-square p-2.5 border-[3px] border-black dark:border-white shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.2)] flex flex-col",
-                                                                hasPractice
-                                                                    ? "bg-[#FF6B6B] dark:bg-[#FF6B6B]"
-                                                                    : "grading-card-muted"
-                                                            )}
-                                                            style={{ backgroundImage: "none" }}
-                                                        >
-                                                            <div className="flex items-center gap-1.5 mb-1">
-                                                                <Target className={cn(
-                                                                    "w-3.5 h-3.5 font-bold flex-shrink-0",
-                                                                    hasPractice ? "text-white" : "text-black dark:text-white"
-                                                                )} />
-                                                                <span className={cn(
-                                                                    "text-[9px] font-black leading-none",
-                                                                    hasPractice ? "text-white" : "text-black dark:text-white"
-                                                                )}>Accuracy</span>
-                                                            </div>
-                                                            <div className="flex-1 flex flex-col justify-center">
-                                                                <div className={cn(
-                                                                    "text-2xl font-black leading-none",
-                                                                    hasPractice ? "text-white" : "text-black dark:text-white"
-                                                                )}>
-                                                                    {accuracyPercent}%
-                                                                </div>
-                                                                <div className={cn(
-                                                                    "text-[9px] mt-1 font-bold",
-                                                                    hasPractice ? "text-white" : "text-black dark:text-white"
-                                                                )}>
-                                                                    {unit.questions_correct}/{unit.questions_answered} correct
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Practice Count Card */}
-                                                        <div
-                                                            className={cn(
-                                                                "grading-card-surface aspect-square p-2.5 border-[3px] border-black dark:border-white shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.2)] flex flex-col",
-                                                                hasPractice
-                                                                    ? "bg-[#C4B5FD] dark:bg-[#C4B5FD]"
-                                                                    : "grading-card-muted"
-                                                            )}
-                                                            style={{ backgroundImage: "none" }}
-                                                        >
-                                                            <div className="flex items-center gap-1.5 mb-1">
-                                                                <TrendingUp className={cn(
-                                                                    "w-3.5 h-3.5 font-bold flex-shrink-0",
-                                                                    hasPractice ? "text-black" : "text-black dark:text-white"
-                                                                )} />
-                                                                <span className={cn(
-                                                                    "text-[9px] font-black leading-none",
-                                                                    hasPractice ? "text-black" : "text-black dark:text-white"
-                                                                )}>Questions</span>
-                                                            </div>
-                                                            <div className="flex-1 flex flex-col justify-center">
-                                                                <div className={cn(
-                                                                    "text-2xl font-black leading-none",
-                                                                    hasPractice ? "text-black" : "text-black dark:text-white"
-                                                                )}>
-                                                                    {unit.questions_answered}
-                                                                </div>
-                                                                <div className={cn(
-                                                                    "text-[9px] mt-1 font-bold",
-                                                                    hasPractice ? "text-black" : "text-black dark:text-white"
-                                                                )}>
-                                                                    total attempts
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Sub-skills (Lessons) */}
-                                                    {unit.sub_skills && unit.sub_skills.length > 0 && (
-                                                        <div
-                                                            className="grading-card-surface mt-3 bg-[#FFFDF5] dark:bg-[#000000] p-2.5 border-[3px] border-black dark:border-white"
-                                                            style={{ backgroundImage: "none" }}
-                                                        >
-                                                            <div className="text-[9px] font-black tracking-wide text-black dark:text-white mb-2">Sub-Skills (Lessons)</div>
-                                                            <div className="space-y-1.5">
-                                                                {unit.sub_skills.slice(0, 5).map((subSkill: any) => (
-                                                                    <div key={subSkill.id} className="flex items-center justify-between text-[9px]">
-                                                                        <span className="font-bold text-black dark:text-white truncate flex-1">{subSkill.name}</span>
+                                                        <AccordionTrigger className="hover:no-underline px-4 py-3 [&>svg]:hidden cursor-pointer group">
+                                                            <div className="flex flex-col gap-2 w-full">
+                                                                <div className="flex items-center justify-between w-full">
+                                                                    <div className="flex flex-col items-start gap-1">
                                                                         <span className={cn(
-                                                                            "font-black ml-2",
-                                                                            subSkill.mastery >= 75 ? "text-green-600 dark:text-green-400" :
-                                                                            subSkill.mastery >= 50 ? "text-yellow-600 dark:text-yellow-400" :
-                                                                            "text-red-600 dark:text-red-400"
+                                                                            "font-black text-xs text-left tracking-tight",
+                                                                            hasPractice ? "text-black dark:text-white" : "text-black/50 dark:text-white/50"
                                                                         )}>
-                                                                            {subSkill.mastery}%
+                                                                            {unit.name}
+                                                                        </span>
+                                                                        <span className={cn(
+                                                                            "text-[9px] font-bold",
+                                                                            hasPractice ? "text-black/70 dark:text-white/70" : "text-black/40 dark:text-white/40"
+                                                                        )}>
+                                                                            {subjectName} • Grade {gradeLevel}
                                                                         </span>
                                                                     </div>
-                                                                ))}
-                                                                {unit.sub_skills.length > 5 && (
-                                                                    <div className="text-[8px] font-bold text-black/50 dark:text-white/50">
-                                                                        +{unit.sub_skills.length - 5} more...
+                                                                    <div className={cn(
+                                                                        "px-2.5 py-0.5 border-[2px] border-black dark:border-white text-[10px] font-black",
+                                                                        strengthColor === "gray" && "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white",
+                                                                        strengthColor === "emerald" && "bg-[#4ADE80] text-black",
+                                                                        strengthColor === "green" && "bg-[#4ADE80] text-black",
+                                                                        strengthColor === "yellow" && "bg-[#FFD93D] text-black",
+                                                                        strengthColor === "orange" && "bg-[#FF6B6B] text-white",
+                                                                        strengthColor === "red" && "bg-[#FF6B6B] text-white"
+                                                                    )}>
+                                                                        {hasPractice ? masteryLabel : `${mastery.toFixed(0)}%`}
+                                                                    </div>
+                                                                </div>
+
+                                                                {/* Progress bar */}
+                                                                <div
+                                                                    className="grading-card-surface w-full bg-[#FFFDF5] dark:bg-[#000000] border-[2px] border-black dark:border-white h-3 overflow-hidden"
+                                                                    style={{ backgroundImage: "none" }}
+                                                                >
+                                                                    <div
+                                                                        className={cn(
+                                                                            "h-full transition-all duration-300",
+                                                                            strengthColor === "gray" && "bg-black/30 dark:bg-white/30",
+                                                                            strengthColor === "emerald" && "bg-[#4ADE80]",
+                                                                            strengthColor === "green" && "bg-[#4ADE80]",
+                                                                            strengthColor === "yellow" && "bg-[#FFD93D]",
+                                                                            strengthColor === "orange" && "bg-[#FF6B6B]",
+                                                                            strengthColor === "red" && "bg-[#FF6B6B]"
+                                                                        )}
+                                                                        style={{ width: `${normalizedStrength}%` }}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </AccordionTrigger>
+                                                        <AccordionContent>
+                                                            <div className="px-4 pb-4 pt-2">
+                                                                <div className="grid grid-cols-2 gap-3">
+                                                                    {/* Accuracy Card */}
+                                                                    <div
+                                                                        className={cn(
+                                                                            "grading-card-surface aspect-square p-2.5 border-[3px] border-black dark:border-white shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.2)] flex flex-col",
+                                                                            hasPractice
+                                                                                ? "bg-[#FF6B6B] dark:bg-[#FF6B6B]"
+                                                                                : "grading-card-muted"
+                                                                        )}
+                                                                        style={{ backgroundImage: "none" }}
+                                                                    >
+                                                                        <div className="flex items-center gap-1.5 mb-1">
+                                                                            <Target className={cn(
+                                                                                "w-3.5 h-3.5 font-bold flex-shrink-0",
+                                                                                hasPractice ? "text-white" : "text-black dark:text-white"
+                                                                            )} />
+                                                                            <span className={cn(
+                                                                                "text-[9px] font-black leading-none",
+                                                                                hasPractice ? "text-white" : "text-black dark:text-white"
+                                                                            )}>Accuracy</span>
+                                                                        </div>
+                                                                        <div className="flex-1 flex flex-col justify-center">
+                                                                            <div className={cn(
+                                                                                "text-2xl font-black leading-none",
+                                                                                hasPractice ? "text-white" : "text-black dark:text-white"
+                                                                            )}>
+                                                                                {accuracyPercent}%
+                                                                            </div>
+                                                                            <div className={cn(
+                                                                                "text-[9px] mt-1 font-bold",
+                                                                                hasPractice ? "text-white" : "text-black dark:text-white"
+                                                                            )}>
+                                                                                {unit.questions_correct}/{unit.questions_answered} correct
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {/* Practice Count Card */}
+                                                                    <div
+                                                                        className={cn(
+                                                                            "grading-card-surface aspect-square p-2.5 border-[3px] border-black dark:border-white shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.2)] flex flex-col",
+                                                                            hasPractice
+                                                                                ? "bg-[#C4B5FD] dark:bg-[#C4B5FD]"
+                                                                                : "grading-card-muted"
+                                                                        )}
+                                                                        style={{ backgroundImage: "none" }}
+                                                                    >
+                                                                        <div className="flex items-center gap-1.5 mb-1">
+                                                                            <TrendingUp className={cn(
+                                                                                "w-3.5 h-3.5 font-bold flex-shrink-0",
+                                                                                hasPractice ? "text-black" : "text-black dark:text-white"
+                                                                            )} />
+                                                                            <span className={cn(
+                                                                                "text-[9px] font-black leading-none",
+                                                                                hasPractice ? "text-black" : "text-black dark:text-white"
+                                                                            )}>Questions</span>
+                                                                        </div>
+                                                                        <div className="flex-1 flex flex-col justify-center">
+                                                                            <div className={cn(
+                                                                                "text-2xl font-black leading-none",
+                                                                                hasPractice ? "text-black" : "text-black dark:text-white"
+                                                                            )}>
+                                                                                {unit.questions_answered}
+                                                                            </div>
+                                                                            <div className={cn(
+                                                                                "text-[9px] mt-1 font-bold",
+                                                                                hasPractice ? "text-black" : "text-black dark:text-white"
+                                                                            )}>
+                                                                                total attempts
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                {/* Sub-skills (Lessons) */}
+                                                                {unit.sub_skills && unit.sub_skills.length > 0 && (
+                                                                    <div
+                                                                        className="grading-card-surface mt-3 bg-[#FFFDF5] dark:bg-[#000000] p-2.5 border-[3px] border-black dark:border-white"
+                                                                        style={{ backgroundImage: "none" }}
+                                                                    >
+                                                                        <div className="text-[9px] font-black tracking-wide text-black dark:text-white mb-2">Sub-Skills (Lessons)</div>
+                                                                        <div className="space-y-1.5">
+                                                                            {unit.sub_skills.slice(0, 5).map((subSkill: any) => (
+                                                                                <div key={subSkill.id} className="flex items-center justify-between text-[9px]">
+                                                                                    <span className="font-bold text-black dark:text-white truncate flex-1">{subSkill.name}</span>
+                                                                                    <span className={cn(
+                                                                                        "font-black ml-2",
+                                                                                        subSkill.mastery >= 75 ? "text-green-600 dark:text-green-400" :
+                                                                                            subSkill.mastery >= 50 ? "text-yellow-600 dark:text-yellow-400" :
+                                                                                                "text-red-600 dark:text-red-400"
+                                                                                    )}>
+                                                                                        {subSkill.mastery}%
+                                                                                    </span>
+                                                                                </div>
+                                                                            ))}
+                                                                            {unit.sub_skills.length > 5 && (
+                                                                                <div className="text-[8px] font-bold text-black/50 dark:text-white/50">
+                                                                                    +{unit.sub_skills.length - 5} more...
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
                                                                     </div>
                                                                 )}
                                                             </div>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </AccordionContent>
-                                        </div>
-                                    </AccordionItem>
-                                );
-                            })
-                        ))
-                    ))
-                )}
-            </Accordion>
+                                                        </AccordionContent>
+                                                    </div>
+                                                </AccordionItem>
+                                            );
+                                        })
+                                    ))
+                                ))
+                            )}
+                        </Accordion>
                     </div>
                 ) : (
                     <div className="h-full w-full flex items-center justify-center cursor-pointer hover:bg-[#FFE500]/20 transition-colors pb-[140px]" onClick={onToggle}>

@@ -331,12 +331,8 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
     );
   }
 
-  // If assessment not completed, redirect to assessment
+  // If assessment not completed, redirect to dedicated assessment page
   if (!assessmentStatus.completed) {
-    if (onStartAssessment) {
-      // Trigger assessment inline
-      onStartAssessment(selectedSubject);
-    }
     return <Redirect to={`/app/assessment/${selectedSubject}`} />;
   }
 

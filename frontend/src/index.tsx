@@ -30,8 +30,10 @@ import "./package/perseus/testing/perseus-init.tsx";
   const SUPPRESSED = [
     'findDOMNode is deprecated',
     'A component is changing an uncontrolled',
+    'changing from uncontrolled to controlled', // Radix UI Accordion variant
     'A string ref',                // React: "A string ref, "%s", has been found..."
     'String refs are not supported', // React 18+ variant
+    'contains the string ref',     // React 18: 'Component "div" contains the string ref "input"'
     'deprecated and will be removed', // General deprecation pattern
     // NOTE: "is not accessible" REMOVED (Bug #69) — was hiding real a11y bugs
   ];
@@ -240,71 +242,71 @@ root.render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <ThemeProvider defaultTheme="light" storageKey="ai-tutor-theme">
-        <AuthProvider>
-          <ComingSoonGuard>
-            <Suspense fallback={
-              <div style={{
-                minHeight: '100vh',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '16px',
-                background: '#FFFDF5',
-                fontFamily: 'system-ui, -apple-system, sans-serif',
-              }}>
+          <AuthProvider>
+            <ComingSoonGuard>
+              <Suspense fallback={
                 <div style={{
-                  width: '200px',
-                  height: '8px',
-                  border: '3px solid #000',
-                  backgroundColor: '#fff',
-                  overflow: 'hidden',
+                  minHeight: '100vh',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '16px',
+                  background: '#FFFDF5',
+                  fontFamily: 'system-ui, -apple-system, sans-serif',
                 }}>
                   <div style={{
-                    height: '100%',
-                    width: '40%',
-                    backgroundColor: '#FFD93D',
-                    animation: 'suspense-loading-bar 1.5s ease-in-out infinite',
-                  }} />
-                </div>
-                <div style={{
-                  fontWeight: 900,
-                  fontSize: '16px',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.1em',
-                  color: '#000',
-                }}>
-                  Loading...
-                </div>
-                <style>{`
+                    width: '200px',
+                    height: '8px',
+                    border: '3px solid #000',
+                    backgroundColor: '#fff',
+                    overflow: 'hidden',
+                  }}>
+                    <div style={{
+                      height: '100%',
+                      width: '40%',
+                      backgroundColor: '#FFD93D',
+                      animation: 'suspense-loading-bar 1.5s ease-in-out infinite',
+                    }} />
+                  </div>
+                  <div style={{
+                    fontWeight: 900,
+                    fontSize: '16px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em',
+                    color: '#000',
+                  }}>
+                    Loading...
+                  </div>
+                  <style>{`
                   @keyframes suspense-loading-bar {
                     0% { transform: translateX(-100%); }
                     100% { transform: translateX(350%); }
                   }
                 `}</style>
-              </div>
-            }>
-              <Switch>
-                <Route path="/app/dev-login" component={DevLogin} />
-                <Route path="/app/auth/setup" component={LoginPage} />
-                <Route path="/app/login" component={LoginPage} />
-                <Route path="/app/account" component={AccountPage} />
-                <Route path="/app/pricing" component={PricingPage} />
-                <Route path="/pricing" component={PricingPage} />
-                <Route path="/app/admin/videos" component={AdminVideoPanel} />
-                <Route path="/app/admin/cost-tracking" component={CostTrackingPage} />
-                <Route path="/app/assessment-exit" component={AssessmentExit} />
-                <Route path="/app/assessment/:subject" component={AssessmentFlow} />
-                <Route path="/app/learn/:subject" component={App} />
-                <Route path="/landing/:id" component={LandingPageWrapper} /> {/* Dynamic landing page routes */}
-                <Route path="/app/:profileId" component={LandingPageOrApp} />
-                <Route path="/app" exact component={LandingPageOrApp} />
-                <Route path="/" exact render={() => <Redirect to="/comingsoon" />} />
-                <Route component={NotFound} /> {/* 404 catch-all (Bug #42) */}
-              </Switch>
-            </Suspense>
-          </ComingSoonGuard>
-        </AuthProvider>
+                </div>
+              }>
+                <Switch>
+                  <Route path="/app/dev-login" component={DevLogin} />
+                  <Route path="/app/auth/setup" component={LoginPage} />
+                  <Route path="/app/login" component={LoginPage} />
+                  <Route path="/app/account" component={AccountPage} />
+                  <Route path="/app/pricing" component={PricingPage} />
+                  <Route path="/pricing" component={PricingPage} />
+                  <Route path="/app/admin/videos" component={AdminVideoPanel} />
+                  <Route path="/app/admin/cost-tracking" component={CostTrackingPage} />
+                  <Route path="/app/assessment-exit" component={AssessmentExit} />
+                  <Route path="/app/assessment/:subject" component={AssessmentFlow} />
+                  <Route path="/app/learn/:subject" component={App} />
+                  <Route path="/landing/:id" component={LandingPageWrapper} /> {/* Dynamic landing page routes */}
+                  <Route path="/app/:profileId" component={LandingPageOrApp} />
+                  <Route path="/app" exact component={LandingPageOrApp} />
+                  <Route path="/" exact render={() => <Redirect to="/comingsoon" />} />
+                  <Route component={NotFound} /> {/* 404 catch-all (Bug #42) */}
+                </Switch>
+              </Suspense>
+            </ComingSoonGuard>
+          </AuthProvider>
         </ThemeProvider>
       </BrowserRouter>
     </QueryClientProvider>

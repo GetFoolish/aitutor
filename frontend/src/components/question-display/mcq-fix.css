@@ -570,3 +570,44 @@ div:has(> #question-content-container) {
     cursor: not-allowed !important;
     filter: grayscale(40%) !important;
 }
+/* ======================================================================
+   FIX: Neo-Brutalist Code & Pseudocode Styling.
+   ====================================================================== */
+#question-content-container pre,
+#question-content-container code {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace !important;
+    font-size: 14px !important;
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+    border-radius: 4px !important;
+}
+
+#question-content-container pre {
+    padding: 16px !important;
+    margin: 16px 0 !important;
+    border: 3px solid #000 !important;
+    box-shadow: 4px 4px 0 #000 !important;
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    line-height: 1.6 !important;
+    background-color: #f8fafc !important;
+}
+
+.dark #question-content-container pre {
+    background-color: #1e293b !important;
+    border-color: #fff !important;
+    box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.3) !important;
+    color: #f1f5f9 !important;
+}
+
+#question-content-container code:not(pre code) {
+    padding: 2px 6px !important;
+    border: 2px solid #000 !important;
+    background-color: #e2e8f0 !important;
+}
+
+.dark #question-content-container code:not(pre code) {
+    border-color: #fff !important;
+    background-color: #334155 !important;
+    color: #f1f5f9 !important;
+}

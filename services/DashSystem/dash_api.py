@@ -100,6 +100,8 @@ def _run_with_timeout(fn, timeout_s: float, *args, **kwargs):
     except Exception:
         if future is not None:
             future.cancel()
+        logger.error(f"[_run_with_timeout] Error or timeout after {timeout_s}s:")
+        logger.error(traceback.format_exc())
         return None
     finally:
         executor.shutdown(wait=False, cancel_futures=True)
@@ -852,7 +854,7 @@ def load_perseus_items_for_dash_questions_from_mongodb(
         from services.DashSystem.pre_serve_validator import validate_pre_serve
     except Exception as e:
         # Validator unavailable — pass through all results
-        logger.debug(f"[VALIDATOR] Pre-serve validator unavailable: {e}")
+        logger.warning(f"[VALIDATOR] Pre-serve validator unavailable: {e}")
         for r in results:
             _patch_numeric_input_widgets(r)
         return [_strip_objectids(r) for r in results]
@@ -984,7 +986,7 @@ def _load_khan_perseus_items(khan_questions: List[Question]) -> List[Dict]:
                     'slug': slug,
                     'skill_names': [dash_system.skills[sid].name for sid in dash_q.skill_ids
                                    if sid in dash_system.skills],
-                    'unit_id': question_doc.get('unit_id'),  # Current module (unit) ID
+                    'unit_id': question_doc.get('unit_id') or (dash_q.skill_ids[0] if dash_q.skill_ids else None),  # Current module (unit) ID — fallback to skill_id
                     'lesson_id': question_doc.get('lesson_id'),  # Sub-skill ID
                     'exercise_id': question_doc.get('exercise_id'),
                     'mongodb_id': str(question_doc.get('_id')),  # MongoDB ObjectId
@@ -1507,7 +1509,7 @@ def log_question_displayed(request: Request, display_info: dict):
         if attempts_count > 0:
             logger.info(f"\n[STUDENT_STATE] {attempts_count} total question attempts recorded")
     except Exception as e:
-        logger.debug(f"Could not fetch student state: {e}")
+        logger.warning(f"Could not fetch student state: {e}")
     
     logger.info(f"{'='*80}\n")
     return {"success": True}
@@ -1884,7 +1886,7 @@ def recommend_next_questions(request: Request, req: RecommendNextRequest):
     def _fetch_for_skill_rec(skill_id):
         skill = dash_system.skills.get(skill_id)
         if not skill:
-            logger.debug(f"[RECOMMEND_NEXT] Skill not found: {skill_id}")
+            logger.warning(f"[RECOMMEND_NEXT] Skill not found: {skill_id}")
             return None
         try:
             # RECOMMENDATIONS: Instant-only. Use content_service (Pool -> Reuse -> Khan Fallback)
@@ -2159,28 +2161,43 @@ def start_assessment(
         # Pre-select 10 diverse skills from curriculum, filtered by grade (±1 grade range)
         all_skills = list(dash_system.skills.values())
 
-        # Filter skills to be within ±1 grade of current student grade
-        grade_filtered_skills = [
-            skill for skill in all_skills
-            if abs(skill.grade_level.value - current_grade_value) <= 1
-        ]
-
-        # If not enough skills in grade range, expand to ±2 grades
-        if len(grade_filtered_skills) < 10:
-            logger.warning(f"[ASSESSMENT] Only {len(grade_filtered_skills)} skills in ±1 grade range, expanding to ±2")
+        if not all_skills:
+            logger.warning(f"[ASSESSMENT] No skills found for {subject}. Using JIT fallback.")
+            from services.DashSystem.dash_system import Skill
+            # Create synthetic skill objects to drive JIT generation
+            grade_level_enum = list(GradeLevel)[current_grade_value]
+            target_skills = [
+                Skill(
+                    skill_id=f"jit_{subject.lower().replace(' ', '_')}_{i}",
+                    name=f"{subject} Concept {i+1}",
+                    grade_level=grade_level_enum,
+                    difficulty=0.5
+                ) for i in range(12)
+            ]
+            grade_filtered_skills = target_skills
+        else:
+            # Filter skills to be within ±1 grade of current student grade
             grade_filtered_skills = [
                 skill for skill in all_skills
-                if abs(skill.grade_level.value - current_grade_value) <= 2
+                if abs(skill.grade_level.value - current_grade_value) <= 1
             ]
 
-        # If still not enough, use all skills
-        if len(grade_filtered_skills) < 10:
-            logger.warning(f"[ASSESSMENT] Only {len(grade_filtered_skills)} skills in ±2 grade range, using all skills")
-            grade_filtered_skills = all_skills
+            # If not enough skills in grade range, expand to ±2 grades
+            if len(grade_filtered_skills) < 10:
+                logger.warning(f"[ASSESSMENT] Only {len(grade_filtered_skills)} skills in ±1 grade range, expanding to ±2")
+                grade_filtered_skills = [
+                    skill for skill in all_skills
+                    if abs(skill.grade_level.value - current_grade_value) <= 2
+                ]
 
-        random.shuffle(grade_filtered_skills)
-        # Pick up to 12 unique skills for parallel generation (to get 10 successful ones)
-        target_skills = grade_filtered_skills[:min(len(grade_filtered_skills), 12)]
+            # If still not enough, use all skills
+            if len(grade_filtered_skills) < 10:
+                logger.warning(f"[ASSESSMENT] Only {len(grade_filtered_skills)} skills in ±2 grade range, using all skills")
+                grade_filtered_skills = all_skills
+
+            random.shuffle(grade_filtered_skills)
+            # Pick up to 12 unique skills for parallel generation (to get 10 successful ones)
+            target_skills = grade_filtered_skills[:min(len(grade_filtered_skills), 12)]
         logger.info(f"[ASSESSMENT] Pre-selected {len(target_skills)} grade-appropriate skills (student grade: {current_grade_value})")
 
         student_age = user_profile.age if user_profile.age else 10
@@ -2296,6 +2313,8 @@ def start_assessment(
 
         if not perseus_items:
             logger.error(f"[ASSESSMENT] Failed to load any Perseus items")
+            import traceback
+            logger.error(traceback.format_exc())
             raise HTTPException(status_code=400, detail="Failed to load assessment questions")
 
         if len(perseus_items) < total_questions:
@@ -4923,7 +4942,7 @@ def _prewarm_assessment_questions(user_id: str, subject: str, region: str):
         if cache_key in _warmstart_cache:
             cached = _warmstart_cache[cache_key]
             if time.time() - cached.get("ts", 0) < WARMSTART_TTL:
-                logger.debug(f"[WARMSTART] Already cached for {cache_key}")
+                logger.info(f"[WARMSTART] Already cached for {cache_key}")
                 evt.set()
                 return
         _warmstart_events[cache_key] = evt

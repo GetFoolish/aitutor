@@ -19,7 +19,7 @@ import { PerseusI18nContextProvider } from "../../package/perseus/src/components
 import { mockStrings } from "../../package/perseus/src/strings";
 import { KEScore } from "@khanacademy/perseus-core";
 import { toast } from "sonner";
-import { CheckCircle2, XCircle, Sparkles, ChevronRight } from "lucide-react";
+import { CheckCircle2, XCircle, Sparkles, ChevronRight, AlertCircle } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useHint } from "../../contexts/HintContext";
 import { apiUtils, reportQuestionAnalytics } from "../../lib/api-utils";
@@ -191,6 +191,8 @@ const RendererComponent = ({
         typeof window !== "undefined" ? window.innerHeight : 900
     );
     const [autoFitZoom, setAutoFitZoom] = useState(1);
+    const [hasSubmitError, setHasSubmitError] = useState(false);
+    const [hasNextError, setHasNextError] = useState(false);
     const rendererRef = useRef<ServerItemRenderer>(null);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const questionStackRef = useRef<HTMLDivElement>(null);
@@ -500,7 +502,7 @@ const RendererComponent = ({
             const unitId = metadata.unit_id || null;
             const mongodbId = metadata.mongodb_id || null;
 
-            console.log('[RendererComponent] Question metadata:', {
+            console.debug('[RendererComponent] Question metadata:', {
                 question_id: metadata.dash_question_id,
                 unit_id: unitId,
                 lesson_id: metadata.lesson_id,
@@ -509,10 +511,12 @@ const RendererComponent = ({
                 mongodb_id: mongodbId
             });
 
-            if (unitId) {
-                onSkillChange(unitId);
+            // Fallback: use first skill_id when unit_id is missing (common for Khan and pool questions)
+            const effectiveUnitId = unitId || (metadata.skill_ids && metadata.skill_ids[0]) || null;
+            if (effectiveUnitId) {
+                onSkillChange(effectiveUnitId);
             } else {
-                console.warn('[RendererComponent] No unit_id found in metadata!');
+                console.debug('[RendererComponent] No unit_id or skill_id found in metadata — sidebar may not update');
             }
 
             // Update URL to /app/{mongodb_id}
@@ -579,7 +583,8 @@ const RendererComponent = ({
     };
 
     const handleNext = async () => {
-        if (isNextLoading || isSubmitting) return;
+        if (!isAnswered || isNextLoading || endOfTest) return;
+        setHasNextError(false);
 
         try {
             setIsNextLoading(true);
@@ -607,6 +612,10 @@ const RendererComponent = ({
                 setStartTime(Date.now()); // Reset timer for next question
                 return index;
             });
+        } catch (error) {
+            console.error('[RendererComponent] Next question error:', error);
+            setHasNextError(true);
+            toast.error("Failed to load next question. Please try again.");
         } finally {
             setIsNextLoading(false);
         }
@@ -614,6 +623,7 @@ const RendererComponent = ({
 
     const handleSubmit = async () => {
         if (isSubmitting || isNextLoading) return;
+        setHasSubmitError(false);
 
         if (rendererRef.current && perseusItem?.question) {
             setIsSubmitting(true);
@@ -832,6 +842,10 @@ const RendererComponent = ({
                 setIsAnswered(true);
                 setScore(keScore);
                 console.log("Score:", keScore);
+            } catch (error) {
+                console.error('[RendererComponent] Submit error:', error);
+                setHasSubmitError(true);
+                toast.error("Failed to submit answer. Please try again.");
             } finally {
                 setIsSubmitting(false);
             }
@@ -1443,6 +1457,7 @@ const RendererComponent = ({
                                 className="relative transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-[#C4B5FD] hover:bg-[#C4B5FD] text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:hover:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] disabled:opacity-50 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5 flex items-center justify-center gap-2 min-w-[100px]"
                             >
                                 {isSubmitting && <div className="w-4 h-4 border-[3px] border-black border-t-transparent rounded-full animate-spin"></div>}
+                                {!isSubmitting && hasSubmitError && <AlertCircle className="w-4 h-4 text-[#FF006E]" />}
                                 {isSubmitting ? "Checking..." : "Submit"}
                             </Button>
                         )}
@@ -1456,6 +1471,7 @@ const RendererComponent = ({
                                 className="relative transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-neutral-800 hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] text-black dark:text-white dark:hover:text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5 flex items-center justify-center gap-2 min-w-[100px]"
                             >
                                 {(isNextLoading || (isLoadingNextBatch && item + 1 >= perseusItems.length)) && <div className="w-4 h-4 border-[3px] border-black dark:border-white border-t-transparent dark:border-t-transparent rounded-full animate-spin"></div>}
+                                {!(isNextLoading || (isLoadingNextBatch && item + 1 >= perseusItems.length)) && hasNextError && <AlertCircle className="w-4 h-4 text-[#FF006E]" />}
                                 {(isNextLoading || (isLoadingNextBatch && item + 1 >= perseusItems.length)) ? "Loading..." : "Next →"}
                             </Button>
                         )}

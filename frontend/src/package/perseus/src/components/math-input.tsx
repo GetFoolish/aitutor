@@ -10,24 +10,56 @@ import {
     convertDotToTimesByLocale,
     MathInputI18nContext,
 } from "@khanacademy/math-input";
+
+// Robust local fallback for missing labelValue or other library strings
+// This avoids the 'labelValue is not a function' and SyntaxError issues
+const mathInputMockStrings = {
+    labelValue: ({ label, value }) => `${label}: ${value}`,
+    mathInputBox: "Math input box",
+    sin: "sin",
+    cos: "cos",
+    tan: "tan",
+    Baseline: "Baseline",
+    Superscript: "Superscript",
+    selected: ({ obj }) => `${obj} selected`,
+    plus: "Plus",
+    minus: "Minus",
+    negative: "Negative",
+    times: "Multiply",
+    divide: "Divide",
+    decimal: "Decimal",
+    percent: "Percent",
+    cdot: "Multiply",
+    equalsSign: "Equals sign",
+    notEqualsSign: "Not-equals sign",
+    greaterThanSign: "Greater than sign",
+    lessThanSign: "Less than sign",
+    greaterThanOrEqualToSign: "Greater than or equal to sign",
+    lessThanOrEqualSign: "Less than or equal to sign",
+    mathInputTitle: "Math input",
+    mathInputDescription: "Use the keypad to enter math",
+    closeKeypad: "Close keypad",
+    openKeypad: "Open keypad",
+};
+
 import Clickable from "@khanacademy/wonder-blocks-clickable";
-import {View} from "@khanacademy/wonder-blocks-core";
-import {Popover, PopoverContentCore} from "@khanacademy/wonder-blocks-popover";
-import {color, spacing} from "@khanacademy/wonder-blocks-tokens";
-import {HeadingMedium} from "@khanacademy/wonder-blocks-typography";
-import {StyleSheet} from "aphrodite";
+import { View } from "@khanacademy/wonder-blocks-core";
+import { Popover, PopoverContentCore } from "@khanacademy/wonder-blocks-popover";
+import { color, spacing } from "@khanacademy/wonder-blocks-tokens";
+import { HeadingMedium } from "@khanacademy/wonder-blocks-typography";
+import { StyleSheet } from "aphrodite";
 import classNames from "classnames";
 import $ from "jquery";
 import * as React from "react";
 import _ from "underscore";
-import {v4 as uuid} from "uuid";
+import { v4 as uuid } from "uuid";
 
 import a11y from "../util/a11y";
-import {debounce} from "../util/debounce";
+import { debounce } from "../util/debounce";
 
-import {PerseusI18nContext} from "./i18n-context";
+import { PerseusI18nContext } from "./i18n-context";
 
-import type {MathFieldInterface} from "@khanacademy/math-input";
+import type { MathFieldInterface } from "@khanacademy/math-input";
 import type {
     AnalyticsEventHandlerFn,
     KeypadKey,
@@ -76,7 +108,7 @@ type Props = {
 };
 
 type InnerProps = Props & {
-    // NOTE(john): We'd like to use the real MathInputStrings type here, but
+    // NOTE: We'd like to use the real MathInputStrings type here, but
     // getting the types and imports to work correctly turns out to be really
     // hard, it's not worth it as we are just passing the types through.
     mathInputStrings: any;
@@ -124,18 +156,18 @@ class InnerMathInput extends React.Component<InnerProps, State> {
         if (this.props.buttonsVisible === "never") {
             return;
         }
-        this.setState({keypadOpen: true});
+        this.setState({ keypadOpen: true });
     }
 
     closeKeypad() {
-        this.setState({keypadOpen: false});
+        this.setState({ keypadOpen: false });
     }
 
     insert: (value: any) => void = (value) => {
         const input = this.mathField();
-        const {locale} = this.context;
+        const { locale } = this.context;
         const customKeyTranslator = {
-            ...getKeyTranslator(locale, this.context.strings),
+            ...getKeyTranslator(locale, this.props.mathInputStrings),
             // If there's something in the input that can become part of a
             // fraction, typing "/" puts it in the numerator. If not, typing
             // "/" does nothing. In that case, enter a \frac.
@@ -170,7 +202,7 @@ class InnerMathInput extends React.Component<InnerProps, State> {
 
     mathField: () => MathFieldInterface | null = () => {
         if (!this.__mathField && this.__mathFieldWrapperRef) {
-            const {locale} = this.context;
+            const { locale } = this.context;
             // Initialize MathQuill.MathField instance
             this.__mathField = createMathField(
                 this.__mathFieldWrapperRef,
@@ -255,16 +287,16 @@ class InnerMathInput extends React.Component<InnerProps, State> {
 
     focus: () => void = () => {
         this.mathField()?.focus();
-        this.setState({focused: true});
+        this.setState({ focused: true });
     };
 
     // removing mathfield focus here makes the cursor vanished when the
     // input is still focused
-    blur: () => void = () => this.setState({focused: false});
+    blur: () => void = () => this.setState({ focused: false });
 
     handleKeypadPress: (key: KeypadKey, e: any) => void = (key, e) => {
-        const {locale} = this.context;
-        const translator = getKeyTranslator(locale, this.context.strings)[key];
+        const { locale } = this.context;
+        const translator = getKeyTranslator(locale, this.props.mathInputStrings)[key];
         const mathField = this.mathField();
 
         if (mathField) {
@@ -346,7 +378,7 @@ class InnerMathInput extends React.Component<InnerProps, State> {
                         opened={this.state.keypadOpen}
                         dismissEnabled
                         rootBoundary="document"
-                        aria-label={this.context.strings.mathInputTitle}
+                        aria-label={this.props.mathInputStrings.mathInputTitle || "Math input"}
                         aria-describedby={`popover-content-${popoverContentUniqueId}`}
                         content={() => (
                             <>
@@ -354,7 +386,7 @@ class InnerMathInput extends React.Component<InnerProps, State> {
                                     id={`popover-content-${popoverContentUniqueId}`}
                                     style={a11y.srOnly}
                                 >
-                                    {this.context.strings.mathInputDescription}
+                                    {this.props.mathInputStrings.mathInputDescription || "Use the keypad to enter math"}
                                 </HeadingMedium>
                                 <PopoverContentCore
                                     style={styles.popoverContent}
@@ -389,8 +421,8 @@ class InnerMathInput extends React.Component<InnerProps, State> {
                             <Clickable
                                 aria-label={
                                     this.state.keypadOpen
-                                        ? this.context.strings.closeKeypad
-                                        : this.context.strings.openKeypad
+                                        ? this.props.mathInputStrings.closeKeypad || "Close keypad"
+                                        : this.props.mathInputStrings.openKeypad || "Open keypad"
                                 }
                                 role="button"
                                 onClick={() =>
@@ -439,17 +471,19 @@ class MathInput extends React.Component<Props, State> {
     }
 
     render() {
+        // Guard against null context when MathInputI18nContext has no provider
+        const mathInputStrings = { ...mathInputMockStrings, ...(this.context?.strings ?? {}) };
         return (
             <InnerMathInput
                 {...this.props}
                 ref={this.inputRef}
-                mathInputStrings={this.context.strings}
+                mathInputStrings={mathInputStrings}
             />
         );
     }
 }
 
-const MathInputIcon = ({hovered, focused, active}) => {
+const MathInputIcon = ({ hovered, focused, active }) => {
     let fillColor: string | undefined;
     switch (true) {
         case focused || active:
@@ -551,6 +585,7 @@ const styles = StyleSheet.create({
         padding: 0,
         paddingBottom: spacing.xxSmall_6,
         maxWidth: "initial",
+        width: "auto",
     },
 });
 

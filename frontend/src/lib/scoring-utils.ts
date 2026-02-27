@@ -261,7 +261,7 @@ export function scorePerseusQuestion(
 
                         // Debug logging for numeric comparisons
                         if (!widgetCorrect) {
-                            console.warn('[NUMERIC-INPUT] Scoring mismatch:', {
+                            console.debug('[NUMERIC-INPUT] Scoring mismatch:', {
                                 widgetId,
                                 rawValue,
                                 userValue: userValueNum,

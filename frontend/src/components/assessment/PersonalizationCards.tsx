@@ -74,11 +74,11 @@ const PersonalizationCards: React.FC<PersonalizationCardsProps> = ({ skills, onC
     // Get the actual container dimensions (including padding)
     const containerWidth = container.offsetWidth || window.innerWidth;
     const containerHeight = container.offsetHeight || window.innerHeight;
-    
+
     // Store dimensions and center in refs for use in animation loop
     containerWidthRef.current = containerWidth;
     containerHeightRef.current = containerHeight;
-    
+
     // Calculate true center of the container (accounting for padding box)
     const centerX = containerWidth / 2;
     const centerY = containerHeight / 2;
@@ -368,26 +368,37 @@ const PersonalizationCards: React.FC<PersonalizationCardsProps> = ({ skills, onC
       }}
     >
       <BackgroundShapes count={18} />
-      {/* Title */}
+      {/* Title with premium styling */}
       <div style={{
         position: 'absolute',
-        top: '40px',
+        top: '60px',
         left: '50%',
         transform: 'translateX(-50%)',
         zIndex: 10,
         textAlign: 'center',
+        width: '100%',
+        padding: '0 20px'
       }}>
-        <h2 style={{
-          fontSize: '28px',
-          fontWeight: 900,
-          color: '#000000',
-          textTransform: 'uppercase',
-          letterSpacing: '0.1em',
-          margin: 0,
-          fontFamily: 'system-ui, -apple-system, sans-serif',
+        <div style={{
+          display: 'inline-block',
+          backgroundColor: '#FFD93D',
+          border: '4px solid #000',
+          padding: '12px 32px',
+          boxShadow: '8px 8px 0px 0px #000',
+          transform: 'rotate(-1deg)'
         }}>
-          Personalizing Your Learning Plan...
-        </h2>
+          <h2 style={{
+            fontSize: 'clamp(20px, 4vw, 32px)',
+            fontWeight: 900,
+            color: '#000000',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            margin: 0,
+            lineHeight: 1.1
+          }}>
+            Personalizing Your Path...
+          </h2>
+        </div>
       </div>
 
       {/* Cards */}
@@ -404,12 +415,12 @@ const PersonalizationCards: React.FC<PersonalizationCardsProps> = ({ skills, onC
               top: 0,
               width: '220px',
               height: '170px',
-              border: '4px solid #000000',
+              border: '5px solid #000000',
               backgroundColor: color,
-              boxShadow: '4px 4px 0px 0px #000000',
+              boxShadow: animationPhase === 'align' ? '8px 8px 0px 0px #000000' : '4px 4px 0px 0px #000000',
               padding: '16px',
               transform: `translate(${pos.x}px, ${pos.y}px) rotate(${pos.rotation}deg) scale(${pos.scale})`,
-              transition: animationPhase === 'align' ? 'transform 0.2s ease-out' : 'none',
+              transition: animationPhase === 'align' ? 'transform 0.3s ease-out, box-shadow 0.3s ease-out' : 'none',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
@@ -420,38 +431,46 @@ const PersonalizationCards: React.FC<PersonalizationCardsProps> = ({ skills, onC
             {/* Grade Level Badge */}
             <div style={{
               alignSelf: 'flex-start',
-              padding: '4px 8px',
-              border: '2px solid #000000',
+              padding: '2px 8px',
+              border: '3px solid #000000',
               backgroundColor: '#FFFFFF',
-              fontSize: '11px',
+              fontSize: '10px',
               fontWeight: 900,
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
               color: '#000000',
+              marginBottom: '8px'
             }}>
               {formatGradeLevel(skill.grade_level)}
             </div>
 
             {/* Skill Name */}
             <div style={{
-              fontSize: '15px',
-              fontWeight: 700,
+              fontSize: '16px',
+              fontWeight: 900,
               color: '#000000',
               textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              lineHeight: '1.3',
+              letterSpacing: '0.02em',
+              lineHeight: '1.2',
               wordBreak: 'break-word',
               textAlign: 'center',
               flex: 1,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: '8px 4px',
+              padding: '4px',
               overflow: 'hidden',
-              textOverflow: 'ellipsis',
             }}>
               {skill.name}
             </div>
+
+            {/* Bottom Accent */}
+            <div style={{
+              width: '100%',
+              height: '8px',
+              backgroundColor: '#000',
+              marginTop: '4px'
+            }} />
           </div>
         );
       })}

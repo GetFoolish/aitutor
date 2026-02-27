@@ -50,6 +50,14 @@ _SUBJECT_KEYWORDS: Dict[str, frozenset] = {
         "factor", "statistics", "probability", "trigonometry", "measurement",
         "integer", "prime", "square root", "area", "perimeter", "volume",
         "counting", "place value", "rounding", "estimation",
+        # Curriculum skill names that should route to math
+        "addition", "subtraction", "multiplication", "division",
+        "data analysis", "graph", "function", "radical", "logarithm",
+        "exponential", "linear", "quadratic", "inequalit", "coordinate",
+        "angle", "circle", "triangle", "polygon", "congruent", "symmetry",
+        "2nd-grade-math", "3rd-grade-math", "4th-grade-math", "5th-grade-math",
+        "6th-grade-math", "7th-grade-math", "8th-grade-math",
+        "grade-math", "pre-algebra", "precalculus",
     }),
     "science": frozenset({
         "science", "biology", "physics", "chemistry", "astronomy",
@@ -1002,12 +1010,17 @@ class DeterministicVerifier:
                     merged["facts_by_topic"][topic_key] = topic_data
         return merged
 
-    def detect_subject(self, skill_name: str, lesson_name: str, fmt: str) -> str:
-        """Determine subject from skill/lesson names via keyword matching."""
+    def detect_subject(self, skill_name: str, lesson_name: str, fmt: str, subject_hint: str = "") -> str:
+        """Determine subject from skill/lesson names via keyword matching.
+        
+        Args:
+            subject_hint: Optional known subject (e.g. from curriculum). If provided,
+                          it's included in keyword matching to improve detection accuracy.
+        """
         # numeric_input and expression are always math
         if fmt in ("numeric_input", "expression"):
             return "math"
-        combined = f"{skill_name} {lesson_name}".lower()
+        combined = f"{skill_name} {lesson_name} {subject_hint}".lower()
         best_subject, best_score = "unknown", 0
         for subject, keywords in _SUBJECT_KEYWORDS.items():
             score = sum(1 for kw in keywords if kw in combined)
@@ -1024,13 +1037,14 @@ class DeterministicVerifier:
         fmt: str,
         age: int,
         difficulty: float,
+        subject_hint: str = "",
     ) -> VerificationResult:
         """
         Main entry point. Detects subject, runs universal + subject-specific checks.
         Returns VerificationResult with pass/fail and failure reasons for prompt feedback.
         """
         t0 = time.time()
-        subject = self.detect_subject(skill_name, lesson_name, fmt)
+        subject = self.detect_subject(skill_name, lesson_name, fmt, subject_hint=subject_hint)
 
         # Universal checks first
         universal_failures = self._universal_checks(item, skill_name, lesson_name)

@@ -363,26 +363,15 @@ class ContentGenerationService:
 
             audit["model"] = self.content_engine.model
 
-            # --- Call Gemini using the same pattern as content_v1.py ---
-            # Temperature: 0.6 baseline (single attempt here; retries handled by verify loop)
+            # --- Call Gemini using centralized wrapper (handles timeouts, quota, response_mime_type) ---
             temperature = 0.6
 
-            def _call_gemini():
-                return self.content_engine.client.models.generate_content(
-                    model=self.content_engine.model,
-                    contents=prompt_text,
-                    config={"temperature": temperature},
-                )
-
-            executor = ThreadPoolExecutor(max_workers=1)
-            future = None
-            try:
-                future = executor.submit(_call_gemini)
-                response = future.result(timeout=30)
-            finally:
-                if future:
-                    future.cancel()
-                executor.shutdown(wait=False, cancel_futures=True)
+            response = self.content_engine.call_gemini(
+                model=self.content_engine.model,
+                contents=prompt_text,
+                config={"temperature": temperature},
+                timeout=30.0,
+            )
 
             raw = response.text or ""
             audit["temperature"] = temperature
@@ -476,9 +465,10 @@ class ContentGenerationService:
 
         for attempt in range(MAX_VERIFY_ATTEMPTS + 1):
             # DeterministicVerifier.verify() signature:
-            # verify(item, skill_name, lesson_name, fmt, age, difficulty)
+            # verify(item, skill_name, lesson_name, fmt, age, difficulty, subject_hint)
             result = self.verifier.verify(
-                question, effective_skill, effective_lesson, fmt, age, difficulty
+                question, effective_skill, effective_lesson, fmt, age, difficulty,
+                subject_hint=subject,
             )
             last_result = {
                 "passed": result.passed,
@@ -561,22 +551,12 @@ class ContentGenerationService:
             # Slightly higher temperature for correction rounds (same as content_v1.py)
             temperature = 0.7
 
-            def _call_gemini():
-                return self.content_engine.client.models.generate_content(
-                    model=self.content_engine.model,
-                    contents=prompt,
-                    config={"temperature": temperature},
-                )
-
-            executor = ThreadPoolExecutor(max_workers=1)
-            future = None
-            try:
-                future = executor.submit(_call_gemini)
-                response = future.result(timeout=15)
-            finally:
-                if future:
-                    future.cancel()
-                executor.shutdown(wait=False, cancel_futures=True)
+            response = self.content_engine.call_gemini(
+                model=self.content_engine.model,
+                contents=prompt,
+                config={"temperature": temperature},
+                timeout=25.0,
+            )
 
             raw = response.text or ""
             if not raw.strip():

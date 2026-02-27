@@ -7,6 +7,7 @@ import random
 import re
 import uuid
 import time
+import warnings
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
@@ -20,12 +21,20 @@ from services.DashSystem.deterministic_verifier import DeterministicVerifier
 
 logger = logging.getLogger(__name__)
 
+# ── Suppress noisy third-party library warnings ──────────────────────────
+# genai library warns about thought_signature parts — purely cosmetic, text
+# is still returned correctly via concatenation.
+warnings.filterwarnings("ignore", message=".*non-text parts in the response.*")
+# Quiet noisy HTTP request logs and internal genai info messages
+# logging.getLogger("google.genai").setLevel(logging.WARNING)
+# logging.getLogger("httpx").setLevel(logging.WARNING)
+
 # Shared bounded executor for Gemini calls.
 # Avoids creating unbounded short-lived threads under load.
 try:
-    _GEMINI_EXECUTOR_MAX_WORKERS = max(4, int(os.getenv("CONTENT_V1_GEMINI_MAX_WORKERS", "12")))
+    _GEMINI_EXECUTOR_MAX_WORKERS = max(4, int(os.getenv("CONTENT_V1_GEMINI_MAX_WORKERS", "20")))
 except (TypeError, ValueError):
-    _GEMINI_EXECUTOR_MAX_WORKERS = 12
+    _GEMINI_EXECUTOR_MAX_WORKERS = 20
 _GEMINI_EXECUTOR = ThreadPoolExecutor(
     max_workers=_GEMINI_EXECUTOR_MAX_WORKERS,
     thread_name_prefix="content-v1-gemini",
@@ -143,10 +152,13 @@ class ContentV1Engine:
             raise Exception(f"Gemini is on cooldown due to quota limits (RESOURCE_EXHAUSTED). Retry in {int(remaining)}s.")
 
         def _do_call():
+            merged_config = dict(config or {})
+            if "response_mime_type" not in merged_config:
+                merged_config["response_mime_type"] = "application/json"
             return self.client.models.generate_content(
                 model=model,
                 contents=contents,
-                config=config,
+                config=merged_config,
             )
 
         try:
@@ -158,7 +170,6 @@ class ContentV1Engine:
             if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str or "QUOTA" in err_str:
                 self._record_quota_error()
             raise e
-        self.verifier = DeterministicVerifier()
 
     def _extract_json(self, text: str) -> Dict[str, Any]:
         cleaned = text.strip()
@@ -175,6 +186,17 @@ class ContentV1Engine:
             cleaned = cleaned[start : end + 1]
         try:
             return json.loads(cleaned)
+        except (json.JSONDecodeError, ValueError):
+            pass
+
+        # Retry: escape lone backslashes that break JSON (LaTeX like \sqrt, \frac, \pi)
+        try:
+            fixed = re.sub(
+                r'\\(?![\\"\/nrtbfu])',   # backslash NOT followed by valid JSON escape char
+                r'\\\\',                  # replace with double-backslash
+                cleaned,
+            )
+            return json.loads(fixed)
         except (json.JSONDecodeError, ValueError):
             logger.warning(f"[EXTRACT_JSON] Failed to parse ({len(cleaned)} chars): {cleaned[:120]}")
             return {}
@@ -890,9 +912,9 @@ class ContentV1Engine:
 
     def _validate_item(self, item: Dict[str, Any], fmt: str = None) -> bool:
         try:
-            q = item["question"]
-            content = q["content"]
-            widgets = q["widgets"]
+            q = item.get("question", {})
+            content = q.get("content", "")
+            widgets = q.get("widgets", {})
             if not isinstance(widgets, dict) or not widgets:
                 return False
             if not content or len(content.strip()) < 10:
@@ -1144,14 +1166,10 @@ class ContentV1Engine:
         )
 
         try:
-            def _call_gemini() -> Any:
-                return self.client.models.generate_content(
-                    model=self.model,
-                    contents=prompt,
-                    config={"temperature": 0.6},
-                )
-
-            response = _run_with_timeout(_call_gemini, timeout_s=20)
+            response = self.call_gemini(
+                model=self.model, contents=prompt,
+                config={"temperature": 0.6}, timeout=30,
+            )
             parsed = self._extract_json(response.text or "")
             if not isinstance(parsed, dict) or not parsed:
                 logger.warning("[GENERATE] _extract_json returned non-dict or empty, falling through to fallback")
@@ -1160,7 +1178,7 @@ class ContentV1Engine:
                 if self._validate_item(parsed, fmt=fmt):
                     return parsed
         except FutureTimeoutError:
-            logger.warning(f"[GENERATE] Gemini timeout (20s) for topic='{topic[:50]}...', age={age}, fmt={fmt}")
+            logger.warning(f"[GENERATE] Gemini timeout (30s) for topic='{topic[:50]}...', age={age}, fmt={fmt}")
             return None
         except Exception as e:
             logger.warning(f"[GENERATE] Gemini generation failed for topic='{topic[:50]}...', age={age}, fmt={fmt}: {e}")
@@ -1182,13 +1200,11 @@ class ContentV1Engine:
             f"Topic: {topic}. Age: {age}. Memory context: {json.dumps(memory, ensure_ascii=True)}"
         )
         try:
-            def _call_gemini() -> Any:
-                return self.client.models.generate_content(
-                    model=self.model,
-                    contents=prompt,
-                    config={"temperature": 0.4},
-                )
-            response = _run_with_timeout(_call_gemini, timeout_s=20)
+            response = self.call_gemini(
+                model=self.model, contents=prompt,
+                config={"temperature": 0.4, "response_mime_type": "text/plain"},
+                timeout=20,
+            )
             text = (response.text or "").strip()
             if text:
                 return re.sub(r"\s+", " ", text)[:240]
@@ -1490,11 +1506,10 @@ class ContentV1Engine:
             "RULES: Exactly ONE choice must be correct. Question must test real knowledge of the topic."
         )
         try:
-            def _call() -> Any:
-                return self.client.models.generate_content(
-                    model=self.fast_model, contents=prompt, config={"temperature": 0.5},
-                )
-            response = _run_with_timeout(_call, timeout_s=15)
+            response = self.call_gemini(
+                model=self.fast_model, contents=prompt,
+                config={"temperature": 0.5}, timeout=15,
+            )
             parsed = self._extract_json(response.text or "")
             if isinstance(parsed, dict) and parsed:
                 parsed = self._repair_item(parsed, fmt="radio_single")
@@ -1617,9 +1632,11 @@ class ContentV1Engine:
                 age=age,
                 misconception=misconception,
             )
-            response = self.client.models.generate_content(
+            response = self.call_gemini(
                 model=self.model,
                 contents=prompt,
+                config={"response_mime_type": "text/plain"},
+                timeout=20,
             )
             hint_text = response.text.strip() if response.text else None
             if hint_text:
@@ -1687,15 +1704,13 @@ class ContentV1Engine:
 
                 active_model = self.fast_model if fast_mode else self.model
 
-                def _call_gemini() -> Any:
-                    return self.client.models.generate_content(
-                        model=active_model,
-                        contents=prompt,
-                        config={"temperature": 0.6 + (attempt * 0.1)},
-                    )
-
                 timeout_s = 15 if fast_mode else 45
-                response = _run_with_timeout(_call_gemini, timeout_s=timeout_s)
+                response = self.call_gemini(
+                    model=active_model,
+                    contents=prompt,
+                    config={"temperature": 0.6 + (attempt * 0.1)},
+                    timeout=timeout_s,
+                )
 
                 raw = response.text or ""
                 if not raw.strip():
@@ -1718,7 +1733,7 @@ class ContentV1Engine:
                     continue
 
                 # Deterministic verification (all subjects)
-                vr = self.verifier.verify(parsed, skill_name, lesson_name, fmt, age, difficulty)
+                vr = self.verifier.verify(parsed, skill_name, lesson_name, fmt, age, difficulty, subject_hint=subject)
                 last_verification = vr
                 if not vr.passed:
                     if fast_mode:
