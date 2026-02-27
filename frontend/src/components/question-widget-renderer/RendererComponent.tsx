@@ -19,7 +19,7 @@ import { PerseusI18nContextProvider } from "../../package/perseus/src/components
 import { mockStrings } from "../../package/perseus/src/strings";
 import { KEScore } from "@khanacademy/perseus-core";
 import { toast } from "sonner";
-import { CheckCircle2, XCircle, Sparkles, ChevronRight, AlertCircle } from "lucide-react";
+import { CheckCircle2, XCircle, Sparkles, ChevronRight, AlertCircle, RotateCw } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useHint } from "../../contexts/HintContext";
 import { apiUtils, reportQuestionAnalytics } from "../../lib/api-utils";
@@ -193,9 +193,12 @@ const RendererComponent = ({
     const [autoFitZoom, setAutoFitZoom] = useState(1);
     const [hasSubmitError, setHasSubmitError] = useState(false);
     const [hasNextError, setHasNextError] = useState(false);
+    const [stuckLoading, setStuckLoading] = useState(false);
+    const [loadPhase, setLoadPhase] = useState<'fast' | 'generating' | 'slow'>('fast');
     const rendererRef = useRef<ServerItemRenderer>(null);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const questionStackRef = useRef<HTMLDivElement>(null);
+    const stuckTimerRef = useRef<NodeJS.Timeout | null>(null);
     const currentItemRef = useRef(0);
     const mountedRef = useRef(true);
     const fetchRequestRef = useRef(0);
@@ -207,6 +210,42 @@ const RendererComponent = ({
                 viewportHeight <= 840 ? 0.96 :
                     viewportHeight <= 920 ? 0.98 :
                         1;
+    // Detect if loading is stuck
+    useEffect(() => {
+        const isLoadingNext = isNextLoading || (isLoadingNextBatch && item + 1 >= perseusItems.length);
+
+        if (isLoadingNext) {
+            if (!stuckTimerRef.current) {
+                stuckTimerRef.current = setTimeout(() => {
+                    setStuckLoading(true);
+                }, 8000); // 8 seconds before potential stuck state
+            }
+        } else {
+            if (stuckTimerRef.current) {
+                clearTimeout(stuckTimerRef.current);
+                stuckTimerRef.current = null;
+            }
+            setStuckLoading(false);
+        }
+
+        return () => {
+            if (stuckTimerRef.current) {
+                clearTimeout(stuckTimerRef.current);
+                stuckTimerRef.current = null;
+            }
+        };
+    }, [isNextLoading, isLoadingNextBatch, item, perseusItems.length]);
+
+    const forceResetNextLoading = () => {
+        setIsNextLoading(false);
+        setIsLoadingNextBatch(false);
+        setStuckLoading(false);
+        setHasNextError(true);
+        if (stuckTimerRef.current) {
+            clearTimeout(stuckTimerRef.current);
+            stuckTimerRef.current = null;
+        }
+    };
 
     // Get user_id from auth context
     const user_id = user?.user_id || 'mongodb_test_user';
@@ -283,6 +322,15 @@ const RendererComponent = ({
 
             const requestId = ++fetchRequestRef.current;
             setIsLoading(true);
+            setLoadPhase('fast');
+            // Progressive phase timers for Neo-Brutalist loader
+            const phase2Timer = setTimeout(() => {
+                if (mountedRef.current && fetchRequestRef.current === requestId) setLoadPhase('generating');
+            }, 3000);
+            const phase3Timer = setTimeout(() => {
+                if (mountedRef.current && fetchRequestRef.current === requestId) setLoadPhase('slow');
+            }, 9000);
+
             setIsError(false);
             setError(null);
 
@@ -1297,14 +1345,78 @@ const RendererComponent = ({
                                 </div>
                             </div>
                         ) : (isLoading && perseusItems.length === 0) ? (
-                            <div className="flex h-full flex-col items-center justify-center gap-3 md:gap-4">
-                                <div className="relative w-12 h-12 md:w-16 md:h-16">
-                                    <div className="absolute inset-0 border-[3px] md:border-[4px] border-black dark:border-white"></div>
-                                    <div className="absolute inset-0 border-[3px] md:border-[4px] border-transparent border-t-[#C4B5FD] animate-spin"></div>
+                            <div className="flex-1 min-h-0 flex flex-col justify-center items-center p-6 sm:p-10 animate-in fade-in duration-500">
+                                <div style={{
+                                    width: '100%',
+                                    maxWidth: '500px',
+                                    border: '5px solid #000',
+                                    backgroundColor: '#FFFDF5',
+                                    boxShadow: '12px 12px 0px 0px #000',
+                                    padding: '40px 30px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    textAlign: 'center',
+                                    gap: '24px'
+                                }}>
+                                    {/* Premium Neo-Brutalist Loading Indicator */}
+                                    <div className="relative w-32 h-32 mb-4">
+                                        <div className="absolute inset-0 border-[6px] border-black bg-[#C4B5FD] animate-[spin_4s_linear_infinite] shadow-[8px_8px_0_0_#000]"></div>
+                                        <div className="absolute inset-4 border-[6px] border-black bg-[#FFD93D] animate-[spin_3s_linear_infinite_reverse] shadow-[-6px_-6px_0_0_#000]"></div>
+                                        <div className="absolute inset-8 border-[6px] border-black bg-[#FF6B6B] animate-[pulse_2s_ease-in-out_infinite] flex items-center justify-center">
+                                            <div className="w-4 h-4 bg-black rounded-full animate-ping"></div>
+                                        </div>
+
+                                        {/* Floating micro-shapes around the main loader */}
+                                        <div className="absolute -top-4 -right-4 w-8 h-8 bg-[#4ECDC4] border-4 border-black rotate-12 animate-bounce"></div>
+                                        <div className="absolute -bottom-2 -left-6 w-6 h-6 bg-[#FF8C42] border-4 border-black -rotate-12 animate-pulse"></div>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <div style={{
+                                            fontWeight: 900,
+                                            fontSize: '24px',
+                                            textTransform: 'uppercase',
+                                            letterSpacing: '0.05em',
+                                            lineHeight: 1.1,
+                                            color: '#000'
+                                        }}>
+                                            {loadPhase === 'fast' && `Warming up`}
+                                            {loadPhase === 'generating' && `Generating Questions`}
+                                            {loadPhase === 'slow' && `Quality Check`}
+                                        </div>
+
+                                        <div style={{
+                                            fontSize: '16px',
+                                            fontWeight: 600,
+                                            color: '#444',
+                                            lineHeight: '1.5',
+                                            maxWidth: '400px'
+                                        }}>
+                                            {loadPhase === 'fast' && 'Checking question bank for cached content...'}
+                                            {loadPhase === 'generating' && 'Creating AI-generated questions tailored to your level...'}
+                                            {loadPhase === 'slow' && 'Verifying answer accuracy and hint quality for the best experience.'}
+                                        </div>
+                                    </div>
+
+                                    {/* Large Brutalist Progress Bar */}
+                                    <div style={{
+                                        width: '100%',
+                                        height: '24px',
+                                        border: '4px solid #000',
+                                        backgroundColor: '#fff',
+                                        overflow: 'hidden',
+                                        boxShadow: '4px 4px 0px 0px #000',
+                                        marginTop: '8px'
+                                    }}>
+                                        <div style={{
+                                            height: '100%',
+                                            backgroundColor: '#4ECDC4',
+                                            width: loadPhase === 'fast' ? '30%' : loadPhase === 'generating' ? '65%' : '90%',
+                                            transition: 'width 2s ease-in-out'
+                                        }}></div>
+                                    </div>
                                 </div>
-                                <p className="text-xs md:text-sm font-black uppercase text-black dark:text-white tracking-wider animate-pulse">
-                                    Loading questions...
-                                </p>
                             </div>
                         ) : perseusItems.length > 0 && Object.keys(perseusItem?.question?.widgets || {}).length > 0 ? (
                             <div
@@ -1470,10 +1582,24 @@ const RendererComponent = ({
                                 disabled={isLoading || endOfTest || perseusItems.length === 0 || !isAnswered || isNextLoading || (isLoadingNextBatch && item + 1 >= perseusItems.length)}
                                 className="relative transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-neutral-800 hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] text-black dark:text-white dark:hover:text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5 flex items-center justify-center gap-2 min-w-[100px]"
                             >
-                                {(isNextLoading || (isLoadingNextBatch && item + 1 >= perseusItems.length)) && <div className="w-4 h-4 border-[3px] border-black dark:border-white border-t-transparent dark:border-t-transparent rounded-full animate-spin"></div>}
+                                {(isNextLoading || (isLoadingNextBatch && item + 1 >= perseusItems.length)) && (
+                                    <div className="w-4 h-4 border-[3px] border-black dark:border-white border-t-transparent dark:border-t-transparent rounded-full animate-spin"></div>
+                                )}
                                 {!(isNextLoading || (isLoadingNextBatch && item + 1 >= perseusItems.length)) && hasNextError && <AlertCircle className="w-4 h-4 text-[#FF006E]" />}
                                 {(isNextLoading || (isLoadingNextBatch && item + 1 >= perseusItems.length)) ? "Loading..." : "Next →"}
                             </Button>
+                        )}
+                        {stuckLoading && (isNextLoading || (isLoadingNextBatch && item + 1 >= perseusItems.length)) && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    forceResetNextLoading();
+                                }}
+                                className="p-2 bg-[#FFD93D] hover:bg-[#FFE066] border-[3px] border-black shadow-[2px_2px_0_0_#000] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all duration-100 h-9 md:h-10"
+                                title="Refresh loading state"
+                            >
+                                <RotateCw className="w-4 h-4 text-black" />
+                            </button>
                         )}
                     </div>
                 </CardFooter>

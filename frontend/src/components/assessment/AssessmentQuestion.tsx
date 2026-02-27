@@ -5,7 +5,7 @@ import { RenderStateRoot } from "@khanacademy/wonder-blocks-core";
 import { PerseusI18nContextProvider } from "../../package/perseus/src/components/i18n-context";
 import { mockStrings } from "../../package/perseus/src/strings";
 import { keScoreFromPerseusScore } from "../../package/perseus/src/util/scoring";
-import { CheckCircle2, XCircle, ChevronRight, AlertCircle } from "lucide-react";
+import { CheckCircle2, XCircle, ChevronRight, AlertCircle, RotateCw } from "lucide-react";
 import { KEScore } from "@khanacademy/perseus-core";
 import { Button } from "@/components/ui/button";
 import {
@@ -200,6 +200,11 @@ const AssessmentQuestion: React.FC<Props> = ({
     setPendingCorrect(null);
     setAutoFitZoom(1);
     setIsNextTriggered(false);
+    setStuckLoading(false);
+    if (stuckTimerRef.current) {
+      clearTimeout(stuckTimerRef.current);
+      stuckTimerRef.current = null;
+    }
     setHasSubmitError(false);
     setHasNextError(false);
     startTimeRef.current = Date.now();
@@ -223,6 +228,40 @@ const AssessmentQuestion: React.FC<Props> = ({
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
+
+  // Detect if next loading is stuck
+  useEffect(() => {
+    if (isNextTriggered) {
+      if (!stuckTimerRef.current) {
+        stuckTimerRef.current = setTimeout(() => {
+          setStuckLoading(true);
+        }, 8000); // 8 seconds before potential stuck state
+      }
+    } else {
+      if (stuckTimerRef.current) {
+        clearTimeout(stuckTimerRef.current);
+        stuckTimerRef.current = null;
+      }
+      setStuckLoading(false);
+    }
+
+    return () => {
+      if (stuckTimerRef.current) {
+        clearTimeout(stuckTimerRef.current);
+        stuckTimerRef.current = null;
+      }
+    };
+  }, [isNextTriggered]);
+
+  const forceResetNextLoading = () => {
+    setIsNextTriggered(false);
+    setStuckLoading(false);
+    setHasNextError(true);
+    if (stuckTimerRef.current) {
+      clearTimeout(stuckTimerRef.current);
+      stuckTimerRef.current = null;
+    }
+  };
 
   // Fix: Block Perseus pre-selection blue ring via CSS class + first-click removal.
   // Perseus sets inline border-color on ring spans from React state — DOM clearing
@@ -313,6 +352,8 @@ const AssessmentQuestion: React.FC<Props> = ({
   }, [question, questionNumber, isAnswered, compactViewport, contentZoom]);
 
   const [isNextTriggered, setIsNextTriggered] = useState(false);
+  const [stuckLoading, setStuckLoading] = useState(false);
+  const stuckTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [hasSubmitError, setHasSubmitError] = useState(false);
   const [hasNextError, setHasNextError] = useState(false);
 
@@ -1037,10 +1078,24 @@ const AssessmentQuestion: React.FC<Props> = ({
               disabled={!isAnswered || pendingCorrect === null || isNextTriggered}
               className="relative transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-neutral-800 hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] text-black dark:text-white dark:hover:text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5 flex items-center justify-center gap-2 min-w-[100px]"
             >
-              {isNextTriggered && <div className="w-4 h-4 border-[3px] border-black dark:border-white border-t-transparent dark:border-t-transparent rounded-full animate-spin"></div>}
+              {isNextTriggered && (
+                <div className="w-4 h-4 border-[3px] border-black dark:border-white border-t-transparent dark:border-t-transparent rounded-full animate-spin"></div>
+              )}
               {!isNextTriggered && (hasNextError || hasError) && <AlertCircle className="w-4 h-4 text-[#FF006E]" />}
               {isNextTriggered ? (isFinalQuestion ? 'Finishing...' : 'Loading...') : (isFinalQuestion ? 'Finish →' : 'Next →')}
             </Button>
+            {stuckLoading && isNextTriggered && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  forceResetNextLoading();
+                }}
+                className="p-2 bg-[#FFD93D] hover:bg-[#FFE066] border-[3px] border-black shadow-[2px_2px_0_0_#000] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all duration-100 h-9 md:h-10"
+                title="Refresh loading state"
+              >
+                <RotateCw className="w-4 h-4 text-black" />
+              </button>
+            )}
           </div>
         </CardFooter>
 
