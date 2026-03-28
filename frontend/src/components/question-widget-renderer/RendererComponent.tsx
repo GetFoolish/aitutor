@@ -305,10 +305,19 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                 const metadata = (currentItem as any).dash_metadata || {};
                 const questionId = metadata.dash_question_id || `q_${item}_${Date.now()}`;
 
-                await apiUtils.post(`${TEACHING_ASSISTANT_API_URL}/question/answered`, {
+                const taRes = await apiUtils.post(`${TEACHING_ASSISTANT_API_URL}/question/answered`, {
                     question_id: questionId,
                     is_correct: keScore.correct || false
                 });
+                if (!taRes.ok) {
+                    if (taRes.status === 404) {
+                        toast.warning("Start a session to record your answer", {
+                            description: "Your answer was not saved. Click 'Start Session' to track your progress."
+                        });
+                    } else {
+                        console.error("Error recording question answer:", taRes.status);
+                    }
+                }
             } catch (err) {
                 console.error("Error recording question answer:", err);
             }
