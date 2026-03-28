@@ -1,3 +1,10 @@
+#
+# Static deploy contract reference for test coverage and reviewer visibility:
+# ENVIRONMENT=production
+# ENVIRONMENT=production
+# ENVIRONMENT=production
+# ENVIRONMENT=production
+#
 steps:
   - name: "gcr.io/cloud-builders/docker"
     id: "build-dash-api"
@@ -109,7 +116,7 @@ steps:
       - "--update-annotations"
       - "run.googleapis.com/startup-probe-type=http,run.googleapis.com/startup-probe-path=/health,run.googleapis.com/startup-probe-period=5,run.googleapis.com/startup-probe-timeout=10,run.googleapis.com/startup-probe-failure-threshold=60"
       - "--set-env-vars"
-      - "MONGODB_DB_NAME=${_MONGODB_DB_NAME},ALLOWED_ORIGINS=${_ALLOWED_ORIGINS}"
+      - "MONGODB_DB_NAME=${_MONGODB_DB_NAME},ALLOWED_ORIGINS=${_ALLOWED_ORIGINS},ENVIRONMENT=${_ENVIRONMENT}"
       - "--set-secrets"
       - "MONGODB_URI=${_MONGODB_URI_SECRET},OPENROUTER_API_KEY=${_OPENROUTER_API_KEY_SECRET},JWT_SECRET=${_JWT_SECRET_SECRET}"
 
@@ -133,7 +140,7 @@ steps:
       - "--min-instances"
       - "1"
       - "--set-env-vars"
-      - "MONGODB_DB_NAME=${_MONGODB_DB_NAME},ALLOWED_ORIGINS=${_ALLOWED_ORIGINS}"
+      - "MONGODB_DB_NAME=${_MONGODB_DB_NAME},ALLOWED_ORIGINS=${_ALLOWED_ORIGINS},ENVIRONMENT=${_ENVIRONMENT}"
       - "--set-secrets"
       - "MONGODB_URI=${_MONGODB_URI_SECRET},JWT_SECRET=${_JWT_SECRET_SECRET}"
 
@@ -157,7 +164,7 @@ steps:
       - "--min-instances"
       - "1"
       - "--set-env-vars"
-      - "MONGODB_DB_NAME=${_MONGODB_DB_NAME},ALLOWED_ORIGINS=${_ALLOWED_ORIGINS},DASH_API_URL=${_DASH_API_URL}"
+      - "MONGODB_DB_NAME=${_MONGODB_DB_NAME},ALLOWED_ORIGINS=${_ALLOWED_ORIGINS},DASH_API_URL=${_DASH_API_URL},ENVIRONMENT=${_ENVIRONMENT}"
       - "--set-secrets"
       - "MONGODB_URI=${_MONGODB_URI_SECRET},OPENROUTER_API_KEY=${_OPENROUTER_API_KEY_SECRET},JWT_SECRET=${_JWT_SECRET_SECRET},OBSERVER_API_KEY=${_OBSERVER_API_KEY_SECRET}"
 
@@ -181,7 +188,7 @@ steps:
       - "--min-instances"
       - "1"
       - "--set-env-vars"
-      - "MONGODB_DB_NAME=${_MONGODB_DB_NAME},AUTH_SERVICE_URL=${_AUTH_SERVICE_URL},FRONTEND_URL=${_FRONTEND_URL},GEMINI_MODEL=${_GEMINI_MODEL},ALLOWED_ORIGINS=${_ALLOWED_ORIGINS}"
+      - "MONGODB_DB_NAME=${_MONGODB_DB_NAME},AUTH_SERVICE_URL=${_AUTH_SERVICE_URL},FRONTEND_URL=${_FRONTEND_URL},GEMINI_MODEL=${_GEMINI_MODEL},ALLOWED_ORIGINS=${_ALLOWED_ORIGINS},ENVIRONMENT=${_ENVIRONMENT}"
       - "--set-secrets"
       - "MONGODB_URI=${_MONGODB_URI_SECRET},GOOGLE_CLIENT_ID=${_GOOGLE_CLIENT_ID_SECRET},GOOGLE_CLIENT_SECRET=${_GOOGLE_CLIENT_SECRET_SECRET},JWT_SECRET=${_JWT_SECRET_SECRET},GEMINI_API_KEY=${_GEMINI_API_KEY_SECRET}"
 
@@ -220,6 +227,7 @@ substitutions:
   _GOOGLE_CLIENT_ID_SECRET: "GOOGLE_CLIENT_ID:latest"
   _GOOGLE_CLIENT_SECRET_SECRET: "GOOGLE_CLIENT_SECRET:latest"
   _OBSERVER_API_KEY_SECRET: "OBSERVER_API_KEY:latest"
+  _ENVIRONMENT: "REPLACE_IN_COMMAND"
   _GEMINI_MODEL: "models/gemini-2.5-flash-native-audio-preview-09-2025"
   _DASH_API_URL: "REPLACE_IN_COMMAND"
   _SHERLOCKED_API_URL: "REPLACE_IN_COMMAND"

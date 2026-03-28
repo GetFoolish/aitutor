@@ -25,6 +25,12 @@ def assert_all_present(path: Path, needles: list[str], message: str, errors: lis
         errors.append(f"{message}: missing {joined} ({path.relative_to(PROJECT_ROOT)})")
 
 
+def assert_occurrences_at_least(path: Path, needle: str, minimum: int, message: str, errors: list[str]) -> None:
+    count = path.read_text().count(needle)
+    if count < minimum:
+        errors.append(f"{message}: expected at least {minimum}, found {count} ({path.relative_to(PROJECT_ROOT)})")
+
+
 def main() -> int:
     errors: list[str] = []
 
@@ -77,6 +83,32 @@ def main() -> int:
         cloudbuild_bootstrap,
         deploy_secret_contract,
         "Bootstrap deploy config is missing required runtime secret/env bindings",
+        errors,
+    )
+    assert_occurrences_at_least(
+        cloudbuild,
+        "ENVIRONMENT=${_ENVIRONMENT}",
+        4,
+        "Main deploy config must set ENVIRONMENT for every backend Cloud Run service",
+        errors,
+    )
+    assert_occurrences_at_least(
+        cloudbuild_bootstrap,
+        "ENVIRONMENT=${_ENVIRONMENT}",
+        4,
+        "Bootstrap deploy config must set ENVIRONMENT for every backend Cloud Run service",
+        errors,
+    )
+    assert_present(
+        cloudbuild,
+        '_ENVIRONMENT: "REPLACE_IN_COMMAND"',
+        "Main deploy config must require explicit environment substitution",
+        errors,
+    )
+    assert_present(
+        cloudbuild_bootstrap,
+        '_ENVIRONMENT: "REPLACE_IN_COMMAND"',
+        "Bootstrap deploy config must require explicit environment substitution",
         errors,
     )
 

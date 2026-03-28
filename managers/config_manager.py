@@ -6,8 +6,9 @@ from dotenv import load_dotenv
 class ConfigManager:
     def __init__(self, config_path: str = 'config.json'):
         self.config_path = config_path
-        # Load environment variables (override existing ones)
-        load_dotenv(override=True)
+        # Preserve explicit process env overrides and only backfill missing keys
+        # from a local .env file without traversing parent directories.
+        load_dotenv(dotenv_path=os.path.join(os.getcwd(), ".env"), override=False)
         
         # Load config.json
         with open(self.config_path, 'r') as f:
@@ -41,6 +42,5 @@ class ConfigManager:
         if use_case in self.config["llm_models"]:
             self.config["llm_models"][use_case]["model"] = model
             # Save back to config.json
-            with open('config.json', 'w') as f:
+            with open(self.config_path, 'w') as f:
                 json.dump(self.config, f, indent=2)
-

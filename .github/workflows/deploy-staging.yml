@@ -42,8 +42,35 @@ jobs:
       - name: Run security contract checks
         run: python3 scripts/check_security_contract.py
 
+      - name: Detect first-time backend bootstrap
+        run: |
+          set -euo pipefail
+
+          describe_url() {
+            gcloud run services describe "$1" \
+              --region us-central1 \
+              --project aitutor-473420 \
+              --format='value(status.url)' 2>/dev/null || true
+          }
+
+          DASH_API_URL="$(describe_url dash-api-staging)"
+          SHERLOCKED_API_URL="$(describe_url sherlocked-api-staging)"
+          TEACHING_ASSISTANT_API_URL="$(describe_url teaching-assistant-staging)"
+          AUTH_SERVICE_URL="$(describe_url auth-service-staging)"
+
+          if [[ -n "$DASH_API_URL" && -n "$SHERLOCKED_API_URL" && -n "$TEACHING_ASSISTANT_API_URL" && -n "$AUTH_SERVICE_URL" ]]; then
+            echo "BOOTSTRAP_REQUIRED=false" >> "$GITHUB_ENV"
+          else
+            echo "BOOTSTRAP_REQUIRED=true" >> "$GITHUB_ENV"
+          fi
+
       - name: Verify seeded Mongo data
+        if: env.BOOTSTRAP_REQUIRED != 'true'
         run: python3 scripts/verify_seed_data.py
+
+      - name: Defer seed verification until post-bootstrap deploy
+        if: env.BOOTSTRAP_REQUIRED == 'true'
+        run: echo "Skipping pre-deploy seed verification because backend bootstrap is required."
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -90,8 +117,17 @@ jobs:
         with:
           project_id: aitutor-473420
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install backend dependencies
+        run: python -m pip install -r requirements.txt -r requirements-test.txt
+
       - name: Set deploy environment
         run: |
+          echo "MONGODB_URI=$(gcloud secrets versions access latest --secret=MONGODB_URI)" >> $GITHUB_ENV
           echo "MONGODB_DB_NAME=ai_tutor" >> $GITHUB_ENV
           echo "MONGODB_URI_SECRET=MONGODB_URI:latest" >> $GITHUB_ENV
           echo "OPENROUTER_API_KEY_SECRET=OPENROUTER_API_KEY:latest" >> $GITHUB_ENV

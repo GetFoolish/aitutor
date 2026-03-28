@@ -54,7 +54,7 @@ class PaginationParams(BaseModel):
     cursor: Optional[str] = Field(None, description="Pagination cursor from previous response")
     limit: int = Field(20, ge=1, le=100, description="Number of items per page")
     sort_by: str = Field("created_at", description="Field to sort by")
-    sort_order: str = Field("desc", regex="^(asc|desc)$", description="Sort order")
+    sort_order: str = Field("desc", pattern="^(asc|desc)$", description="Sort order")
 
 
 def paginate_query(
