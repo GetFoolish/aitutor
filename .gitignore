@@ -51,3 +51,4 @@ questionbankscrapper/
 
 # Build output
 frontend/build/
+.gstack/
