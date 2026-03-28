@@ -57,6 +57,7 @@ const AssessmentExit = lazy(() => import("./components/assessment/AssessmentExit
 const DevLogin = lazy(() => import("./components/auth/DevLogin"));
 const AdminVideoPanel = lazy(() => import("./components/admin/AdminVideoPanel"));
 const CostTrackingPage = lazy(() => import("./components/admin/CostTrackingPage"));
+const ClassroomPage = lazy(() => import("./components/classroom/ClassroomPage"));
 
 // Simple 404 page for unknown routes (Bug #42)
 const NotFound: React.FC = () => (
@@ -295,6 +296,8 @@ root.render(
                 <Route path="/app/admin/cost-tracking" component={CostTrackingPage} />
                 <Route path="/app/assessment-exit" component={AssessmentExit} />
                 <Route path="/app/assessment/:subject" component={AssessmentFlow} />
+                <Route path="/app/classroom/:classroomId" component={ClassroomPage} />
+                <Route path="/app/classroom" exact component={ClassroomPage} />
                 <Route path="/app/learn/:subject" component={App} />
                 <Route path="/landing/:id" component={LandingPageWrapper} /> {/* Dynamic landing page routes */}
                 <Route path="/app/:profileId" component={LandingPageOrApp} />

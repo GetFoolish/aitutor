@@ -1504,6 +1504,254 @@ from services.CostTracking.api import router as cost_router
 app.include_router(cost_router)
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# TTS Proxy — OpenMAIC multi-provider TTS integration
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TTSRequest(BaseModel):
+    provider: str
+    text: str
+    voice: Optional[str] = None
+    speed: Optional[float] = 1.0
+    api_key: Optional[str] = None
+    base_url: Optional[str] = None
+
+
+@app.post("/api/tts")
+async def tts_proxy(req: TTSRequest):
+    """
+    Proxy TTS requests to external providers (OpenAI, ElevenLabs).
+    Returns raw audio bytes (mp3).
+    Browser Native TTS is handled client-side and never reaches this endpoint.
+    """
+    from fastapi.responses import Response
+    import httpx
+
+    text = req.text.strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="text is required")
+
+    if req.provider == "openai-tts":
+        api_key = req.api_key or os.getenv("OPENAI_API_KEY", "")
+        if not api_key:
+            raise HTTPException(status_code=400, detail="OpenAI API key required")
+        base_url = req.base_url or "https://api.openai.com/v1"
+        voice = req.voice or "alloy"
+        speed = max(0.25, min(4.0, req.speed or 1.0))
+
+        async with httpx.AsyncClient(timeout=30) as client:
+            resp = await client.post(
+                f"{base_url}/audio/speech",
+                headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                json={"model": "tts-1", "input": text, "voice": voice, "speed": speed},
+            )
+        if not resp.is_success:
+            raise HTTPException(status_code=resp.status_code, detail=resp.text)
+        return Response(content=resp.content, media_type="audio/mpeg")
+
+    elif req.provider == "elevenlabs-tts":
+        api_key = req.api_key or os.getenv("ELEVENLABS_API_KEY", "")
+        if not api_key:
+            raise HTTPException(status_code=400, detail="ElevenLabs API key required")
+        base_url = req.base_url or "https://api.elevenlabs.io/v1"
+        voice_id = req.voice or "JBFqnCBsd6RMkjVDRZzb"  # George
+
+        async with httpx.AsyncClient(timeout=30) as client:
+            resp = await client.post(
+                f"{base_url}/text-to-speech/{voice_id}",
+                headers={"xi-api-key": api_key, "Content-Type": "application/json"},
+                json={"text": text, "model_id": "eleven_multilingual_v2"},
+            )
+        if not resp.is_success:
+            raise HTTPException(status_code=resp.status_code, detail=resp.text)
+        return Response(content=resp.content, media_type="audio/mpeg")
+
+    else:
+        raise HTTPException(status_code=400, detail=f"Unsupported TTS provider: {req.provider}")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Web Search — Tavily integration (OpenMAIC approach)
+# ─────────────────────────────────────────────────────────────────────────────
+
+TAVILY_MAX_QUERY_LENGTH = 400
+
+
+class WebSearchRequest(BaseModel):
+    query: str
+    provider: Optional[str] = "tavily"
+    max_results: Optional[int] = 5
+    api_key: Optional[str] = None
+
+
+@app.post("/api/tools/web-search")
+async def web_search(req: WebSearchRequest):
+    """
+    Proxy web search requests to Tavily.
+    Ported from OpenMAIC's lib/web-search/tavily.ts architecture.
+    """
+    import httpx
+
+    query = req.query.strip()[:TAVILY_MAX_QUERY_LENGTH]
+    if not query:
+        raise HTTPException(status_code=400, detail="query is required")
+
+    if req.provider == "tavily":
+        api_key = req.api_key or os.getenv("TAVILY_API_KEY", "")
+        if not api_key:
+            raise HTTPException(status_code=400, detail="Tavily API key required (set TAVILY_API_KEY)")
+
+        async with httpx.AsyncClient(timeout=15) as client:
+            resp = await client.post(
+                "https://api.tavily.com/search",
+                headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                json={
+                    "query": query,
+                    "search_depth": "basic",
+                    "max_results": req.max_results,
+                    "include_answer": "basic",
+                },
+            )
+        if not resp.is_success:
+            raise HTTPException(status_code=resp.status_code, detail=resp.text)
+
+        data = resp.json()
+        return {
+            "answer": data.get("answer", ""),
+            "sources": [
+                {"title": r["title"], "url": r["url"], "content": r["content"], "score": r.get("score", 0)}
+                for r in data.get("results", [])
+            ],
+            "query": data.get("query", query),
+            "response_time": data.get("response_time", 0),
+        }
+
+    raise HTTPException(status_code=400, detail=f"Unsupported search provider: {req.provider}")
+
+
+# ============================================================================
+# OpenMAIC Classroom Proxy Endpoints (FOO-37)
+# ============================================================================
+# These proxy requests to the OpenMAIC sibling service (port 3333) so the
+# aitutor frontend can use multi-agent classroom features without CORS issues.
+
+OPENMAIC_BASE_URL = os.getenv("OPENMAIC_BASE_URL", "http://localhost:3333")
+
+
+@app.get("/api/classroom/{classroom_id}")
+async def get_classroom(classroom_id: str, current_user=Depends(get_current_user)):
+    """Proxy: GET /api/classroom?id={classroom_id} from OpenMAIC service."""
+    import httpx
+    async with httpx.AsyncClient(timeout=15) as client:
+        resp = await client.get(
+            f"{OPENMAIC_BASE_URL}/api/classroom",
+            params={"id": classroom_id},
+        )
+    if not resp.is_success:
+        raise HTTPException(status_code=resp.status_code, detail=resp.text)
+    return resp.json()
+
+
+@app.post("/api/classroom/chat")
+async def classroom_chat(request: Request, current_user=Depends(get_current_user)):
+    """
+    SSE proxy: POST /api/chat on OpenMAIC service.
+    Streams multi-agent generation events back to the client.
+    """
+    import httpx
+
+    body = await request.body()
+
+    async def event_stream():
+        try:
+            async with httpx.AsyncClient(timeout=120) as client:
+                async with client.stream(
+                    "POST",
+                    f"{OPENMAIC_BASE_URL}/api/chat",
+                    content=body,
+                    headers={"Content-Type": "application/json"},
+                ) as resp:
+                    if not resp.is_success:
+                        error_text = await resp.aread()
+                        yield f"data: {json.dumps({'type': 'error', 'data': {'message': error_text.decode()}})}\n\n"
+                        return
+                    async for chunk in resp.aiter_text():
+                        if chunk:
+                            yield chunk
+        except Exception as e:
+            logger.error(f"[CLASSROOM CHAT] Proxy error: {e}")
+            yield f"data: {json.dumps({'type': 'error', 'data': {'message': str(e)}})}\n\n"
+
+    return EventSourceResponse(event_stream())
+
+
+@app.get("/api/classroom/agents/tutoring")
+async def get_tutoring_agents(current_user=Depends(get_current_user)):
+    """
+    Returns tutoring-optimised agent configurations for the classroom.
+    These personas are tuned for math tutoring context on teachr.live.
+    """
+    WHITEBOARD_ACTIONS = [
+        "wb_open", "wb_close", "wb_draw_text", "wb_draw_shape",
+        "wb_draw_chart", "wb_draw_latex", "wb_draw_table", "wb_draw_line",
+        "wb_clear", "wb_delete",
+    ]
+    SLIDE_ACTIONS = ["spotlight", "laser", "play_video"]
+
+    return {
+        "agents": [
+            {
+                "id": "tutor-teacher",
+                "name": "Ms. Aria",
+                "role": "teacher",
+                "persona": (
+                    "You are Ms. Aria, a warm and patient math teacher. "
+                    "You explain concepts step by step, building on what students already know. "
+                    "Use vivid analogies and real-world examples. "
+                    "Pause to check understanding — ask questions, don't just lecture. "
+                    "Use the whiteboard to illustrate equations and diagrams. "
+                    "Never announce your whiteboard actions; just teach naturally."
+                ),
+                "avatar": "/avatars/teacher.png",
+                "color": "#3b82f6",
+                "allowedActions": SLIDE_ACTIONS + WHITEBOARD_ACTIONS,
+                "priority": 10,
+            },
+            {
+                "id": "tutor-student-1",
+                "name": "Jamie",
+                "role": "student",
+                "persona": (
+                    "You are Jamie, a curious 12-year-old student. "
+                    "You ask clarifying questions when confused, make occasional mistakes, "
+                    "and celebrate when you understand something. "
+                    "You think out loud and sometimes get distracted by interesting side questions. "
+                    "Keep responses short — 1-3 sentences."
+                ),
+                "avatar": "/avatars/student1.png",
+                "color": "#10b981",
+                "allowedActions": [],
+                "priority": 5,
+            },
+            {
+                "id": "tutor-student-2",
+                "name": "Sam",
+                "role": "student",
+                "persona": (
+                    "You are Sam, a diligent student who likes to find patterns. "
+                    "You often try to summarise what the teacher just said in your own words. "
+                    "Sometimes you suggest an alternative method you've seen before. "
+                    "Keep responses short — 1-3 sentences."
+                ),
+                "avatar": "/avatars/student2.png",
+                "color": "#f59e0b",
+                "allowedActions": [],
+                "priority": 4,
+            },
+        ]
+    }
+
+
 if __name__ == "__main__":
     import uvicorn
     port = int(os.getenv("PORT", os.getenv("TEACHING_ASSISTANT_PORT", "8002")))
