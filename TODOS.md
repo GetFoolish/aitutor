@@ -52,6 +52,26 @@
 **Source:** Adversarial review (ship v0.1.1.0)
 `scripts/check_security_contract.py` — substring matching on YAML files can be bypassed by comments or indentation changes. Replace with pyyaml structural parse if used as a production gate.
 
+### OAuth state value exposed in JSON response body
+**Priority:** P2
+**Source:** Adversarial review (ship v0.1.2.0)
+`services/AuthService/auth_api.py:122-129` — `/auth/google` returns both `authorization_url` and `state` in the JSON body. State is only needed for the cookie validation; returning it in JS exposes it unnecessarily. Remove `state` from the response body.
+
+### JWT auth token visible to browser extensions during async fetch window
+**Priority:** P2
+**Source:** Adversarial review (ship v0.1.2.0)
+`frontend/src/components/auth/GoogleSignIn.tsx:34-52` — After OAuth redirect, token sits in `window.location.hash` during the full `/auth/me` async round-trip before `replaceState` clears the URL. Browser extensions and analytics tools can read it. Fix: call `replaceState` synchronously before the async fetch.
+
+### No PKCE on Google OAuth flow
+**Priority:** P2
+**Source:** Adversarial review (ship v0.1.2.0)
+`services/AuthService/oauth_handler.py` — OAuth flow does not use PKCE (`code_challenge_method` not specified in authlib `AsyncOAuth2Client`). Without PKCE, an intercepted authorization code (e.g., from server logs of the callback URL) could be replayed if redirect_uri checks are bypassed. Add `code_challenge_method="S256"` to the authorization URL generation.
+
+### Dev test button guard uses process.env.NODE_ENV
+**Priority:** P3
+**Source:** Adversarial review (ship v0.1.2.0)
+`frontend/src/components/auth/GoogleSignIn.tsx:149` — Dev signup test button uses `process.env.NODE_ENV === 'development'` guard. Vite may not replace this if `define` is not set in vite.config. Switch to `import.meta.env.DEV` for reliable tree-shaking in production builds.
+
 ## Completed
 
 <!-- completed items go here with version and date -->

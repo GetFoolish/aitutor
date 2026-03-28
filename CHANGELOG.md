@@ -2,6 +2,13 @@
 
 All notable changes to AI Tutor are documented here.
 
+## [0.1.2.0] - 2026-03-28
+
+### Security
+- JWT fail-closed logic now treats any non-explicit-dev `ENVIRONMENT` value as production, preventing ephemeral secrets on misconfigured servers (`prod`, `live`, `staging2`)
+- Multi-worker deployments no longer generate per-process ephemeral JWT secrets that invalidate each other's tokens
+- Removed `"null"` from default CORS allowed origins — the null origin enables credentialed requests from sandboxed iframes on attacker-controlled pages
+
 ## [0.1.1.0] - 2026-03-28
 
 ### Added
