@@ -133,7 +133,6 @@ jobs:
 
       - name: Set deploy environment
         run: |
-          echo "MONGODB_URI=$(gcloud secrets versions access latest --secret=MONGODB_URI)" >> $GITHUB_ENV
           echo "MONGODB_DB_NAME=ai_tutor" >> $GITHUB_ENV
           echo "MONGODB_URI_SECRET=MONGODB_URI:latest" >> $GITHUB_ENV
           echo "OPENROUTER_API_KEY_SECRET=OPENROUTER_API_KEY:latest" >> $GITHUB_ENV
@@ -142,7 +141,7 @@ jobs:
           echo "GOOGLE_CLIENT_ID_SECRET=GOOGLE_CLIENT_ID:latest" >> $GITHUB_ENV
           echo "GOOGLE_CLIENT_SECRET_SECRET=GOOGLE_CLIENT_SECRET:latest" >> $GITHUB_ENV
           echo "OBSERVER_API_KEY_SECRET=OBSERVER_API_KEY:latest" >> $GITHUB_ENV
-          echo "GOOGLE_CLIENT_ID_PUBLIC=$(gcloud secrets versions access latest --secret=GOOGLE_CLIENT_ID)" >> $GITHUB_ENV
+          echo "GOOGLE_CLIENT_ID_PUBLIC=${{ vars.GOOGLE_CLIENT_ID }}" >> $GITHUB_ENV
           echo "ALLOWED_ORIGINS=https://teachr.live" >> $GITHUB_ENV
           echo "FRONTEND_URL=https://teachr.live" >> $GITHUB_ENV
 
