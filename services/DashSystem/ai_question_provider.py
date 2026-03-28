@@ -170,6 +170,18 @@ class AIQuestionProvider:
         self._bg_refill_semaphore = threading.BoundedSemaphore(self.MAX_BACKGROUND_REFILLS)
         self._ensure_indexes()
 
+        # Optional: OpenMAIC provider for lesson-based question generation
+        self._openmaic: Optional[Any] = None
+        _use_openmaic = os.getenv("USE_OPENMAIC", "false").lower() in ("1", "true", "yes")
+        if _use_openmaic:
+            try:
+                from services.DashSystem.openmaic_provider import OpenMAICProvider
+                _base_url = os.getenv("OPENMAIC_BASE_URL", "http://localhost:3333")
+                self._openmaic = OpenMAICProvider(base_url=_base_url)
+                logger.info(f"[AI_PROVIDER] OpenMAIC provider enabled at {_base_url}")
+            except Exception as e:
+                logger.warning(f"[AI_PROVIDER] Failed to init OpenMAIC provider: {e}")
+
     # ------------------------------------------------------------------
     # Index setup
     # ------------------------------------------------------------------
@@ -572,6 +584,105 @@ class AIQuestionProvider:
         low = max(0.05, low)
         return [round(low + i * step, 2) for i in range(count)]
 
+    def _refill_from_openmaic(
+        self,
+        skill_id: str,
+        skill_name: str,
+        lesson_name: str,
+        target_difficulty: float,
+        grade_level: str,
+        age: int,
+        user_id: str,
+        count: int,
+        subject: str,
+    ) -> int:
+        """
+        Refill queue using OpenMAIC lesson generation.
+
+        Generates a full lesson for the skill, extracts quiz questions,
+        stores them in ai_generated_questions, and enqueues them.
+        """
+        if not self._openmaic.is_available():
+            raise RuntimeError("OpenMAIC service not available")
+
+        questions = self._openmaic.generate_questions_for_skill(
+            skill_name=skill_name,
+            age=age,
+            subject=subject,
+            count=count,
+            difficulty=target_difficulty,
+        )
+        if not questions:
+            raise RuntimeError("OpenMAIC returned no questions")
+
+        existing_ids = set(
+            doc["question_id"]
+            for doc in self.queue.find(
+                {"skill_id": skill_id, "status": {"$in": ["ready", "served"]}},
+                {"question_id": 1, "_id": 0},
+            )
+        )
+
+        difficulties = self._spread_difficulties(target_difficulty, len(questions))
+        inserted = 0
+
+        for idx, perseus_json in enumerate(questions):
+            if not isinstance(perseus_json, dict):
+                continue
+
+            # Pop internal source tag before storage
+            perseus_json.pop("_source", None)
+
+            diff = difficulties[idx] if idx < len(difficulties) else target_difficulty
+            fmt = self._detect_format(perseus_json)
+
+            doc = self._store_question(
+                skill_id=skill_id,
+                skill_name=skill_name,
+                lesson_name=lesson_name,
+                difficulty=diff,
+                grade_level=grade_level,
+                age=age,
+                fmt=fmt,
+                perseus_json=perseus_json,
+                source="openmaic",
+                user_id=user_id,
+                subject=subject,
+            )
+            if not doc or doc["question_id"] in existing_ids:
+                continue
+
+            try:
+                self.queue.insert_one({
+                    "skill_id": skill_id,
+                    "question_id": doc["question_id"],
+                    "difficulty": diff,
+                    "subject": subject,
+                    "status": "ready",
+                    "created_at": datetime.utcnow(),
+                })
+                existing_ids.add(doc["question_id"])
+                inserted += 1
+            except Exception as e:
+                logger.warning(f"[AI_PROVIDER] Failed to enqueue openmaic question: {e}")
+
+        return inserted
+
+    @staticmethod
+    def _detect_format(perseus_json: Dict[str, Any]) -> str:
+        """Detect question format from Perseus JSON widget types."""
+        widgets = (perseus_json.get("question") or {}).get("widgets", {})
+        for widget_id, widget in widgets.items():
+            w_type = widget.get("type", "")
+            if w_type == "radio":
+                multi = (widget.get("options") or {}).get("multipleSelect", False)
+                return "radio_multi" if multi else "radio_single"
+            if w_type == "expression":
+                return "expression"
+            if w_type == "numeric-input":
+                return "numeric_input"
+        return "radio_single"  # safe default
+
     def refill_queue(
         self,
         skill_id: str,
@@ -584,7 +695,27 @@ class AIQuestionProvider:
         count: int = 5,
         subject: str = "",
     ) -> int:
-        """Parallel queue refill. Called from background thread."""
+        """Parallel queue refill. Called from background thread.
+
+        If USE_OPENMAIC=true and the OpenMAIC service is available, questions
+        are generated via OpenMAIC's lesson generation API (batch-efficient).
+        Falls back to direct Gemini generation on any failure.
+        """
+        # Try OpenMAIC first if enabled
+        if self._openmaic is not None:
+            try:
+                openmaic_inserted = self._refill_from_openmaic(
+                    skill_id, skill_name, lesson_name, target_difficulty,
+                    grade_level, age, user_id, count, subject
+                )
+                if openmaic_inserted > 0:
+                    logger.info(
+                        f"[AI_PROVIDER] OpenMAIC refilled {openmaic_inserted}/{count} for skill={skill_name}"
+                    )
+                    return openmaic_inserted
+            except Exception as e:
+                logger.warning(f"[AI_PROVIDER] OpenMAIC refill failed, falling back to Gemini: {e}")
+
         memory = self.content_engine._memory_context(user_id)
         existing_ids = set(
             doc["question_id"]

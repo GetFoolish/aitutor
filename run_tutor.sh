@@ -166,6 +166,20 @@ SHERLOCKED_API_PORT=${SHERLOCKED_API_PORT:-8001}
 TEACHING_ASSISTANT_PORT=${TEACHING_ASSISTANT_PORT:-8002}
 AUTH_SERVICE_PORT=${AUTH_SERVICE_PORT:-8003}
 
+# Start OpenMAIC sibling service (if USE_OPENMAIC=true and dir exists)
+if [[ "${USE_OPENMAIC:-false}" == "true" ]]; then
+  OPENMAIC_DIR="$(dirname "$SCRIPT_DIR")/OpenMAIC"
+  if [[ -d "$OPENMAIC_DIR" && -f "$OPENMAIC_DIR/package.json" ]]; then
+    echo "Starting OpenMAIC service... Logs -> logs/openmaic.log"
+    (cd "$OPENMAIC_DIR" && GOOGLE_API_KEY="$GEMINI_API_KEY" DEFAULT_MODEL="google:gemini-2.0-flash" PORT=3333 pnpm dev) \
+      > "$SCRIPT_DIR/logs/openmaic.log" 2>&1 &
+    pids+=($!)
+    echo "  OpenMAIC PID: $!"
+  else
+    echo "⚠️  USE_OPENMAIC=true but OpenMAIC dir not found at $OPENMAIC_DIR"
+  fi
+fi
+
 # Start the Node.js frontend in the background (after backend services are ready)
 echo "Starting Node.js frontend... Logs -> logs/frontend.log"
 (cd "$SCRIPT_DIR/frontend" && npm run dev) > "$SCRIPT_DIR/logs/frontend.log" 2>&1 &
@@ -184,6 +198,7 @@ echo "  🕵️  SherlockED API:     http://localhost:$SHERLOCKED_API_PORT"
 echo "  👨‍🏫 TeachingAssistant:  http://localhost:$TEACHING_ASSISTANT_PORT"
 echo "  🎓 Tutor Service:      (integrated in frontend)"
 echo "  🎓 Cost Tracking Service:  http://localhost:$COST_TRACKING_PORT"
+[[ "${USE_OPENMAIC:-false}" == "true" ]] && echo "  🏫 OpenMAIC:           http://localhost:3333"
 echo "     Cost tracking interface: http://localhost:$FRONTEND_PORT/app/admin/cost-tracking"
 echo "     Two way channel interface: file://$SCRIPT_DIR/services/TeachingAssistant/scripts/test_channel1_viewer.html"
 echo "Press Ctrl+C to stop."
