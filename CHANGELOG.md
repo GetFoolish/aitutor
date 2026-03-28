@@ -2,6 +2,21 @@
 
 All notable changes to AI Tutor are documented here.
 
+## [0.1.1.0] - 2026-03-28
+
+### Added
+- MetaMathQA dataset ingestion script (`scripts/ingest_metamathqa.py`) supporting ~395K math problems from HuggingFace
+
+### Changed
+- `ingest_gsm8k.py` switched from OpenAI to OpenRouter free model for cost reduction
+- Vitest config excludes vendored Perseus tests and pre-existing legacy App.test.tsx; only project smoke tests run
+
+### Fixed
+- OAuth state cookie now cleared on all error paths in `/auth/callback` (prevents retry loops after OAuth errors)
+- Auth token URL fragment fallback to query params removed; tokens exclusively come from hash fragment (prevents Referer leakage regression)
+- JWT config uses ephemeral strong secret in dev when configured secret is weak/missing (prevents trivially forgeable tokens)
+- Answer submission shows warning toast when no active session (no silent failure)
+
 ## [0.1.0.0] - 2026-03-28
 
 ### Added
