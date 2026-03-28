@@ -88,6 +88,7 @@ class DASHSystem:
         # Cache statistics for monitoring
         self._cache_hits = 0
         self._cache_misses = 0
+        self.question_data_mode = "modern"
         # Keep questions dict for backward compatibility (will be populated on-demand)
         self.questions: Dict[str, Question] = {}  # Deprecated: use _get_or_create_question() instead
         self.curriculum: Dict = {}
@@ -113,87 +114,138 @@ class DASHSystem:
     def _load_from_mongodb(self):
         """Load skills and questions from MongoDB"""
         try:
-            # Load skills from MongoDB (using generated_skills collection)
-            skills_docs = list(self.mongo.generated_skills.find())
-            for skill_doc in skills_docs:
-                try:
-                    skill = Skill(
-                        skill_id=skill_doc['skill_id'],
-                        name=skill_doc['name'],
-                        grade_level=GradeLevel[skill_doc['grade_level']],
-                        prerequisites=skill_doc['prerequisites'],
-                        forgetting_rate=skill_doc['forgetting_rate'],
-                        difficulty=skill_doc['difficulty'],
-                        order=skill_doc.get('order', 0)
-                    )
-                    self.skills[skill.skill_id] = skill
-                except KeyError as e:
-                    log_print(f"[WARNING] Skipping skill {skill_doc.get('skill_id', 'unknown')}: missing field {e}")
-            
-            log_print(f"[MONGODB] Loaded {len(self.skills)} skills from MongoDB")
-            
-            # Get valid exerciseDirNames (skill_ids) from loaded skills for MongoDB-level filtering
-            valid_skill_ids = list(self.skills.keys())
-            log_print(f"[MONGODB] Filtering questions by {len(valid_skill_ids)} valid skills at database level...")
-            
-            # Load lightweight question index from scraped_questions collection
-            # Filter at MongoDB level using $in operator to only get questions with valid skills
-            # This reduces documents processed from ~38,158 to ~1,623 (23x reduction)
-            log_print("[MONGODB] Loading question index from scraped_questions collection (lightweight projection with skill filter)...")
-            questions_cursor = self.mongo.scraped_questions.find(
-                {"exerciseDirName": {"$in": valid_skill_ids}},  # Filter at DB level using $in operator
-                {"questionId": 1, "exerciseDirName": 1}  # Projection: only needed fields
-            ).batch_size(1000)
-            
-            # Initialize index structures
-            self.question_index.clear()
-            self.skill_question_index.clear()
-            
-            question_count = 0
-            processed_count = 0
-            
-            for q_doc in questions_cursor:
-                question_count += 1
-                if question_count % 1000 == 0:
-                    log_print(f"[MONGODB] Processed {question_count} questions so far...")
-                
-                try:
-                    # Extract questionId (includes fabricated prefix: e.g., "41.1.2.1.9_x338f5e1fbc6cafdf")
-                    # Format: {course_idx}.{unit_idx}.{lesson_idx}.{exercise_idx}.{question_idx}_{item_id}
-                    question_id = q_doc.get('questionId', '')
-                    if not question_id:
-                        continue
-                    
-                    # Extract exerciseDirName (maps to skill_id)
-                    exercise_dir_name = q_doc.get('exerciseDirName', '')
-                    if not exercise_dir_name:
-                        log_print(f"[WARNING] Skipping question {question_id}: missing exerciseDirName")
-                        continue
-                    
-                    # Note: Skill validation already done at MongoDB level via $in filter
-                    # But double-check for safety (should always pass now)
-                    if exercise_dir_name not in self.skills:
-                        log_print(f"[WARNING] Question {question_id} has skill {exercise_dir_name} not in skills (unexpected after DB filter)")
-                        continue
-                    
-                    # Build lightweight indexes
-                    self.question_index[question_id] = exercise_dir_name
-                    if exercise_dir_name not in self.skill_question_index:
-                        self.skill_question_index[exercise_dir_name] = []
-                    self.skill_question_index[exercise_dir_name].append(question_id)
-                    processed_count += 1
-                    
-                except KeyError as e:
-                    log_print(f"[WARNING] Skipping question {q_doc.get('questionId', 'unknown')}: missing field {e}")
-                except Exception as e:
-                    log_print(f"[WARNING] Skipping question {q_doc.get('questionId', 'unknown')}: error {e}")
-            
-            log_print(f"[MONGODB] Loaded {len(self.question_index)} questions into index (processed {processed_count} out of {question_count} total documents)")
-            log_print(f"[MONGODB] Index covers {len(self.skill_question_index)} skills")
-            
+            modern_skill_count = self.mongo.generated_skills.count_documents({})
+            modern_question_count = self.mongo.scraped_questions.count_documents({})
+            legacy_skill_count = self.mongo.skills.count_documents({})
+            legacy_question_count = self.mongo.dash_questions.count_documents({})
+
+            if modern_skill_count > 0 and modern_question_count > 0:
+                self.question_data_mode = "modern"
+                log_print("[MONGODB] Using generated_skills + scraped_questions runtime data")
+                self._load_skills_from_collection(list(self.mongo.generated_skills.find()))
+                self._load_modern_question_index()
+                return
+
+            if legacy_skill_count > 0 and legacy_question_count > 0:
+                self.question_data_mode = "legacy"
+                log_print("[MONGODB] Falling back to legacy skills + dash_questions runtime data")
+                if modern_skill_count > 0 and modern_question_count == 0:
+                    log_print("[MONGODB] generated_skills is populated but scraped_questions is empty; using legacy compatibility mode")
+                self._load_skills_from_collection(list(self.mongo.skills.find()))
+                self._load_legacy_question_index()
+                return
+
+            raise RuntimeError(
+                "No compatible MongoDB question dataset found. "
+                "Expected either generated_skills + scraped_questions or skills + dash_questions."
+            )
         except Exception as e:
             log_print(f"[ERROR] Error loading from MongoDB: {e}")
             raise RuntimeError(f"Failed to load data from MongoDB: {e}. Local fallback disabled.")
+
+    def _load_skills_from_collection(self, skills_docs: List[Dict]):
+        """Load skill definitions from a MongoDB collection."""
+        self.skills.clear()
+
+        for skill_doc in skills_docs:
+            try:
+                skill = Skill(
+                    skill_id=skill_doc['skill_id'],
+                    name=skill_doc['name'],
+                    grade_level=GradeLevel[skill_doc['grade_level']],
+                    prerequisites=skill_doc.get('prerequisites', []),
+                    forgetting_rate=skill_doc.get('forgetting_rate', 0.1),
+                    difficulty=skill_doc.get('difficulty', 0.0),
+                    order=skill_doc.get('order', 0)
+                )
+                self.skills[skill.skill_id] = skill
+            except KeyError as e:
+                log_print(f"[WARNING] Skipping skill {skill_doc.get('skill_id', 'unknown')}: missing field {e}")
+
+        log_print(f"[MONGODB] Loaded {len(self.skills)} skills from MongoDB")
+
+    def _load_modern_question_index(self):
+        """Build the runtime question index from scraped_questions."""
+        valid_skill_ids = list(self.skills.keys())
+        log_print(f"[MONGODB] Filtering questions by {len(valid_skill_ids)} valid skills at database level...")
+        log_print("[MONGODB] Loading question index from scraped_questions collection (lightweight projection with skill filter)...")
+
+        questions_cursor = self.mongo.scraped_questions.find(
+            {"exerciseDirName": {"$in": valid_skill_ids}},
+            {"questionId": 1, "exerciseDirName": 1}
+        ).batch_size(1000)
+
+        self.question_index.clear()
+        self.skill_question_index.clear()
+
+        question_count = 0
+        processed_count = 0
+
+        for q_doc in questions_cursor:
+            question_count += 1
+            if question_count % 1000 == 0:
+                log_print(f"[MONGODB] Processed {question_count} questions so far...")
+
+            try:
+                question_id = q_doc.get('questionId', '')
+                if not question_id:
+                    continue
+
+                exercise_dir_name = q_doc.get('exerciseDirName', '')
+                if not exercise_dir_name:
+                    log_print(f"[WARNING] Skipping question {question_id}: missing exerciseDirName")
+                    continue
+
+                if exercise_dir_name not in self.skills:
+                    log_print(f"[WARNING] Question {question_id} has skill {exercise_dir_name} not in skills (unexpected after DB filter)")
+                    continue
+
+                self.question_index[question_id] = exercise_dir_name
+                if exercise_dir_name not in self.skill_question_index:
+                    self.skill_question_index[exercise_dir_name] = []
+                self.skill_question_index[exercise_dir_name].append(question_id)
+                processed_count += 1
+
+            except KeyError as e:
+                log_print(f"[WARNING] Skipping question {q_doc.get('questionId', 'unknown')}: missing field {e}")
+            except Exception as e:
+                log_print(f"[WARNING] Skipping question {q_doc.get('questionId', 'unknown')}: error {e}")
+
+        log_print(f"[MONGODB] Loaded {len(self.question_index)} questions into index (processed {processed_count} out of {question_count} total documents)")
+        log_print(f"[MONGODB] Index covers {len(self.skill_question_index)} skills")
+
+    def _load_legacy_question_index(self):
+        """Build the runtime question index from legacy dash_questions."""
+        log_print("[MONGODB] Loading question index from legacy dash_questions collection...")
+
+        self.question_index.clear()
+        self.skill_question_index.clear()
+
+        question_count = 0
+        processed_count = 0
+
+        for q_doc in self.mongo.dash_questions.find({}, {"question_id": 1, "skill_id": 1}):
+            question_count += 1
+
+            question_id = q_doc.get('question_id', '')
+            skill_id = q_doc.get('skill_id', '')
+
+            if not question_id or not skill_id:
+                log_print(f"[WARNING] Skipping legacy question with missing identifiers: {q_doc}")
+                continue
+
+            if skill_id not in self.skills:
+                log_print(f"[WARNING] Legacy question {question_id} has skill {skill_id} not present in skills collection")
+                continue
+
+            self.question_index[question_id] = skill_id
+            if skill_id not in self.skill_question_index:
+                self.skill_question_index[skill_id] = []
+            self.skill_question_index[skill_id].append(question_id)
+            processed_count += 1
+
+        log_print(f"[MONGODB] Loaded {len(self.question_index)} legacy questions into index (processed {processed_count} out of {question_count} total documents)")
+        log_print(f"[MONGODB] Legacy index covers {len(self.skill_question_index)} skills")
     
     def _get_or_create_question(self, question_id: str) -> Optional[Question]:
         """

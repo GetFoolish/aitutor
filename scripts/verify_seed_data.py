@@ -9,9 +9,13 @@ from pymongo import MongoClient
 from pymongo.errors import PyMongoError
 
 
-REQUIRED_COLLECTIONS = {
+MODERN_REQUIRED_COLLECTIONS = {
     "generated_skills": "Generated skill graph used by DASH",
-    "scraped_questions": "Source question bank used for runtime question loading",
+    "scraped_questions": "Source question bank used by the modern runtime",
+}
+LEGACY_REQUIRED_COLLECTIONS = {
+    "skills": "Legacy skill graph used by compatibility mode",
+    "dash_questions": "Legacy question bank used by compatibility mode",
 }
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -35,23 +39,44 @@ def main() -> int:
 
     db = client[db_name]
 
-    missing = []
-    for collection_name, description in REQUIRED_COLLECTIONS.items():
-        count = db[collection_name].count_documents({})
-        print(f"{collection_name}: {count}")
-        if count == 0:
-            missing.append(f"{collection_name} ({description})")
+    modern_counts = {}
+    legacy_counts = {}
+
+    for collection_name in MODERN_REQUIRED_COLLECTIONS:
+        modern_counts[collection_name] = db[collection_name].count_documents({})
+        print(f"{collection_name}: {modern_counts[collection_name]}")
+
+    for collection_name in LEGACY_REQUIRED_COLLECTIONS:
+        legacy_counts[collection_name] = db[collection_name].count_documents({})
+        print(f"{collection_name}: {legacy_counts[collection_name]}")
 
     client.close()
 
-    if missing:
-        print("Seed verification failed. Missing required data:")
-        for item in missing:
-            print(f" - {item}")
-        return 1
+    modern_ready = all(count > 0 for count in modern_counts.values())
+    legacy_ready = all(count > 0 for count in legacy_counts.values())
 
-    print("Seed verification passed.")
-    return 0
+    if modern_ready:
+        print("Seed verification passed using modern runtime collections.")
+        return 0
+
+    if legacy_ready:
+        print("Seed verification passed using legacy compatibility collections.")
+        if modern_counts["generated_skills"] > 0 and modern_counts["scraped_questions"] == 0:
+            print("Modern generated_skills exists but scraped_questions is empty; runtime will use legacy compatibility mode.")
+        return 0
+
+    print("Seed verification failed. No compatible runtime dataset was found.")
+    print("Missing modern collections:")
+    for collection_name, description in MODERN_REQUIRED_COLLECTIONS.items():
+        if modern_counts[collection_name] == 0:
+            print(f" - {collection_name} ({description})")
+
+    print("Missing legacy collections:")
+    for collection_name, description in LEGACY_REQUIRED_COLLECTIONS.items():
+        if legacy_counts[collection_name] == 0:
+            print(f" - {collection_name} ({description})")
+
+    return 1
 
 
 if __name__ == "__main__":

@@ -118,10 +118,10 @@ Compose expects the same root `.env` contract. If you want Compose to use a remo
 
 ## Data Bootstrap
 
-The runtime expects seeded Mongo collections:
+The runtime supports two seeded Mongo layouts:
 
-- `generated_skills`
-- `scraped_questions`
+- modern mode: `generated_skills` + `scraped_questions`
+- legacy compatibility mode: `skills` + `dash_questions`
 
 Useful scripts:
 
@@ -136,6 +136,8 @@ Verify the current database before running the app or deploying:
 ```bash
 python3 scripts/verify_seed_data.py
 ```
+
+The verifier reports which dataset mode it found and fails only when neither supported layout is present.
 
 ## Validation Commands
 

@@ -68,6 +68,8 @@ cd frontend && npm run build
 cd frontend && npm run test:ci
 ```
 
+`scripts/verify_seed_data.py` accepts either the modern runtime dataset (`generated_skills` + `scraped_questions`) or the legacy compatibility dataset (`skills` + `dash_questions`).
+
 ## Notes
 
 - `cloudbuild.bootstrap.yaml` is only for first-time environments where service URLs do not exist yet.
