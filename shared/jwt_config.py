@@ -62,9 +62,16 @@ def is_cloud_run_runtime() -> bool:
 
 
 def should_fail_closed_on_weak_jwt_secret() -> bool:
-    """Return True when weak JWT secrets must abort startup."""
+    """Return True when weak JWT secrets must abort startup.
+
+    Fails closed by default: any ENVIRONMENT value other than an explicit
+    dev/test marker is treated as production. This prevents silent ephemeral
+    secrets on staging servers that use non-standard env names like 'prod',
+    'live', or 'staging2'.
+    """
     environment = os.getenv("ENVIRONMENT", "development").lower()
-    return environment in {"production", "staging"} or is_cloud_run_runtime()
+    explicitly_dev = environment in {"development", "dev", "test", "local", "ci"}
+    return (not explicitly_dev) or is_cloud_run_runtime()
 
 
 def should_abort_on_weak_jwt_secret() -> bool:
