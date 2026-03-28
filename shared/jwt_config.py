@@ -70,7 +70,11 @@ def should_fail_closed_on_weak_jwt_secret() -> bool:
     'live', or 'staging2'.
     """
     environment = os.getenv("ENVIRONMENT", "development").lower()
-    explicitly_dev = environment in {"development", "dev", "test", "local", "ci"}
+    explicitly_dev = (
+        environment in {"development", "dev", "test", "testing", "local", "ci"}
+        or environment.startswith("dev-")
+        or environment.startswith("test-")
+    )
     return (not explicitly_dev) or is_cloud_run_runtime()
 
 
