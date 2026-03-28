@@ -1,15 +1,13 @@
-"""
-JWT token utilities for authentication
-"""
-import jwt
-import os
-import sys
+"""JWT token utilities for authentication."""
+
 from datetime import datetime, timedelta
 from typing import Dict, Optional
 
-JWT_SECRET = os.getenv("JWT_SECRET", "change-me-in-production")
-JWT_ALGORITHM = "HS256"
-JWT_EXPIRATION_MINUTES = 1440 # 24 hours
+import jwt
+
+from shared.jwt_config import JWT_ALGORITHM, JWT_SECRET
+
+JWT_EXPIRATION_MINUTES = 1440  # 24 hours
 
 
 def create_jwt_token(user_data: Dict) -> str:
@@ -88,4 +86,3 @@ def verify_setup_token(token: str) -> Optional[Dict]:
         Google user info if valid, None otherwise
     """
     return verify_token(token)
-

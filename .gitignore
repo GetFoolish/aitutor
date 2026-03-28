@@ -18,6 +18,8 @@ __pycache__/
 env/
 venv/
 .venv/
+.coverage
+htmlcov/
 
 # Environment variables
 .env
@@ -40,6 +42,7 @@ ehthumbs.db
 
 
 .cursor/
+.agents/
 
 frontend_old/
 aitutor-chore-ui-revamp_v2/

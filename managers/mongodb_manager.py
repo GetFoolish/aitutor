@@ -32,7 +32,13 @@ class MongoDBManager:
         return cls._instance
     
     def __init__(self):
-        if self._client is None:
+        # Keep imports side-effect free so test discovery can import modules
+        # without requiring a live MongoDB connection.
+        pass
+
+    def _ensure_connected(self):
+        """Connect on first real use."""
+        if self._client is None or self._db is None:
             self._connect()
     
     def _connect(self):
@@ -63,46 +69,55 @@ class MongoDBManager:
     @property
     def db(self):
         """Get database instance"""
+        self._ensure_connected()
         return self._db
     
     @property
     def users(self):
         """Get users collection"""
+        self._ensure_connected()
         return self._db['users']
     
     @property
     def perseus_questions(self):
         """Get perseus_questions collection"""
+        self._ensure_connected()
         return self._db['perseus_questions']
     
     @property
     def dash_questions(self):
         """Get dash_questions collection"""
+        self._ensure_connected()
         return self._db['dash_questions']
     
     @property
     def skills(self):
         """Get skills collection"""
+        self._ensure_connected()
         return self._db['skills']
     
     @property
     def generated_skills(self):
         """Get generated_skills collection"""
+        self._ensure_connected()
         return self._db['generated_skills']
     
     @property
     def scraped_questions(self):
         """Get scraped_questions collection"""
+        self._ensure_connected()
         return self._db['scraped_questions']
 
     @property
     def sessions(self):
         """Get sessions collection for active tutoring session state"""
+        self._ensure_connected()
         return self._db['sessions']
     
     def test_connection(self):
         """Test if MongoDB connection is working"""
         try:
+            self._ensure_connected()
             self._client.admin.command('ping')
             collections = self._db.list_collection_names()
             logger.info(f"[MONGODB] Connection OK. Collections: {collections}")
@@ -115,8 +130,9 @@ class MongoDBManager:
         """Close MongoDB connection"""
         if self._client:
             self._client.close()
+            self._client = None
+            self._db = None
             logger.info("[MONGODB] Connection closed")
 
 # Create global instance
 mongo_db = MongoDBManager()
-
