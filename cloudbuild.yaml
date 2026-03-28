@@ -142,7 +142,7 @@ steps:
       - "--set-env-vars"
       - "MONGODB_DB_NAME=${_MONGODB_DB_NAME},ALLOWED_ORIGINS=${_ALLOWED_ORIGINS},ENVIRONMENT=${_ENVIRONMENT}"
       - "--set-secrets"
-      - "MONGODB_URI=${_MONGODB_URI_SECRET},JWT_SECRET=${_JWT_SECRET_SECRET}"
+      - "MONGODB_URI=${_MONGODB_URI_SECRET}"
 
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     id: "deploy-teaching-assistant"

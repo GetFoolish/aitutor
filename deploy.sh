@@ -97,6 +97,9 @@ if [[ ${#missing_urls[@]} -gt 0 ]]; then
     exit 1
 fi
 
+echo "🌱 Seeding compatible runtime MongoDB data when required..."
+python3 scripts/seed_runtime_data.py
+
 echo "🔍 Verifying seeded MongoDB data..."
 python3 scripts/verify_seed_data.py
 

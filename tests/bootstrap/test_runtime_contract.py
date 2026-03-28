@@ -62,9 +62,10 @@ def test_deploy_script_verifies_seed_data_after_bootstrap():
     deploy_script = read("deploy.sh")
 
     bootstrap_idx = deploy_script.index("bootstrap_backend_if_needed")
+    seed_idx = deploy_script.index('python3 scripts/seed_runtime_data.py')
     verify_idx = deploy_script.index('python3 scripts/verify_seed_data.py')
 
-    assert verify_idx > bootstrap_idx
+    assert bootstrap_idx < seed_idx < verify_idx
     assert "MONGODB_URI" in deploy_script
 
 
@@ -99,3 +100,13 @@ def test_deploy_workflows_gate_seed_verification_on_bootstrap_state():
         assert "python3 scripts/verify_seed_data.py" in workflow
         assert "actions/setup-python@v5" in workflow
         assert "python -m pip install -r requirements.txt -r requirements-test.txt" in workflow
+
+
+def test_sherlocked_deploy_does_not_receive_unused_jwt_secret():
+    cloudbuild = read("cloudbuild.yaml")
+    cloudbuild_bootstrap = read("cloudbuild.bootstrap.yaml")
+
+    assert 'id: "deploy-sherlocked-api"' in cloudbuild
+    assert 'id: "deploy-sherlocked-api"' in cloudbuild_bootstrap
+    assert 'MONGODB_URI=${_MONGODB_URI_SECRET},JWT_SECRET=${_JWT_SECRET_SECRET}' not in cloudbuild
+    assert 'MONGODB_URI=${_MONGODB_URI_SECRET},JWT_SECRET=${_JWT_SECRET_SECRET}' not in cloudbuild_bootstrap

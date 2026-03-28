@@ -7,6 +7,19 @@ import sys
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
+def extract_step_block(path: Path, step_id: str) -> str:
+    content = path.read_text()
+    marker = f'id: "{step_id}"'
+    start = content.find(marker)
+    if start == -1:
+        return ""
+
+    next_step = content.find('\n  - name:', start + len(marker))
+    if next_step == -1:
+        return content[start:]
+    return content[start:next_step]
+
+
 def assert_absent(path: Path, needle: str, message: str, errors: list[str]) -> None:
     if needle in path.read_text():
         errors.append(f"{message} ({path.relative_to(PROJECT_ROOT)})")
@@ -38,6 +51,7 @@ def main() -> int:
     teaching_api = PROJECT_ROOT / "services" / "TeachingAssistant" / "api.py"
     cloudbuild = PROJECT_ROOT / "cloudbuild.yaml"
     cloudbuild_bootstrap = PROJECT_ROOT / "cloudbuild.bootstrap.yaml"
+    deploy_script = PROJECT_ROOT / "deploy.sh"
 
     assert_absent(
         auth_api,
@@ -63,28 +77,108 @@ def main() -> int:
         "Bootstrap deploys must use Secret Manager bindings",
         errors,
     )
-    deploy_secret_contract = [
-        "MONGODB_URI=${_MONGODB_URI_SECRET}",
-        "OPENROUTER_API_KEY=${_OPENROUTER_API_KEY_SECRET}",
-        "JWT_SECRET=${_JWT_SECRET_SECRET}",
-        "GOOGLE_CLIENT_ID=${_GOOGLE_CLIENT_ID_SECRET}",
-        "GOOGLE_CLIENT_SECRET=${_GOOGLE_CLIENT_SECRET_SECRET}",
-        "GEMINI_API_KEY=${_GEMINI_API_KEY_SECRET}",
-        "OBSERVER_API_KEY=${_OBSERVER_API_KEY_SECRET}",
-        "DASH_API_URL=${_DASH_API_URL}",
+    deploy_contracts = [
+        (
+            cloudbuild,
+            "deploy-dash-api",
+            [
+                "MONGODB_URI=${_MONGODB_URI_SECRET}",
+                "OPENROUTER_API_KEY=${_OPENROUTER_API_KEY_SECRET}",
+                "JWT_SECRET=${_JWT_SECRET_SECRET}",
+            ],
+            [],
+        ),
+        (
+            cloudbuild,
+            "deploy-sherlocked-api",
+            ["MONGODB_URI=${_MONGODB_URI_SECRET}"],
+            ["JWT_SECRET=${_JWT_SECRET_SECRET}"],
+        ),
+        (
+            cloudbuild,
+            "deploy-teaching-assistant",
+            [
+                "MONGODB_URI=${_MONGODB_URI_SECRET}",
+                "OPENROUTER_API_KEY=${_OPENROUTER_API_KEY_SECRET}",
+                "JWT_SECRET=${_JWT_SECRET_SECRET}",
+                "OBSERVER_API_KEY=${_OBSERVER_API_KEY_SECRET}",
+                "DASH_API_URL=${_DASH_API_URL}",
+            ],
+            [],
+        ),
+        (
+            cloudbuild,
+            "deploy-auth-service",
+            [
+                "MONGODB_URI=${_MONGODB_URI_SECRET}",
+                "GOOGLE_CLIENT_ID=${_GOOGLE_CLIENT_ID_SECRET}",
+                "GOOGLE_CLIENT_SECRET=${_GOOGLE_CLIENT_SECRET_SECRET}",
+                "JWT_SECRET=${_JWT_SECRET_SECRET}",
+                "GEMINI_API_KEY=${_GEMINI_API_KEY_SECRET}",
+            ],
+            [],
+        ),
+        (
+            cloudbuild_bootstrap,
+            "deploy-dash-api",
+            [
+                "MONGODB_URI=${_MONGODB_URI_SECRET}",
+                "OPENROUTER_API_KEY=${_OPENROUTER_API_KEY_SECRET}",
+                "JWT_SECRET=${_JWT_SECRET_SECRET}",
+            ],
+            [],
+        ),
+        (
+            cloudbuild_bootstrap,
+            "deploy-sherlocked-api",
+            ["MONGODB_URI=${_MONGODB_URI_SECRET}"],
+            ["JWT_SECRET=${_JWT_SECRET_SECRET}"],
+        ),
+        (
+            cloudbuild_bootstrap,
+            "deploy-teaching-assistant",
+            [
+                "MONGODB_URI=${_MONGODB_URI_SECRET}",
+                "OPENROUTER_API_KEY=${_OPENROUTER_API_KEY_SECRET}",
+                "JWT_SECRET=${_JWT_SECRET_SECRET}",
+                "OBSERVER_API_KEY=${_OBSERVER_API_KEY_SECRET}",
+                "DASH_API_URL=${_DASH_API_URL}",
+            ],
+            [],
+        ),
+        (
+            cloudbuild_bootstrap,
+            "deploy-auth-service",
+            [
+                "MONGODB_URI=${_MONGODB_URI_SECRET}",
+                "GOOGLE_CLIENT_ID=${_GOOGLE_CLIENT_ID_SECRET}",
+                "GOOGLE_CLIENT_SECRET=${_GOOGLE_CLIENT_SECRET_SECRET}",
+                "JWT_SECRET=${_JWT_SECRET_SECRET}",
+                "GEMINI_API_KEY=${_GEMINI_API_KEY_SECRET}",
+            ],
+            [],
+        ),
     ]
-    assert_all_present(
-        cloudbuild,
-        deploy_secret_contract,
-        "Main deploy config is missing required runtime secret/env bindings",
-        errors,
-    )
-    assert_all_present(
-        cloudbuild_bootstrap,
-        deploy_secret_contract,
-        "Bootstrap deploy config is missing required runtime secret/env bindings",
-        errors,
-    )
+
+    for path, step_id, required_needles, forbidden_needles in deploy_contracts:
+        step_block = extract_step_block(path, step_id)
+        if not step_block:
+            errors.append(f"Missing deploy step {step_id} ({path.relative_to(PROJECT_ROOT)})")
+            continue
+
+        missing = [needle for needle in required_needles if needle not in step_block]
+        if missing:
+            joined = ", ".join(missing)
+            errors.append(
+                f"Deploy step {step_id} is missing required bindings: {joined} ({path.relative_to(PROJECT_ROOT)})"
+            )
+
+        unexpected = [needle for needle in forbidden_needles if needle in step_block]
+        if unexpected:
+            joined = ", ".join(unexpected)
+            errors.append(
+                f"Deploy step {step_id} must not receive unused bindings: {joined} ({path.relative_to(PROJECT_ROOT)})"
+            )
     assert_occurrences_at_least(
         cloudbuild,
         "ENVIRONMENT=${_ENVIRONMENT}",
@@ -111,6 +205,20 @@ def main() -> int:
         "Bootstrap deploy config must require explicit environment substitution",
         errors,
     )
+    deploy_script_content = deploy_script.read_text()
+    try:
+        bootstrap_idx = deploy_script_content.index("bootstrap_backend_if_needed")
+        seed_idx = deploy_script_content.index("python3 scripts/seed_runtime_data.py")
+        verify_idx = deploy_script_content.index("python3 scripts/verify_seed_data.py")
+    except ValueError as exc:
+        errors.append(
+            f"Deploy script is missing bootstrap seed verification flow: {exc} ({deploy_script.relative_to(PROJECT_ROOT)})"
+        )
+    else:
+        if not (bootstrap_idx < seed_idx < verify_idx):
+            errors.append(
+                f"Deploy script must run bootstrap -> seed -> verify in order ({deploy_script.relative_to(PROJECT_ROOT)})"
+            )
 
     if errors:
         print("Security contract check failed:")
