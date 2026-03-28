@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { CheckCircle2, XCircle, Sparkles, ChevronRight } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useHint } from "../../contexts/HintContext";
+import { useOptionalTutorContext } from "../../features/tutor";
 import { apiUtils, reportQuestionAnalytics } from "../../lib/api-utils";
 import { scorePerseusQuestion, hasUserInput } from "../../lib/scoring-utils";
 import { jwtUtils } from "../../lib/jwt-utils";
@@ -175,6 +176,7 @@ const RendererComponent = ({
     const { user } = useAuth();
     const { setTotalHints, setCurrentHintIndex, currentHintIndex, showHints, setShowHints, setResponsiveHint } = useHint();
     const queryClient = useQueryClient();
+    const tutorCtx = useOptionalTutorContext();
     const [perseusItems, setPerseusItems] = useState<PerseusItem[]>([]);
     const [item, setItem] = useState(0);
     const [endOfTest, setEndOfTest] = useState(false);
@@ -607,6 +609,14 @@ const RendererComponent = ({
 
     const handleSubmit = async () => {
         if (rendererRef.current && perseusItem?.question) {
+            // Session guard: in normal (non-assessment) mode, require an active tutor session
+            if (!assessmentMode && tutorCtx !== undefined && !tutorCtx.connected) {
+                toast.info("Start a session to record your answer", {
+                    description: "Click the Start Session button to begin your AI tutor session."
+                });
+                return;
+            }
+
             // getUserInput() returns UserInputMap (the new object format)
             const userInput = rendererRef.current.getUserInput();
             const itemData = perseusItem; // Full item with question AND answer

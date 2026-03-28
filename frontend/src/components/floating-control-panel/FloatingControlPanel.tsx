@@ -829,6 +829,13 @@ function FloatingControlPanel({
   // Calculate initial position once without state
   const initialPosition = useMemo(() => {
     if (typeof window === "undefined") return { x: 0, y: 0 };
+    const isMobile = window.innerWidth <= 390;
+    if (isMobile) {
+      // On mobile, anchor to the bottom so it doesn't overlap question header/content
+      const x = Math.max(0, window.innerWidth - 380);
+      const y = Math.max(0, window.innerHeight - 160);
+      return { x, y };
+    }
     return { x: window.innerWidth - 380, y: 96 };
   }, []);
 
