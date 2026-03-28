@@ -2,7 +2,6 @@
 Google OAuth handler
 """
 import os
-from authlib.integrations.httpx_client import AsyncOAuth2Client
 from typing import Dict, Optional
 
 from shared.logging_config import get_logger
@@ -20,7 +19,16 @@ class GoogleOAuthHandler:
     
     def __init__(self, redirect_uri: str):
         self.redirect_uri = redirect_uri
-        self.client = None
+
+    def _build_client(self, state: Optional[str] = None):
+        from authlib.integrations.httpx_client import AsyncOAuth2Client
+
+        return AsyncOAuth2Client(
+            GOOGLE_CLIENT_ID,
+            GOOGLE_CLIENT_SECRET,
+            redirect_uri=self.redirect_uri,
+            state=state,
+        )
     
     def get_authorization_url(self) -> tuple[str, str]:
         """
@@ -32,20 +40,16 @@ class GoogleOAuthHandler:
         if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
             raise ValueError("GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET must be set")
         
-        self.client = AsyncOAuth2Client(
-            GOOGLE_CLIENT_ID,
-            GOOGLE_CLIENT_SECRET,
-            redirect_uri=self.redirect_uri
-        )
-        
-        authorization_url, state = self.client.create_authorization_url(
+        client = self._build_client()
+
+        authorization_url, state = client.create_authorization_url(
             'https://accounts.google.com/o/oauth2/v2/auth',
             scope=['openid', 'email', 'profile']
         )
         
         return authorization_url, state
     
-    async def get_user_info(self, code: str, state: str) -> Optional[Dict]:
+    async def get_user_info(self, code: str, state: str, authorization_response: str) -> Optional[Dict]:
         """
         Exchange authorization code for user info
         
@@ -56,23 +60,18 @@ class GoogleOAuthHandler:
         Returns:
             Google user information dictionary
         """
-        if not self.client:
-            self.client = AsyncOAuth2Client(
-                GOOGLE_CLIENT_ID,
-                GOOGLE_CLIENT_SECRET,
-                redirect_uri=self.redirect_uri
-            )
+        client = self._build_client(state=state)
         
         try:
             # Exchange code for token
-            token = await self.client.fetch_token(
+            await client.fetch_token(
                 'https://oauth2.googleapis.com/token',
                 code=code,
-                authorization_response=None
+                authorization_response=authorization_response,
             )
             
             # Get user info
-            resp = await self.client.get('https://www.googleapis.com/oauth2/v2/userinfo')
+            resp = await client.get('https://www.googleapis.com/oauth2/v2/userinfo')
             user_info = resp.json()
             
             return {
@@ -85,4 +84,5 @@ class GoogleOAuthHandler:
         except Exception as e:
             logger.error(f"Error getting user info: {e}")
             return None
-
+        finally:
+            await client.aclose()

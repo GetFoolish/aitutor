@@ -32,9 +32,8 @@ logger = get_logger(__name__)
 from typing import Dict, List
 active_observers: Dict[str, List[WebSocket]] = {}
 
-# Simple API key for observer authentication (backend devs only)
-# In production, use a more robust auth mechanism
-OBSERVER_API_KEY = os.getenv("OBSERVER_API_KEY", "dev-observer-key-12345")
+DEFAULT_OBSERVER_API_KEY = "dev-observer-key-12345"
+OBSERVER_API_KEY_HEADER = "X-Observer-Api-Key"
 
 
 app = FastAPI(title="Teaching Assistant API")
@@ -97,8 +96,64 @@ async def options_handler(full_path: str):
         }
     )
 
-# Create TeachingAssistant instance (now stateless - all state in MongoDB)
-ta = TeachingAssistant()
+class LazyTeachingAssistant:
+    """Defer MongoDB-backed TeachingAssistant startup until first real use."""
+
+    def __init__(self):
+        self._assistant: Optional[TeachingAssistant] = None
+
+    def get(self) -> TeachingAssistant:
+        if self._assistant is None:
+            self._assistant = TeachingAssistant()
+        return self._assistant
+
+    def __getattr__(self, name):
+        return getattr(self.get(), name)
+
+
+def get_configured_observer_api_key() -> Optional[str]:
+    """Observer access is disabled until a non-default key is configured."""
+    api_key = os.getenv("OBSERVER_API_KEY", "").strip()
+    if not api_key or api_key == DEFAULT_OBSERVER_API_KEY:
+        return None
+    return api_key
+
+
+def require_observer_api_key(api_key: Optional[str]) -> str:
+    configured_key = get_configured_observer_api_key()
+    if not configured_key:
+        raise HTTPException(
+            status_code=503,
+            detail="Observer endpoints are disabled until OBSERVER_API_KEY is configured",
+        )
+    if api_key != configured_key:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+    return configured_key
+
+
+async def authenticate_observer_websocket(websocket: WebSocket) -> bool:
+    configured_key = get_configured_observer_api_key()
+    if not configured_key:
+        await websocket.close(code=4001, reason="Observer endpoints disabled")
+        return False
+
+    try:
+        auth_message = await asyncio.wait_for(websocket.receive_json(), timeout=5)
+    except asyncio.TimeoutError:
+        await websocket.close(code=4002, reason="Observer auth timeout")
+        return False
+    except Exception:
+        await websocket.close(code=4002, reason="Observer auth failed")
+        return False
+
+    if auth_message.get("type") != "auth" or auth_message.get("api_key") != configured_key:
+        await websocket.close(code=4001, reason="Invalid API key")
+        return False
+
+    return True
+
+
+ta = LazyTeachingAssistant()
 
 # DASH API URL for pre-loading questions
 DASH_API_URL = os.getenv("DASH_API_URL", "http://localhost:8000")
@@ -524,9 +579,7 @@ def push_instruction(request: InstructionRequest, http_request: Request):
     Push an instruction to the tutor via SSE.
 
     The instruction will be delivered to the frontend via SSE and sent to Gemini.
-    Can be called by:
-    - Authenticated user (uses their active session)
-    - Backend system with session_id specified
+    Authenticated users may target only their own active session.
     """
     user_id = get_current_user(http_request)
 
@@ -539,6 +592,12 @@ def push_instruction(request: InstructionRequest, http_request: Request):
 
         if not session:
             raise HTTPException(status_code=404, detail="No active session found")
+
+        if session.get("user_id") != user_id:
+            raise HTTPException(
+                status_code=403,
+                detail="You can only push instructions to your own session",
+            )
 
         session_id = session["session_id"]
 
@@ -566,14 +625,13 @@ def push_instruction(request: InstructionRequest, http_request: Request):
 
 
 @app.post("/session/instruction/admin")
-def push_instruction_admin(request: InstructionRequest, api_key: str = None):
+def push_instruction_admin(request: InstructionRequest, http_request: Request):
     """
     Admin endpoint to push instruction to any session.
     Requires observer API key authentication.
     session_id is required for this endpoint.
     """
-    if api_key != OBSERVER_API_KEY:
-        raise HTTPException(status_code=401, detail="Invalid API key")
+    require_observer_api_key(http_request.headers.get(OBSERVER_API_KEY_HEADER))
 
     if not request.session_id:
         raise HTTPException(status_code=400, detail="session_id is required for admin endpoint")
@@ -611,13 +669,12 @@ def push_instruction_admin(request: InstructionRequest, api_key: str = None):
 # ============================================================================
 
 @app.get("/sessions/active")
-def list_active_sessions(api_key: str = None):
+def list_active_sessions(http_request: Request):
     """
     List all active sessions (for backend devs to choose which to observe)
     Requires API key authentication
     """
-    if api_key != OBSERVER_API_KEY:
-        raise HTTPException(status_code=401, detail="Invalid API key")
+    require_observer_api_key(http_request.headers.get(OBSERVER_API_KEY_HEADER))
 
     sessions = ta.session_manager.list_active_sessions()
     return {
@@ -641,35 +698,31 @@ async def websocket_observe(websocket: WebSocket):
     Observer WebSocket endpoint for backend devs to monitor live sessions.
 
     Query params:
-        - api_key: Observer API key for authentication
         - session_id: The session to observe (required)
 
     Receives: audio, media, transcript messages as they flow through the producer
     """
     # 1. Extract query parameters
     query_params = parse_qs(websocket.scope["query_string"].decode())
-    api_key = query_params.get("api_key", [None])[0]
     session_id = query_params.get("session_id", [None])[0]
 
-    # 2. Validate API key
-    if api_key != OBSERVER_API_KEY:
-        await websocket.close(code=4001, reason="Invalid API key")
-        return
-
-    # 3. Validate session_id
+    # 2. Validate session_id
     if not session_id:
         await websocket.close(code=4002, reason="Missing session_id")
         return
 
-    # 4. Verify session exists
+    await websocket.accept()
+
+    if not await authenticate_observer_websocket(websocket):
+        return
+
+    # 3. Verify session exists
     session = ta.session_manager.get_session_by_id(session_id)
     if not session:
         await websocket.close(code=4003, reason="Session not found")
         return
 
-    # 5. Accept connection and register as observer
-    await websocket.accept()
-
+    # 4. Register as observer
     if session_id not in active_observers:
         active_observers[session_id] = []
     active_observers[session_id].append(websocket)
@@ -690,7 +743,7 @@ async def websocket_observe(websocket: WebSocket):
     })
 
     try:
-        # 6. Keep connection alive and handle any observer commands
+        # 5. Keep connection alive and handle any observer commands
         while True:
             try:
                 # Wait for messages (ping/pong or commands)

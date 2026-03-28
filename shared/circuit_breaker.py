@@ -41,7 +41,7 @@ class CircuitBreaker:
     def call(self, func: Callable, *args, **kwargs) -> Any:
         """Execute function with circuit breaker protection."""
         if self.state == CircuitState.OPEN:
-            if time.time() - self.last_failure_time > self.recovery_timeout:
+            if time.time() - self.last_failure_time >= self.recovery_timeout:
                 self.state = CircuitState.HALF_OPEN
                 self.failure_count = 0
             else:
@@ -58,7 +58,7 @@ class CircuitBreaker:
     async def call_async(self, func: Callable, *args, **kwargs) -> Any:
         """Execute async function with circuit breaker protection."""
         if self.state == CircuitState.OPEN:
-            if time.time() - self.last_failure_time > self.recovery_timeout:
+            if time.time() - self.last_failure_time >= self.recovery_timeout:
                 self.state = CircuitState.HALF_OPEN
                 self.failure_count = 0
             else:
@@ -88,6 +88,7 @@ class CircuitBreaker:
         
         if self.failure_count >= self.failure_threshold:
             self.state = CircuitState.OPEN
+            self.last_failure_time = time.time()
     
     def get_state(self) -> dict:
         """Get current circuit breaker state."""

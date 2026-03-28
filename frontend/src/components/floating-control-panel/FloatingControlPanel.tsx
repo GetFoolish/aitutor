@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { motion, useDragControls } from "framer-motion";
 import { useTutorContext, AudioRecorder } from "../../features/tutor";
+import type { TranscriptionData } from "../../features/tutor";
 // import { useLiveAPIContext } from "../../contexts/LiveAPIContext"; // Commented out - useLiveAPIContext is an alias for useTutorContext, import from correct location
 // import { AudioRecorder } from "../../lib/audio-recorder"; // Commented out - AudioRecorder is exported from ../../features/tutor, not from lib
 import { jwtUtils } from "../../lib/jwt-utils";

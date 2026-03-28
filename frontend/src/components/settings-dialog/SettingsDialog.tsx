@@ -66,7 +66,6 @@ export default function SettingsDialog({
       // Enable output audio transcription for model speech-to-text
       outputAudioTranscription: {},
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleUserPromptChange = useCallback(

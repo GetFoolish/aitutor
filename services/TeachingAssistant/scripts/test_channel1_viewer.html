@@ -350,7 +350,7 @@
             </div>
             <div>
                 <label>Observer API Key:</label>
-                <input type="text" id="apiKey" value="dev-observer-key-12345">
+                <input type="text" id="apiKey" value="" placeholder="Set OBSERVER_API_KEY from your local .env">
             </div>
         </div>
         <div style="margin-top: 10px;">
@@ -484,7 +484,11 @@
             debugLog('Fetching active sessions...', 'info');
 
             try {
-                const response = await fetch(`${apiUrl}/sessions/active?api_key=${encodeURIComponent(apiKey)}`);
+                const response = await fetch(`${apiUrl}/sessions/active`, {
+                    headers: {
+                        'X-Observer-Api-Key': apiKey
+                    }
+                });
 
                 if (!response.ok) {
                     const error = await response.text();
@@ -557,7 +561,7 @@
             setStatus('connecting');
             debugLog(`Connecting to observe session ${selectedSessionId}...`, 'info');
 
-            const url = `${wsUrl}/ws/feed/observe?api_key=${encodeURIComponent(apiKey)}&session_id=${encodeURIComponent(selectedSessionId)}`;
+            const url = `${wsUrl}/ws/feed/observe?session_id=${encodeURIComponent(selectedSessionId)}`;
 
             try {
                 ws = new WebSocket(url);
@@ -571,6 +575,11 @@
                 debugLog('Observer WebSocket connected', 'success');
                 setStatus('connected', 'OBSERVING');
                 document.getElementById('disconnectBtn').disabled = false;
+
+                ws.send(JSON.stringify({
+                    type: 'auth',
+                    api_key: apiKey
+                }));
 
                 // Initialize audio context on user interaction (needed for browsers)
                 initAudioContext();
@@ -868,10 +877,13 @@
 
             try {
                 const response = await fetch(
-                    `${apiUrl}/session/instruction/admin?api_key=${encodeURIComponent(apiKey)}`,
+                    `${apiUrl}/session/instruction/admin`,
                     {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Observer-Api-Key': apiKey
+                        },
                         body: JSON.stringify({
                             instruction: instructionText,
                             session_id: selectedSessionId
@@ -947,7 +959,7 @@
 
         // Initial setup
         debugLog('Observer page loaded. Click "Refresh Sessions" to see active sessions.', 'info');
-        debugLog('Default API key: dev-observer-key-12345', 'info');
+        debugLog('Set OBSERVER_API_KEY in your local environment and paste it here before connecting.', 'info');
         debugLog('Channel 2: Use the instruction panel to send commands to the tutor.', 'info');
     </script>
 </body>

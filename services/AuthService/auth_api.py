@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, JSONResponse
 from pydantic import BaseModel
 from typing import Optional, List
+from urllib.parse import urlencode
 
 # Add project root to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
@@ -56,12 +57,52 @@ app.add_middleware(
 # Get base URL from environment
 BASE_URL = os.getenv("AUTH_SERVICE_URL", "http://localhost:8003")
 REDIRECT_URI = f"{BASE_URL}/auth/callback"
+OAUTH_STATE_COOKIE = "oauth_state"
 
 # Initialize OAuth handler
 oauth_handler = GoogleOAuthHandler(REDIRECT_URI)
 
 # Initialize UserManager
 user_manager = UserManager()
+
+
+def oauth_cookie_secure() -> bool:
+    return BASE_URL.startswith("https://")
+
+
+def oauth_cookie_samesite() -> str:
+    return "none" if oauth_cookie_secure() else "lax"
+
+
+def set_oauth_state_cookie(response: JSONResponse, state: str) -> None:
+    response.set_cookie(
+        key=OAUTH_STATE_COOKIE,
+        value=state,
+        httponly=True,
+        secure=oauth_cookie_secure(),
+        samesite=oauth_cookie_samesite(),
+        max_age=600,
+        path="/auth",
+    )
+
+
+def clear_oauth_state_cookie(response: RedirectResponse) -> None:
+    response.delete_cookie(
+        key=OAUTH_STATE_COOKIE,
+        path="/auth",
+        httponly=True,
+        secure=oauth_cookie_secure(),
+        samesite=oauth_cookie_samesite(),
+    )
+
+
+def build_frontend_redirect(fragment_params: dict[str, str]) -> RedirectResponse:
+    frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
+    response = RedirectResponse(
+        url=f"{frontend_url}/app/login#{urlencode(fragment_params)}"
+    )
+    clear_oauth_state_cookie(response)
+    return response
 
 
 class CompleteSetupRequest(BaseModel):
@@ -81,31 +122,43 @@ async def google_login():
     """Initiate Google OAuth flow"""
     try:
         authorization_url, state = oauth_handler.get_authorization_url()
-        return {
+        response = JSONResponse({
             "authorization_url": authorization_url,
             "state": state
-        }
+        })
+        set_oauth_state_cookie(response, state)
+        return response
     except Exception as e:
         logger.error(f"Error initiating Google OAuth: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to initiate OAuth: {str(e)}")
 
 
 @app.get("/auth/callback")
-async def google_callback(code: Optional[str] = Query(None), state: Optional[str] = Query(None), error: Optional[str] = Query(None)):
+async def google_callback(request: Request, code: Optional[str] = Query(None), state: Optional[str] = Query(None), error: Optional[str] = Query(None)):
     """Handle Google OAuth callback"""
     if error:
         logger.error(f"OAuth error: {error}")
-        return JSONResponse(
+        resp = JSONResponse(
             status_code=400,
             content={"error": "OAuth authentication failed", "details": error}
         )
-    
+        clear_oauth_state_cookie(resp)
+        return resp
+
     if not code:
-        raise HTTPException(status_code=400, detail="Missing authorization code")
+        resp = JSONResponse(status_code=400, content={"error": "Missing authorization code"})
+        clear_oauth_state_cookie(resp)
+        return resp
+
+    expected_state = request.cookies.get(OAUTH_STATE_COOKIE)
+    if not state:
+        raise HTTPException(status_code=400, detail="Missing state parameter")
+    if not expected_state or state != expected_state:
+        raise HTTPException(status_code=400, detail="Invalid OAuth state")
     
     try:
         # Get user info from Google
-        google_user = await oauth_handler.get_user_info(code, state or "")
+        google_user = await oauth_handler.get_user_info(code, state, str(request.url))
         
         if not google_user:
             raise HTTPException(status_code=400, detail="Failed to get user info from Google")
@@ -128,20 +181,17 @@ async def google_callback(code: Optional[str] = Query(None), state: Optional[str
                 "google_id": google_user["id"]
             })
             
-            # Redirect to frontend with token
-            frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
-            return RedirectResponse(
-                url=f"{frontend_url}/app/login?token={jwt_token}&is_new_user=false"
+            return build_frontend_redirect(
+                {
+                    "token": jwt_token,
+                    "is_new_user": "false",
+                }
             )
         else:
             # New user - need to complete setup
             setup_token = create_setup_token(google_user)
             
-            # Redirect to frontend setup page
-            frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
-            return RedirectResponse(
-                url=f"{frontend_url}/app/login?setup_token={setup_token}"
-            )
+            return build_frontend_redirect({"setup_token": setup_token})
             
     except Exception as e:
         logger.error(f"Error in OAuth callback: {e}")
@@ -248,32 +298,6 @@ async def logout():
     return {"message": "Logged out successfully"}
 
 
-@app.get("/auth/gemini-key")
-async def get_gemini_key(request: Request):
-    """Get Gemini API key for authenticated user (DEPRECATED - use /auth/gemini-token instead)"""
-    try:
-        # Verify JWT token
-        user_id = get_current_user(request)
-
-        # Get API key and model from environment variables
-        api_key = os.getenv("GEMINI_API_KEY")
-        model = os.getenv("GEMINI_MODEL", "models/gemini-2.5-flash-native-audio-preview-09-2025")
-
-        if not api_key:
-            logger.error("GEMINI_API_KEY not configured in environment")
-            raise HTTPException(status_code=500, detail="Gemini API key not configured")
-
-        return {
-            "api_key": api_key,
-            "model": model
-        }
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error getting Gemini API key: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to get API key: {str(e)}")
-
-
 @app.get("/auth/gemini-token")
 async def get_gemini_token(request: Request):
     """Get ephemeral token for Gemini Live API (secure - single use)"""
@@ -309,9 +333,7 @@ async def get_gemini_token(request: Request):
             }
         )
 
-        logger.info(f"Created ephemeral token for user {user_id}")
-        logger.info(f"Token name: {token.name}")
-        logger.info(f"Token object: {token}")
+        logger.info(f"Created ephemeral Gemini token for user {user_id}")
 
         return {
             "token": token.name,
@@ -328,4 +350,3 @@ if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8003))
     uvicorn.run(app, host="0.0.0.0", port=port)
-

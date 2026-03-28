@@ -3,6 +3,7 @@ import sys
 import os
 import json
 import logging
+import random
 from typing import List, Dict, Optional
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -101,6 +102,196 @@ def health_check():
     }
 
 
+DEFAULT_ANSWER_AREA = {
+    "calculator": False,
+    "chi2Table": False,
+    "periodicTable": False,
+    "tTable": False,
+    "zTable": False,
+}
+
+
+def _build_dash_metadata(question_id: str, dash_q: Question, slug: str) -> Dict:
+    return {
+        'dash_question_id': question_id,
+        'skill_ids': dash_q.skill_ids,
+        'difficulty': dash_q.difficulty,
+        'expected_time_seconds': dash_q.expected_time_seconds,
+        'slug': slug,
+        'skill_names': [dash_system.skills[sid].name for sid in dash_q.skill_ids if sid in dash_system.skills],
+    }
+
+
+def _normalize_choice_text(value: object) -> str:
+    return str(value).strip()
+
+
+def _fallback_distractor_candidates(correct_answer: str) -> List[str]:
+    stripped = correct_answer.strip()
+    if not stripped:
+        return ["Option A", "Option B", "Option C"]
+
+    if stripped.endswith("%"):
+        raw_number = stripped[:-1]
+        try:
+            value = float(raw_number)
+            return [f"{value + 5:g}%", f"{max(value - 5, 0):g}%", f"{value + 10:g}%"]
+        except ValueError:
+            pass
+
+    try:
+        numeric_value = float(stripped)
+        if numeric_value.is_integer():
+            base = int(numeric_value)
+            return [str(base + 1), str(base - 1), str(base + 2)]
+        return [f"{numeric_value + 0.1:g}", f"{numeric_value - 0.1:g}", f"{numeric_value + 0.2:g}"]
+    except ValueError:
+        pass
+
+    if "/" in stripped:
+        numerator, denominator, *rest = stripped.split("/")
+        if not rest:
+            try:
+                num = int(numerator.strip())
+                den = int(denominator.strip())
+                return [f"{num + 1}/{den}", f"{num}/{den + 1}", f"{max(num - 1, 1)}/{den}"]
+            except ValueError:
+                pass
+
+    if ":" in stripped:
+        left, right, *rest = stripped.split(":")
+        if not rest:
+            try:
+                left_num = int(left.strip())
+                right_num = int(right.strip())
+                return [f"{left_num + 1}:{right_num}", f"{left_num}:{right_num + 1}", f"{max(left_num - 1, 1)}:{right_num}"]
+            except ValueError:
+                pass
+
+    return [f"{stripped}?", f"not {stripped}", f"{stripped} (alt)"]
+
+
+def _build_legacy_radio_choices(question_id: str, correct_answer: str, candidate_answers: List[str]) -> List[Dict]:
+    correct_choice = _normalize_choice_text(correct_answer)
+    seen = {correct_choice.lower()}
+    distractors: List[str] = []
+
+    for candidate in candidate_answers + _fallback_distractor_candidates(correct_choice):
+        normalized = _normalize_choice_text(candidate)
+        if not normalized or normalized.lower() in seen:
+            continue
+        distractors.append(normalized)
+        seen.add(normalized.lower())
+        if len(distractors) == 3:
+            break
+
+    while len(distractors) < 3:
+        filler = f"{correct_choice} ({len(distractors) + 1})"
+        if filler.lower() not in seen:
+            distractors.append(filler)
+            seen.add(filler.lower())
+
+    choice_values = [correct_choice, *distractors[:3]]
+    rng = random.Random(question_id)
+    rng.shuffle(choice_values)
+
+    choices = []
+    for idx, choice_value in enumerate(choice_values):
+        is_correct = choice_value == correct_choice
+        choices.append(
+            {
+                "id": f"{question_id}-choice-{idx}",
+                "content": choice_value,
+                "correct": is_correct,
+                "isNoneOfTheAbove": False,
+                "rationale": "This is the correct answer." if is_correct else "This is not the correct answer.",
+            }
+        )
+
+    return choices
+
+
+def _build_legacy_perseus_item(dash_q: Question, question_doc: Dict, candidate_answers: List[str]) -> Dict:
+    question_id = question_doc["question_id"]
+    content = question_doc.get("content", "").strip()
+    correct_answer = _normalize_choice_text(question_doc.get("correct_answer", ""))
+
+    if not content or not correct_answer:
+        raise ValueError(f"Legacy question {question_id} is missing content or correct_answer")
+
+    return {
+        "question": {
+            "content": f"{content}\n\n[[☃ radio 1]]\n",
+            "images": {},
+            "widgets": {
+                "radio 1": {
+                    "graded": True,
+                    "version": {"major": 1, "minor": 0},
+                    "static": False,
+                    "type": "radio",
+                    "alignment": "default",
+                    "options": {
+                        "choices": _build_legacy_radio_choices(question_id, correct_answer, candidate_answers),
+                        "countChoices": False,
+                        "hasNoneOfTheAbove": False,
+                        "multipleSelect": False,
+                        "randomize": False,
+                        "deselectEnabled": False,
+                    },
+                }
+            },
+        },
+        "answerArea": dict(DEFAULT_ANSWER_AREA),
+        "hints": [],
+        "itemDataVersion": {"major": 0, "minor": 0},
+        "dash_metadata": _build_dash_metadata(question_id, dash_q, question_id),
+    }
+
+
+def _load_legacy_perseus_items(dash_questions: List[Question]) -> List[Dict]:
+    from managers.mongodb_manager import mongo_db
+
+    dash_lookup = {q.question_id: q for q in dash_questions}
+    question_ids = list(dash_lookup.keys())
+    legacy_docs = list(mongo_db.dash_questions.find({"question_id": {"$in": question_ids}}))
+    legacy_lookup = {doc.get("question_id"): doc for doc in legacy_docs}
+
+    skill_ids = sorted({doc.get("skill_id") for doc in legacy_docs if doc.get("skill_id")})
+    skill_answer_docs = list(
+        mongo_db.dash_questions.find(
+            {"skill_id": {"$in": skill_ids}},
+            {"question_id": 1, "skill_id": 1, "correct_answer": 1},
+        )
+    )
+
+    answers_by_skill: Dict[str, List[str]] = {}
+    global_answers: List[str] = []
+    for answer_doc in skill_answer_docs:
+        answer_text = _normalize_choice_text(answer_doc.get("correct_answer", ""))
+        skill_id = answer_doc.get("skill_id")
+        if not answer_text or not skill_id:
+            continue
+        answers_by_skill.setdefault(skill_id, []).append(answer_text)
+        global_answers.append(answer_text)
+
+    perseus_items = []
+    for question_id, dash_q in dash_lookup.items():
+        question_doc = legacy_lookup.get(question_id)
+        if not question_doc:
+            logger.warning(f"No legacy dash question found for question_id {question_id}")
+            continue
+
+        skill_id = question_doc.get("skill_id")
+        candidate_answers = answers_by_skill.get(skill_id, []) + global_answers
+
+        try:
+            perseus_items.append(_build_legacy_perseus_item(dash_q, question_doc, candidate_answers))
+        except ValueError as exc:
+            logger.warning(str(exc))
+
+    return perseus_items
+
+
 def load_perseus_items_for_dash_questions_from_mongodb(
     dash_questions: List[Question]
 ) -> List[Dict]:
@@ -132,13 +323,9 @@ def load_perseus_items_for_dash_questions_from_mongodb(
     if dash_system is None:
         logger.error("DASH system not initialized when loading Perseus items")
         return perseus_items
-    
-    for dash_q in dash_questions:
-        # question_id includes fabricated prefix (e.g., "41.1.2.1.9_x338f5e1fbc6cafdf")
-        # This matches exactly what's stored in scraped_questions.questionId
-        question_id = dash_q.question_id
-        skill_id = dash_q.skill_ids[0] if dash_q.skill_ids else None
-        
+
+    if getattr(dash_system, "question_data_mode", "modern") == "legacy":
+        return _load_legacy_perseus_items(dash_questions)
 
     for question_id, dash_q in dash_lookup.items():
         scraped_doc = scraped_lookup.get(question_id)
@@ -184,15 +371,7 @@ def load_perseus_items_for_dash_questions_from_mongodb(
                 "answerArea": answer_area,
                 "hints": hints,
                 "itemDataVersion": item_data_version,
-                "dash_metadata": {
-                    'dash_question_id': question_id,
-                    'skill_ids': dash_q.skill_ids,
-                    'difficulty': dash_q.difficulty,
-                    'expected_time_seconds': dash_q.expected_time_seconds,
-                    'slug': slug,
-                    'skill_names': [dash_system.skills[sid].name for sid in dash_q.skill_ids
-                                   if sid in dash_system.skills]
-                }
+                "dash_metadata": _build_dash_metadata(question_id, dash_q, slug),
             }
 
             perseus_items.append(perseus_data)

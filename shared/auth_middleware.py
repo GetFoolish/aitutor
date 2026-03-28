@@ -1,10 +1,35 @@
 """
 Shared JWT authentication middleware for FastAPI services
 """
+from typing import Dict, Optional
+
 import jwt
-from fastapi import Request, HTTPException
-from typing import Optional, Dict
-from shared.jwt_config import JWT_SECRET, JWT_ALGORITHM
+from fastapi import HTTPException, Request
+
+from shared.jwt_config import (
+    JWT_ALGORITHM,
+    JWT_AUDIENCE,
+    JWT_AUTH_TOKEN_USE,
+    JWT_ISSUER,
+    JWT_SECRET,
+)
+
+
+def _decode_auth_token(token: str) -> Dict:
+    """Decode backend auth tokens using the shared auth contract."""
+    payload = jwt.decode(
+        token,
+        JWT_SECRET,
+        algorithms=[JWT_ALGORITHM],
+        audience=JWT_AUDIENCE,
+        issuer=JWT_ISSUER,
+        options={"require": ["sub", "aud", "iss", "iat", "exp", "token_use"]},
+    )
+
+    if payload.get("token_use") != JWT_AUTH_TOKEN_USE:
+        raise jwt.InvalidTokenError("unexpected token_use")
+
+    return payload
 
 
 def get_current_user(request: Request) -> str:
@@ -31,11 +56,7 @@ def get_current_user(request: Request) -> str:
     token = auth_header.split(" ")[1]
     
     try:
-        payload = jwt.decode(
-            token, 
-            JWT_SECRET, 
-            algorithms=[JWT_ALGORITHM]
-        )
+        payload = _decode_auth_token(token)
         user_id = payload.get("sub")
         
         if not user_id:
@@ -60,11 +81,7 @@ def get_user_from_token(token: str) -> Optional[Dict]:
         Dictionary with user info or None if invalid
     """
     try:
-        payload = jwt.decode(
-            token, 
-            JWT_SECRET, 
-            algorithms=[JWT_ALGORITHM]
-        )
+        payload = _decode_auth_token(token)
         return {
             "user_id": payload.get("sub"),
             "email": payload.get("email", ""),
@@ -73,4 +90,3 @@ def get_user_from_token(token: str) -> Optional[Dict]:
         }
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
         return None
-
