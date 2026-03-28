@@ -27,8 +27,8 @@ def main() -> int:
     db_name = os.getenv("MONGODB_DB_NAME", "ai_tutor")
 
     if not mongo_uri:
-        print("MONGODB_URI is required to verify seeded Mongo data.")
-        return 1
+        print("MONGODB_URI not set — skipping seed verification (Cloud Run services receive the secret at runtime).")
+        return 0
 
     try:
         client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
