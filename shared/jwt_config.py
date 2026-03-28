@@ -2,6 +2,7 @@
 
 import os
 import re
+import secrets
 import sys
 
 from dotenv import load_dotenv
@@ -103,4 +104,10 @@ is_valid, error_msg = validate_jwt_secret(_jwt_secret_raw)
 if not is_valid:
     handle_invalid_jwt_secret(error_msg)
 
-JWT_SECRET = _jwt_secret_raw
+# In dev/test with a weak/missing secret, use an ephemeral strong secret rather than
+# signing tokens with an empty string (which PyJWT accepts for both sign and verify,
+# making every token trivially forgeable).
+if is_valid:
+    JWT_SECRET = _jwt_secret_raw
+else:
+    JWT_SECRET = secrets.token_urlsafe(32)

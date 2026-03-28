@@ -32,11 +32,10 @@ const GoogleSignInContent: React.FC<GoogleSignInContentProps> = ({ onAuthSuccess
 
   // Check if we're returning from OAuth callback
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
     const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-    const token = hashParams.get('token') || urlParams.get('token');
-    const isNewUser = (hashParams.get('is_new_user') || urlParams.get('is_new_user')) === 'true';
-    const setupTokenParam = hashParams.get('setup_token') || urlParams.get('setup_token');
+    const token = hashParams.get('token');
+    const isNewUser = hashParams.get('is_new_user') === 'true';
+    const setupTokenParam = hashParams.get('setup_token');
 
     if (token) {
       // Existing user - login directly

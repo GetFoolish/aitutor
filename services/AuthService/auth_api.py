@@ -138,13 +138,17 @@ async def google_callback(request: Request, code: Optional[str] = Query(None), s
     """Handle Google OAuth callback"""
     if error:
         logger.error(f"OAuth error: {error}")
-        return JSONResponse(
+        resp = JSONResponse(
             status_code=400,
             content={"error": "OAuth authentication failed", "details": error}
         )
-    
+        clear_oauth_state_cookie(resp)
+        return resp
+
     if not code:
-        raise HTTPException(status_code=400, detail="Missing authorization code")
+        resp = JSONResponse(status_code=400, content={"error": "Missing authorization code"})
+        clear_oauth_state_cookie(resp)
+        return resp
 
     expected_state = request.cookies.get(OAUTH_STATE_COOKIE)
     if not state:
