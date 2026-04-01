@@ -1,3 +1,9 @@
+/* Visible focus indicators for keyboard navigation */
+*:focus-visible {
+  outline: 3px solid #000;
+  outline-offset: 2px;
+}
+
 :root {
   // Web 1.0 Neo-Brutalism Color Palette
   --neo-black: #000000;
@@ -441,4 +447,25 @@ body {
 // left gap when content is scaled down. Force top-left origin via :has().
 div:has(> #question-content-container) {
   transform-origin: top left !important;
+}
+
+// ─── OpenMAIC: Immersive Mode ─────────────────────────────────────────────────
+// When [data-immersive="true"] is set on <html>, hide distracting chrome
+// and let the tutor take the full viewport.
+[data-immersive="true"] {
+  .header,
+  .side-panel,
+  .grading-sidebar {
+    display: none !important;
+  }
+
+  // Floating control panel auto-hides after idle — controlled by JS;
+  // here we just ensure it transitions smoothly
+  .floating-control-panel {
+    transition: opacity 0.4s ease;
+    &.immersive-hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
 }
