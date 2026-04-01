@@ -121,43 +121,26 @@ class DASHSystem:
             raise RuntimeError("MongoDB is required. Please configure MONGODB_URI in .env file.")
     
     def _load_from_mongodb(self):
-        """Load skills and questions from MongoDB.
+        """Load skills from MongoDB for DASH scheduling.
 
-        With Gemini-first architecture: skills are required (for DASH scheduling),
-        but scraped_questions/dash_questions are optional — AI generation fills the gap.
+        AI-first architecture: question_index and skill_question_index remain
+        EMPTY — all question content is served by Gemini via AIQuestionProvider.
+        Never loads from dash_questions or scraped_questions (legacy Khan Academy data).
         """
         try:
+            # AI-first: only skills are needed for DASH scheduling
             modern_skill_count = self.mongo.generated_skills.count_documents({})
-            modern_question_count = self.mongo.scraped_questions.count_documents({})
             legacy_skill_count = self.mongo.skills.count_documents({})
-            legacy_question_count = self.mongo.dash_questions.count_documents({})
 
-            if modern_skill_count > 0 and modern_question_count > 0:
-                self.question_data_mode = "modern"
-                log_print("[MONGODB] Using generated_skills + scraped_questions runtime data")
-                self._load_skills_from_collection(list(self.mongo.generated_skills.find()))
-                self._load_modern_question_index()
-                return
-
-            if legacy_skill_count > 0 and legacy_question_count > 0:
-                self.question_data_mode = "legacy"
-                log_print("[MONGODB] Falling back to legacy skills + dash_questions runtime data")
-                if modern_skill_count > 0 and modern_question_count == 0:
-                    log_print("[MONGODB] generated_skills is populated but scraped_questions is empty; using legacy compatibility mode")
-                self._load_skills_from_collection(list(self.mongo.skills.find()))
-                self._load_legacy_question_index()
-                return
-
-            # Skills-only mode: load curriculum for scheduling, use AI for all question content
             if modern_skill_count > 0:
                 self.question_data_mode = "ai_only"
-                log_print("[MONGODB] Skills-only mode: using generated_skills for DASH scheduling, Gemini AI for all questions")
+                log_print(f"[MONGODB] AI-only mode: loading {modern_skill_count} skills from generated_skills. Questions served by Gemini.")
                 self._load_skills_from_collection(list(self.mongo.generated_skills.find()))
                 return
 
             if legacy_skill_count > 0:
                 self.question_data_mode = "ai_only"
-                log_print("[MONGODB] Skills-only mode: using legacy skills for DASH scheduling, Gemini AI for all questions")
+                log_print(f"[MONGODB] AI-only mode: loading {legacy_skill_count} skills from legacy skills collection. Questions served by Gemini.")
                 self._load_skills_from_collection(list(self.mongo.skills.find()))
                 return
 

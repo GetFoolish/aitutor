@@ -221,6 +221,7 @@ class AIQuestionProvider:
         lesson_name: Optional[str] = None,
         fast_mode: bool = False,
         subject: str = "",
+        student_context: str = "",
     ) -> Optional[Dict[str, Any]]:
         """
         Get a single AI-generated Perseus question for the given skill + difficulty.
@@ -258,11 +259,12 @@ class AIQuestionProvider:
                 return formatted
             # Validation failed — fall through to next tier
 
-        # Tier 3: generate just-in-time
+        # Tier 3: generate just-in-time (with frozen student context for personalization)
         result = self._generate_jit(
             skill_id, skill_name, effective_lesson, target_difficulty, grade_level, age, user_id,
             fast_mode=fast_mode,
             subject=subject,
+            student_context=student_context,
         )
         if result:
             logger.info(f"[AI_PROVIDER] JIT GENERATED for skill={skill_name} diff={target_difficulty:.2f}")
@@ -401,6 +403,7 @@ class AIQuestionProvider:
         user_id: str,
         fast_mode: bool = False,
         subject: str = "",
+        student_context: str = "",
     ) -> Optional[Dict[str, Any]]:
         """Generate a question on-demand via Gemini."""
         if fast_mode:
@@ -416,6 +419,14 @@ class AIQuestionProvider:
         memory = self.content_engine._memory_context(user_id)
         khan_example = self._get_khan_example(skill_id, fmt)
 
+        # Load frozen student context if not pre-supplied by caller
+        if not student_context:
+            try:
+                from services.DashSystem.student_memory import get_student_context_for_gemini
+                student_context = get_student_context_for_gemini(user_id)
+            except Exception:
+                student_context = ""
+
         perseus_json = self.content_engine.generate_for_skill(
             skill_name=skill_name,
             lesson_name=lesson_name,
@@ -426,6 +437,7 @@ class AIQuestionProvider:
             khan_example=khan_example,
             fast_mode=fast_mode,
             subject=subject,
+            student_context=student_context,
         )
 
         if not perseus_json:

@@ -2594,6 +2594,21 @@ def start_adaptive_assessment(subject: str, request: Request):
         current_time = time.time()
         grade_name = user_profile.current_grade.replace("GRADE_", "Grade ").replace("K", "Kindergarten")
 
+        # ── Freeze student memory snapshot at session start (never reload mid-session) ──
+        _frozen_student_context = ""
+        try:
+            from services.DashSystem import student_memory as sm
+            sm.get_student_memory().ensure_student(
+                user_id,
+                age=jwt_age if jwt_age else None,
+                grade=user_profile.current_grade,
+            )
+            _frozen_student_context = sm.get_student_context_for_gemini(user_id)
+            if _frozen_student_context:
+                logger.info(f"[STUDENT_MEMORY] Frozen snapshot for {user_id}: {_frozen_student_context[:80]}...")
+        except Exception as _mem_init_err:
+            logger.debug(f"[STUDENT_MEMORY] snapshot init skipped: {_mem_init_err}")
+
         def _jit_first_question(
             exclude_question_ids: Optional[List[str]] = None,
             target_difficulty: float = 0.5,
@@ -2616,6 +2631,7 @@ def start_adaptive_assessment(subject: str, request: Request):
                     user_id=user_id,
                     fast_mode=True,
                     subject=subject,
+                    student_context=_frozen_student_context,
                 )
             except Exception as e:
                 logger.warning(f"[ADAPTIVE_ASSESSMENT] JIT generation failed: {e}")
@@ -3101,6 +3117,23 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
         import traceback
         logger.warning(traceback.format_exc())
 
+    # ── Record attempt in student memory (for personalized future questions) ──
+    try:
+        from services.DashSystem import student_memory as sm
+        skill_name_for_mem = ""
+        if resolved_skill_id and dash_system and resolved_skill_id in dash_system.skills:
+            skill_name_for_mem = dash_system.skills[resolved_skill_id].name
+        sm.record_question_attempt(
+            student_id=user_id,
+            question_id=payload.question_id,
+            subject=(session.get("subject") or "").title(),
+            skill=resolved_skill_id or payload.skill_id or "",
+            skill_name=skill_name_for_mem,
+            was_correct=payload.is_correct,
+        )
+    except Exception as _mem_err:
+        logger.debug(f"[STUDENT_MEMORY] record_question_attempt skipped: {_mem_err}")
+
     # Check if assessment is complete (> not >= because questions_asked already
     # includes the current answer; >= would skip the last question)
     if questions_asked > session.get("max_questions", 10):
@@ -3134,6 +3167,34 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
         # Clean up prefetch cache for completed assessment
         with _prefetch_lock:
             _prefetch_cache.pop(payload.assessment_id, None)
+
+        # ── Update student memory after assessment completes ──
+        try:
+            from services.DashSystem import student_memory as sm
+            subj = (session.get("subject") or "").title()
+            skill_results = [
+                {
+                    "skill": a.get("skill_id", ""),
+                    "skill_name": (
+                        dash_system.skills[a["skill_id"]].name
+                        if dash_system and a.get("skill_id") and a["skill_id"] in dash_system.skills
+                        else a.get("skill_id", "")
+                    ),
+                    "is_correct": a["is_correct"],
+                }
+                for a in all_answers if isinstance(a, dict)
+            ]
+            sm.record_session(
+                session_id=payload.assessment_id,
+                student_id=user_id,
+                subject=subj,
+                questions_correct=correct_count,
+                questions_total=len(all_answers),
+            )
+            sm.update_memory_after_assessment(user_id, subj, skill_results)
+            logger.info(f"[STUDENT_MEMORY] Updated memory for {user_id} after {subj} assessment")
+        except Exception as _mem_err:
+            logger.debug(f"[STUDENT_MEMORY] post-assessment update skipped: {_mem_err}")
 
         return {
             "completed": True,

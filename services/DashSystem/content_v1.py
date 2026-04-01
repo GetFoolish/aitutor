@@ -1584,6 +1584,7 @@ class ContentV1Engine:
         khan_example: str = "",
         fast_mode: bool = False,
         subject: str = "",
+        student_context: str = "",
     ) -> Optional[Dict[str, Any]]:
         """
         Generate a question for a specific DASH skill using curriculum-aligned prompting.
@@ -1619,6 +1620,9 @@ class ContentV1Engine:
                     khan_example=khan_example,
                     subject=subject,
                 )
+                # Prepend frozen student context snapshot for personalization
+                if student_context:
+                    prompt = student_context + "\n\n" + prompt
                 # Inject verification feedback from previous failed attempt
                 if verification_feedback:
                     prompt += (
