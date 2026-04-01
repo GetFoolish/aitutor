@@ -1463,7 +1463,7 @@ class ContentV1Engine:
         """Generate an educational image via Gemini, save to disk, return URL path."""
         if not self.client:
             return None
-        image_model = os.getenv("GEMINI_IMAGE_MODEL", "gemini-3-pro-image-preview")
+        image_model = os.getenv("GEMINI_IMAGE_MODEL", "gemini-2.0-flash")
 
         from services.DashSystem.ai_question_prompts import build_image_prompt
         prompt = build_image_prompt(skill_name, lesson_name, age, question_text)

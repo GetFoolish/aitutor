@@ -23,18 +23,51 @@ from collections import Counter
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
+# Gemini client (lazy import to avoid hard dependency at module load)
+_gemini_client = None
+_gemini_lock = threading.Lock()
+
+
+def _get_gemini():
+    global _gemini_client
+    if _gemini_client is None:
+        with _gemini_lock:
+            if _gemini_client is None:
+                try:
+                    import google.generativeai as genai
+                    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+                    if api_key:
+                        genai.configure(api_key=api_key)
+                        _gemini_client = genai.GenerativeModel("gemini-2.0-flash")
+                except Exception as e:
+                    logger.warning(f"[STUDENT_MEMORY] Gemini init failed: {e}")
+    return _gemini_client
+
 logger = logging.getLogger(__name__)
 
 DEFAULT_DB_PATH = Path(os.path.expanduser("~/.hermes/aitutor_students.db"))
 
 SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS students (
-    student_id  TEXT PRIMARY KEY,
-    name        TEXT,
-    age         INTEGER,
-    grade       TEXT,
-    created_at  REAL NOT NULL,
-    last_seen   REAL NOT NULL
+    student_id          TEXT PRIMARY KEY,
+    name                TEXT,
+    age                 INTEGER,
+    grade               TEXT,
+    biography           TEXT,
+    biography_version   INTEGER DEFAULT 0,
+    biography_updated   REAL,
+    created_at          REAL NOT NULL,
+    last_seen           REAL NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS biography_history (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id      TEXT NOT NULL,
+    version         INTEGER NOT NULL,
+    biography       TEXT NOT NULL,
+    created_at      REAL NOT NULL,
+    session_count   INTEGER DEFAULT 0,
+    FOREIGN KEY (student_id) REFERENCES students(student_id)
 );
 
 CREATE TABLE IF NOT EXISTS memory (
@@ -319,13 +352,15 @@ class StudentMemoryDB:
         return " | ".join(parts) if parts else ""
 
     def get_student_context_for_gemini(self, student_id: str) -> str:
-        """Full prompt addition for Gemini question generation."""
+        """Full prompt addition for Gemini question generation.
+        Includes both compact snapshot AND living biography prose when available.
+        """
         snapshot = self.get_student_memory_snapshot(student_id)
         if not snapshot:
             return ""
 
         student = self._conn.execute(
-            "SELECT grade, age FROM students WHERE student_id = ?", (student_id,)
+            "SELECT grade, age, biography FROM students WHERE student_id = ?", (student_id,)
         ).fetchone()
         weak = self.get_weak_skills(student_id, min_attempts=2)
         mastered = self.get_mastered_skills(student_id)
@@ -354,7 +389,130 @@ class StudentMemoryDB:
         if mem.get("misconceptions"):
             lines.append(f"  Common mistake: {mem['misconceptions']}. Design a distractor that targets this.")
 
+        # Append living biography if available
+        biography = student["biography"] if student else None
+        if biography:
+            lines.append(f"\nLEARNER BIOGRAPHY:\n  {biography}")
+
         return "\n".join(lines) if len(lines) > 1 else ""
+
+    # ── Living Biography ──────────────────────────────────────────────────────
+
+    def get_biography(self, student_id: str) -> Optional[str]:
+        """Return current biography prose, or None if not yet generated."""
+        row = self._conn.execute(
+            "SELECT biography FROM students WHERE student_id = ?", (student_id,)
+        ).fetchone()
+        return row["biography"] if row else None
+
+    def _save_biography(self, student_id: str, biography: str):
+        """Persist new biography and append to history."""
+        now = time.time()
+        def _write(conn):
+            row = conn.execute(
+                "SELECT biography_version FROM students WHERE student_id = ?", (student_id,)
+            ).fetchone()
+            new_version = (row["biography_version"] or 0) + 1 if row else 1
+
+            conn.execute(
+                """UPDATE students
+                   SET biography=?, biography_version=?, biography_updated=?
+                   WHERE student_id=?""",
+                (biography, new_version, now, student_id),
+            )
+            # Count sessions for history record
+            session_count = conn.execute(
+                "SELECT COUNT(*) as cnt FROM sessions WHERE student_id=?", (student_id,)
+            ).fetchone()["cnt"]
+            conn.execute(
+                """INSERT INTO biography_history (student_id, version, biography, created_at, session_count)
+                   VALUES (?, ?, ?, ?, ?)""",
+                (student_id, new_version, biography, now, session_count),
+            )
+        self._execute_write(_write)
+
+    def update_biography_async(
+        self,
+        student_id: str,
+        subject: str,
+        questions_correct: int,
+        questions_total: int,
+        weak_skills: List[str],
+        strong_skills: List[str],
+    ):
+        """Spawn daemon thread to generate/update biography via Gemini (non-blocking)."""
+        threading.Thread(
+            target=self._update_biography_worker,
+            args=(student_id, subject, questions_correct, questions_total, weak_skills, strong_skills),
+            daemon=True,
+            name=f"bio-update-{student_id[:8]}",
+        ).start()
+
+    def _update_biography_worker(
+        self,
+        student_id: str,
+        subject: str,
+        questions_correct: int,
+        questions_total: int,
+        weak_skills: List[str],
+        strong_skills: List[str],
+    ):
+        """Background worker: call Gemini to write/update biography prose."""
+        try:
+            gemini = _get_gemini()
+            if not gemini:
+                logger.debug("[BIOGRAPHY] Gemini unavailable — skipping biography update")
+                return
+
+            current_bio = self.get_biography(student_id) or ""
+            student_row = self._conn.execute(
+                "SELECT grade, age FROM students WHERE student_id=?", (student_id,)
+            ).fetchone()
+
+            grade_str = ""
+            if student_row:
+                if student_row["grade"]:
+                    grade_str = student_row["grade"].replace("GRADE_", "Grade ").replace("_", " ").title()
+                elif student_row["age"]:
+                    grade_str = f"age {student_row['age']}"
+
+            weak_str = ", ".join(weak_skills[:4]) if weak_skills else "none noted"
+            strong_str = ", ".join(strong_skills[:4]) if strong_skills else "none noted"
+            score_str = f"{questions_correct}/{questions_total}"
+
+            if current_bio:
+                prompt = (
+                    f"You are updating a student's learning biography.\n"
+                    f"Current biography:\n{current_bio}\n\n"
+                    f"New session data — subject: {subject}, score: {score_str}, "
+                    f"skills they struggled with: {weak_str}, "
+                    f"skills they showed strength in: {strong_str}.\n"
+                    f"Update the biography to reflect any new learning patterns, breakthroughs, or struggles. "
+                    f"Preserve what was already known unless contradicted. "
+                    f"Keep it to 200 words max. Use flowing prose, not bullet points."
+                )
+            else:
+                prompt = (
+                    f"Write a brief learning biography for a student{' in ' + grade_str if grade_str else ''}.\n"
+                    f"First session data — subject: {subject}, score: {score_str}, "
+                    f"skills they struggled with: {weak_str}, "
+                    f"skills they showed strength in: {strong_str}.\n"
+                    f"Describe their learning patterns, areas of strength and difficulty in 150-200 words. "
+                    f"Use warm, encouraging prose. Do not use bullet points. "
+                    f"Write from a tutor's perspective describing the student."
+                )
+
+            response = gemini.generate_content(prompt)
+            new_bio = response.text.strip() if response and response.text else ""
+
+            if new_bio and len(new_bio) > 50:
+                self._save_biography(student_id, new_bio)
+                logger.info(f"[BIOGRAPHY] Updated biography for {student_id[:12]} ({len(new_bio)} chars)")
+            else:
+                logger.warning(f"[BIOGRAPHY] Gemini returned empty/short biography for {student_id[:12]}")
+
+        except Exception as e:
+            logger.warning(f"[BIOGRAPHY] Biography update failed for {student_id[:12]}: {e}")
 
     # ── Post-assessment memory update ─────────────────────────────────────────
 
@@ -364,13 +522,14 @@ class StudentMemoryDB:
         subject: str,
         skill_results: List[Dict],  # [{"skill": ..., "skill_name": ..., "is_correct": bool}]
     ):
-        """Analyze patterns and update persistent memory keys."""
+        """Analyze patterns, update persistent memory keys, and trigger biography update."""
         if not skill_results:
             return
 
-        wrong_skills = [r["skill_name"] or r["skill"] for r in skill_results if not r["is_correct"]]
+        wrong_skills = [r.get("skill_name") or r.get("skill", "") for r in skill_results if not r.get("is_correct")]
+        right_skills = [r.get("skill_name") or r.get("skill", "") for r in skill_results if r.get("is_correct")]
         skill_counts = Counter(wrong_skills)
-        repeated_struggles = [s for s, c in skill_counts.items() if c >= 1]
+        repeated_struggles = [s for s, c in skill_counts.items() if c >= 1 and s]
 
         # Update struggles_with
         if repeated_struggles:
@@ -380,9 +539,21 @@ class StudentMemoryDB:
             self.set_memory(student_id, "struggles_with", ", ".join(combined))
 
         # Update last_subject_score
-        correct = sum(1 for r in skill_results if r["is_correct"])
+        correct = sum(1 for r in skill_results if r.get("is_correct"))
         total = len(skill_results)
         self.set_memory(student_id, f"last_{subject.lower()}_score", f"{correct}/{total}")
+
+        # Trigger async biography update
+        weak = self.get_weak_skills(student_id, min_attempts=1)
+        strong = self.get_mastered_skills(student_id, min_attempts=2, min_accuracy=0.8)
+        self.update_biography_async(
+            student_id=student_id,
+            subject=subject,
+            questions_correct=correct,
+            questions_total=total,
+            weak_skills=weak[:5],
+            strong_skills=strong[:5],
+        )
 
 
 # ── Module-level singleton ────────────────────────────────────────────────────

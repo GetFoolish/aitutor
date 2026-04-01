@@ -111,6 +111,60 @@ class CompleteSetupRequest(BaseModel):
     age: int
 
 
+class DevLoginRequest(BaseModel):
+    age: int
+    name: Optional[str] = "Test Student"
+
+
+@app.post("/auth/dev-login")
+async def dev_login(request: DevLoginRequest):
+    """Create a dev/test user instantly (no OAuth). Used by QA and local dev."""
+    import uuid
+    if request.age < 5 or request.age > 18:
+        raise HTTPException(status_code=400, detail="Age must be between 5 and 18")
+
+    name = (request.name or "Test Student").strip() or "Test Student"
+    # Stable dev user ID derived from name+age so repeated logins reuse the same user
+    stable_seed = f"dev_{name.lower().replace(' ', '_')}_{request.age}"
+    import hashlib
+    user_id = "dev_" + hashlib.md5(stable_seed.encode()).hexdigest()[:12]
+
+    try:
+        user_profile = user_manager.create_google_user(
+            google_id=user_id,
+            email=f"{user_id}@dev.teachr.live",
+            name=name,
+            age=request.age,
+            picture="",
+            user_type="student",
+        )
+    except Exception:
+        # User may already exist — look up by google_id
+        user_profile = user_manager.get_user_by_google_id(user_id)
+        if not user_profile:
+            raise HTTPException(status_code=500, detail="Failed to create dev user")
+
+    jwt_token = create_jwt_token({
+        "user_id": user_profile.user_id,
+        "email": f"{user_id}@dev.teachr.live",
+        "name": name,
+        "google_id": user_id,
+    })
+
+    return {
+        "token": jwt_token,
+        "user": {
+            "user_id": user_profile.user_id,
+            "email": f"{user_id}@dev.teachr.live",
+            "name": name,
+            "age": user_profile.age,
+            "current_grade": user_profile.current_grade,
+            "user_type": "student",
+        },
+        "is_new_user": False,
+    }
+
+
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
@@ -307,7 +361,7 @@ async def get_gemini_token(request: Request):
 
         # Get API key and model from environment variables
         api_key = os.getenv("GEMINI_API_KEY")
-        model = os.getenv("GEMINI_MODEL", "models/gemini-2.5-flash-native-audio-preview-09-2025")
+        model = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
 
         if not api_key:
             logger.error("GEMINI_API_KEY not configured in environment")

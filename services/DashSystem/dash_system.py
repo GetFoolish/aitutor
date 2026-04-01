@@ -98,6 +98,9 @@ class DASHSystem:
         self.ai_provider = None
         self.use_ai_questions = True
         self.content_service = None
+        # Current subject context (set by _switch_subject_if_needed in dash_api)
+        self.subject = "Math"
+        self.region = "US"
 
         # Initialize MongoDB manager if using MongoDB
         self.mongo = None

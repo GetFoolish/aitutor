@@ -220,6 +220,69 @@ def ensure_dash_system():
         raise HTTPException(status_code=503, detail="DASHSystem not initialized")
 
 
+# Subject-grade skill topic lookup used by JIT first-question.
+# Use SPECIFIC testable skills (not broad topic names) so Gemini generates real questions.
+_SUBJECT_GRADE_SKILLS: dict = {
+    "math": {
+        "GRADE_4": "multiplying two 2-digit numbers",
+        "GRADE_5": "adding and subtracting fractions with unlike denominators",
+        "GRADE_6": "finding equivalent ratios and unit rates",
+        "GRADE_7": "solving one-step linear equations with integers",
+        "GRADE_8": "applying the Pythagorean theorem to find missing side lengths",
+        "GRADE_9": "factoring quadratic expressions",
+        "GRADE_10": "finding sine, cosine, and tangent of right triangle angles",
+        "GRADE_11": "evaluating logarithms and applying logarithm rules",
+        "GRADE_12": "limits and derivatives of polynomial functions",
+        "K": "counting objects up to 20",
+        "GRADE_1": "adding single-digit numbers",
+        "GRADE_2": "place value of hundreds, tens, and ones",
+        "GRADE_3": "multiplication facts up to 10",
+        "default": "solving basic arithmetic word problems",
+    },
+    "science": {
+        "GRADE_4": "identifying the stages of the water cycle",
+        "GRADE_5": "classifying producers, consumers, and decomposers in a food chain",
+        "GRADE_6": "identifying organelles and their functions in a cell",
+        "GRADE_7": "balancing simple chemical equations",
+        "GRADE_8": "calculating speed, distance, and time using Newton's laws",
+        "GRADE_9": "drawing Bohr models of atoms and identifying atomic number",
+        "GRADE_10": "applying Mendelian genetics to predict phenotype ratios",
+        "GRADE_11": "applying conservation of energy to thermodynamic systems",
+        "default": "identifying variables in a controlled scientific experiment",
+    },
+    "english": {
+        "GRADE_4": "identifying the main idea and supporting details in a passage",
+        "GRADE_5": "using correct subject-verb agreement in complex sentences",
+        "GRADE_6": "identifying simile, metaphor, and personification in poetry",
+        "GRADE_7": "writing a clear thesis statement and supporting arguments",
+        "GRADE_8": "identifying textual evidence to support a claim",
+        "GRADE_9": "analyzing rhetorical appeals in persuasive texts",
+        "GRADE_10": "comparing themes across two literary works",
+        "GRADE_11": "analyzing syntax and tone in non-fiction prose",
+        "default": "identifying context clues to determine word meaning",
+    },
+    "history": {
+        "GRADE_4": "identifying causes of the American Revolution",
+        "GRADE_5": "explaining the purpose of the Bill of Rights",
+        "GRADE_6": "comparing achievements of ancient Egyptian and Mesopotamian civilizations",
+        "GRADE_7": "analyzing causes and effects of the Crusades",
+        "GRADE_8": "explaining how the Industrial Revolution changed working conditions",
+        "GRADE_9": "identifying the alliance system that triggered World War I",
+        "GRADE_10": "analyzing the impact of decolonization in Africa and Asia after WWII",
+        "GRADE_11": "evaluating the causes and consequences of the Cold War arms race",
+        "default": "identifying cause and effect relationships in historical events",
+    },
+}
+
+
+def _pick_real_skill_name(subject: str, grade: str) -> str:
+    """Return a concrete curriculum skill topic for the subject/grade (not a meta name)."""
+    subj_key = subject.lower()
+    grade_map = _SUBJECT_GRADE_SKILLS.get(subj_key, {})
+    skill = grade_map.get(grade) or grade_map.get("default") or f"{subject} fundamentals"
+    return skill
+
+
 def ensure_content_v1():
     """Ensure Content V1 engine is initialized before use."""
     if content_v1_engine is None:
@@ -2624,14 +2687,19 @@ def start_adaptive_assessment(subject: str, request: Request):
             """Best-effort subject-scoped JIT question for adaptive start."""
             if not dash_system.use_ai_questions or not dash_system.ai_provider:
                 return None, None
+
+            # Pick a real skill topic from the curriculum for this subject/grade
+            # to avoid meta-questions like "What happens when you use Math for Grade 5?"
+            real_skill_name = _pick_real_skill_name(subject, user_profile.current_grade)
+            skill_slug = real_skill_name.lower().replace(" ", "_").replace("/", "_")
             synthetic_id = (
-                f"assessment_{subject.lower().replace(' ', '_')}_"
-                f"{user_profile.current_grade.lower()}_{int(time.time()*1000) % 100000}"
+                f"assess_{subject.lower().replace(' ', '_')}_"
+                f"{skill_slug[:20]}_{int(time.time()*1000) % 100000}"
             )
             try:
                 ai_result = dash_system.ai_provider.get_question_for_skill(
                     skill_id=synthetic_id,
-                    skill_name=f"{subject} for {grade_name}",
+                    skill_name=real_skill_name,
                     target_difficulty=target_difficulty,
                     grade_level=user_profile.current_grade,
                     age=user_profile.age if user_profile.age else 10,

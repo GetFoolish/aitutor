@@ -114,6 +114,14 @@ class MongoDBManager:
         self._ensure_connected()
         return self._db['sessions']
     
+    def __getattr__(self, name: str):
+        """Fallback: return named MongoDB collection for any unrecognised attribute."""
+        # Guard against internal attributes to avoid infinite recursion
+        if name.startswith('_'):
+            raise AttributeError(name)
+        self._ensure_connected()
+        return self._db[name]
+
     def test_connection(self):
         """Test if MongoDB connection is working"""
         try:
