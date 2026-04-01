@@ -714,19 +714,20 @@ const AssessmentQuestion: React.FC<Props> = ({
       if (!radioWidgetKey || !widgets[radioWidgetKey]?.options?.choices) return false;
 
       const choices = widgets[radioWidgetKey].options.choices;
-      const rawInput = (userInput as Record<string, any>)[radioWidgetKey] || {};
-      const userSelection = rawInput.choicesSelected || [];
-      const selectedIds = rawInput.selectedChoiceIds || [];
 
       choiceElements.forEach((el, idx) => {
         if (idx >= choices.length) return;
         const choice = choices[idx];
-        const isUserSelected = userSelection[idx] === true ||
-          selectedIds.includes(String(idx)) ||
-          selectedIds.includes(`choice-${idx}`);
         const htmlEl = el as HTMLElement;
 
-        if (choice?.correct) {
+        // Use aria-pressed="true" (set by Perseus on selected choices) — more reliable than
+        // parsing userInput key names which can vary and cause false negatives.
+        const pressedEl = el.querySelector('button[aria-pressed="true"], [aria-pressed="true"]');
+        const isUserSelected = pressedEl !== null;
+
+        const isChoiceCorrect = Boolean(choice?.correct);
+
+        if (isChoiceCorrect) {
           el.setAttribute('data-feedback', 'correct');
           // Force green via inline !important — beats any CSS specificity battle
           htmlEl.style.setProperty('background-color', '#4ADE80', 'important');
@@ -739,7 +740,7 @@ const AssessmentQuestion: React.FC<Props> = ({
             label.textContent = '✓ Correct Answer';
             el.appendChild(label);
           }
-        } else if (isUserSelected && !choice?.correct) {
+        } else if (isUserSelected) {
           el.setAttribute('data-feedback', 'incorrect');
           htmlEl.style.setProperty('background-color', '#FF6B6B', 'important');
           htmlEl.style.setProperty('border-color', '#EF4444', 'important');

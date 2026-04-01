@@ -14,13 +14,13 @@
   gap: 4px;
   padding: 4px 10px;
   background: #FFFDF5;
-  border: 2px solid #000000;
+  border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 0;
   font-weight: 700;
   font-size: 14px;
   cursor: pointer;
   transition: all 0.1s ease;
-  box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 1);
+  box-shadow: none;
   font-family: 'Space Grotesk', sans-serif;
 
   &:hover {
@@ -353,8 +353,8 @@
 :global(.dark) {
   .streak-counter {
     background: #1a1a1a;
-    border-color: #fff;
-    box-shadow: 1px 1px 0 0 rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: none;
 
     .streak-count {
       color: #fff;
