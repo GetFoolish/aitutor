@@ -46,6 +46,7 @@ import "./package/perseus/testing/perseus-init.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { ThemeProvider } from "./components/theme/theme-provier";
+import { StreakProvider } from "./contexts/StreakContext";
 import ComingSoonGuard from "./components/coming-soon/ComingSoonGuard"; // Commented out to allow home page access
 
 const LoginPage = lazy(() => import("./components/auth/LoginPage"));
@@ -286,6 +287,7 @@ root.render(
       <BrowserRouter>
         <ThemeProvider defaultTheme="light" storageKey="ai-tutor-theme">
         <AuthProvider>
+          <StreakProvider>
           <ComingSoonGuard>
             <Suspense fallback={
               <div style={{
@@ -351,6 +353,7 @@ root.render(
               </Switch>
             </Suspense>
           </ComingSoonGuard>
+          </StreakProvider>
         </AuthProvider>
         </ThemeProvider>
       </BrowserRouter>
