@@ -93,6 +93,15 @@ class DASHSystem:
         self.questions: Dict[str, Question] = {}  # Deprecated: use _get_or_create_question() instead
         self.curriculum: Dict = {}
         self.user_manager = UserManager(users_folder="Users")
+        # AI question generation (Gemini) — primary path for all subjects
+        self.ai_provider = None
+        self.use_ai_questions = True
+        try:
+            from services.DashSystem.ai_question_provider import AIQuestionProvider
+            self.ai_provider = AIQuestionProvider()
+            log_print("[AI] AIQuestionProvider initialized — Gemini-first question generation enabled")
+        except Exception as e:
+            log_print(f"[AI] AIQuestionProvider unavailable: {e} — falling back to question index")
         
         # Initialize MongoDB manager if using MongoDB
         self.mongo = None
@@ -112,7 +121,11 @@ class DASHSystem:
             raise RuntimeError("MongoDB is required. Please configure MONGODB_URI in .env file.")
     
     def _load_from_mongodb(self):
-        """Load skills and questions from MongoDB"""
+        """Load skills and questions from MongoDB.
+
+        With Gemini-first architecture: skills are required (for DASH scheduling),
+        but scraped_questions/dash_questions are optional — AI generation fills the gap.
+        """
         try:
             modern_skill_count = self.mongo.generated_skills.count_documents({})
             modern_question_count = self.mongo.scraped_questions.count_documents({})
@@ -135,9 +148,22 @@ class DASHSystem:
                 self._load_legacy_question_index()
                 return
 
+            # Skills-only mode: load curriculum for scheduling, use AI for all question content
+            if modern_skill_count > 0:
+                self.question_data_mode = "ai_only"
+                log_print("[MONGODB] Skills-only mode: using generated_skills for DASH scheduling, Gemini AI for all questions")
+                self._load_skills_from_collection(list(self.mongo.generated_skills.find()))
+                return
+
+            if legacy_skill_count > 0:
+                self.question_data_mode = "ai_only"
+                log_print("[MONGODB] Skills-only mode: using legacy skills for DASH scheduling, Gemini AI for all questions")
+                self._load_skills_from_collection(list(self.mongo.skills.find()))
+                return
+
             raise RuntimeError(
-                "No compatible MongoDB question dataset found. "
-                "Expected either generated_skills + scraped_questions or skills + dash_questions."
+                "No skills found in MongoDB. "
+                "Expected either generated_skills or skills collection with curriculum data."
             )
         except Exception as e:
             log_print(f"[ERROR] Error loading from MongoDB: {e}")
@@ -984,12 +1010,43 @@ class DASHSystem:
             target_difficulty = base_difficulty + difficulty_adjustment
             min_difficulty = max(0.0, target_difficulty - 0.2)
             max_difficulty = target_difficulty + 0.2
-            
-            # Get question IDs for this skill from index (fast lookup)
+
+            # Get question IDs for this skill from index (fast lookup).
+            # If AI provider is available and this skill has no scraped questions, use Gemini.
             skill_question_ids = self.skill_question_index.get(skill_id, [])
-            if not skill_question_ids:
+            if not skill_question_ids and self.use_ai_questions and self.ai_provider:
+                try:
+                    ai_result = self.ai_provider.get_question_for_skill(
+                        skill_id=skill_id,
+                        skill_name=skill.name,
+                        target_difficulty=target_difficulty,
+                        grade_level=user_profile.current_grade,
+                        age=user_profile.age if user_profile.age else 10,
+                        exclude_question_ids=list(answered_question_ids),
+                        user_id=student_id,
+                        fast_mode=True,
+                        subject="",
+                    )
+                    if ai_result:
+                        dm = ai_result.get("dash_metadata", {})
+                        qid = dm.get("dash_question_id")
+                        if qid and qid not in answered_question_ids:
+                            q = Question(
+                                question_id=qid,
+                                skill_ids=[skill_id],
+                                content="",
+                                difficulty=dm.get("difficulty", target_difficulty),
+                                expected_time_seconds=60.0,
+                            )
+                            q.perseus_data = ai_result  # type: ignore[attr-defined]
+                            log_print(f"[AI_QUESTION] Generated question {qid} for skill {skill.name}")
+                            return q
+                except Exception as _ai_err:
+                    log_print(f"[AI_QUESTION] AI generation failed for skill {skill_id}: {_ai_err}")
                 continue
-            
+            elif not skill_question_ids:
+                continue
+
             # Filter out answered questions
             candidate_ids = [qid for qid in skill_question_ids if qid not in answered_question_ids]
             if not candidate_ids:
@@ -1089,12 +1146,42 @@ class DASHSystem:
             max_difficulty = target_difficulty + 0.2
             
             # Reduced verbosity - only log when selecting a question
-            
-            # Get question IDs for this skill from index (fast lookup)
+
+            # Get question IDs for this skill from index.
+            # Use Gemini AI when no scraped questions exist for this skill.
             skill_question_ids = self.skill_question_index.get(skill_id, [])
-            if not skill_question_ids:
+            if not skill_question_ids and self.use_ai_questions and self.ai_provider:
+                try:
+                    ai_result = self.ai_provider.get_question_for_skill(
+                        skill_id=skill_id,
+                        skill_name=skill.name,
+                        target_difficulty=target_difficulty,
+                        grade_level=user_profile.current_grade,
+                        age=user_profile.age if user_profile.age else 10,
+                        exclude_question_ids=list(answered_question_ids),
+                        user_id=student_id,
+                        fast_mode=True,
+                        subject="",
+                    )
+                    if ai_result:
+                        dm = ai_result.get("dash_metadata", {})
+                        qid = dm.get("dash_question_id")
+                        if qid and qid not in answered_question_ids:
+                            q = Question(
+                                question_id=qid,
+                                skill_ids=[skill_id],
+                                content="",
+                                difficulty=dm.get("difficulty", target_difficulty),
+                                expected_time_seconds=60.0,
+                            )
+                            q.perseus_data = ai_result  # type: ignore[attr-defined]
+                            return q
+                except Exception as _ai_err:
+                    log_print(f"[AI_QUESTION] AI generation failed for skill {skill_id}: {_ai_err}")
+                continue
+            elif not skill_question_ids:
                 continue  # Skip silently if no questions for this skill
-            
+
             # Filter out answered questions
             candidate_ids = [qid for qid in skill_question_ids if qid not in answered_question_ids]
             if not candidate_ids:
