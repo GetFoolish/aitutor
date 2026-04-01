@@ -94,15 +94,11 @@ class DASHSystem:
         self.curriculum: Dict = {}
         self.user_manager = UserManager(users_folder="Users")
         # AI question generation (Gemini) — primary path for all subjects
+        # Note: AIQuestionProvider requires content_engine + mongo, initialized after MongoDB is ready
         self.ai_provider = None
         self.use_ai_questions = True
-        try:
-            from services.DashSystem.ai_question_provider import AIQuestionProvider
-            self.ai_provider = AIQuestionProvider()
-            log_print("[AI] AIQuestionProvider initialized — Gemini-first question generation enabled")
-        except Exception as e:
-            log_print(f"[AI] AIQuestionProvider unavailable: {e} — falling back to question index")
-        
+        self.content_service = None
+
         # Initialize MongoDB manager if using MongoDB
         self.mongo = None
         if use_mongodb:
@@ -172,6 +168,15 @@ class DASHSystem:
                 log_print(f"[WARNING] Skipping skill {skill_doc.get('skill_id', 'unknown')}: missing field {e}")
 
         log_print(f"[MONGODB] Loaded {len(self.skills)} skills from MongoDB")
+
+    def set_content_service(self, service):
+        """Register the ContentGenerationService for pool-based question serving."""
+        self.content_service = service
+
+    def set_ai_provider(self, provider):
+        """Register an AIQuestionProvider instance after MongoDB is ready."""
+        self.ai_provider = provider
+        log_print("[AI] AIQuestionProvider registered — Gemini-first question generation enabled")
 
     def _load_modern_question_index(self):
         """Build the runtime question index from scraped_questions."""

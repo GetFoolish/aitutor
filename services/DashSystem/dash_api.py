@@ -336,6 +336,14 @@ async def startup_event():
             f"DASHSystem initialized ({ai_mode} mode): "
             f"{len(dash_system.skills)} skills, {qi_count} questions in index"
         )
+
+        # Wire AIQuestionProvider now that content_engine + mongo are available
+        try:
+            from services.DashSystem.ai_question_provider import AIQuestionProvider
+            ai_provider = AIQuestionProvider(content_engine=content_v1_engine, mongo=mongo_db)
+            dash_system.set_ai_provider(ai_provider)
+        except Exception as e_aip:
+            logger.warning(f"[AI] AIQuestionProvider init failed: {e_aip} — AI generation disabled")
         # ContentGenerationService for pool-based question serving
         try:
             from services.DashSystem.content_generation_service import ContentGenerationService
