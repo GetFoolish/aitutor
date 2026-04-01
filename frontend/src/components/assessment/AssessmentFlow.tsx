@@ -276,10 +276,14 @@ const AssessmentFlow: React.FC = () => {
         )
         .catch(() => null);
 
+      const forceMC = sessionStorage.getItem('dev_force_mc') === '1';
       let response: Response | null = null;
       for (let attempt = 0; attempt < MAX_START_RETRIES; attempt += 1) {
+        const startUrl = forceMC
+          ? `${DASH_API_URL}/assessment/start-adaptive/${subject}?force_mc=true`
+          : `${DASH_API_URL}/assessment/start-adaptive/${subject}`;
         response = await apiUtils.post(
-          `${DASH_API_URL}/assessment/start-adaptive/${subject}`,
+          startUrl,
           {},
           { signal: controller.signal }
         );
@@ -434,7 +438,7 @@ const AssessmentFlow: React.FC = () => {
   }, [contentFingerprint, firePrefetch, totalQuestions, subject]);
 
   const requestNextQuestion = useCallback(async (
-    payload: { assessment_id: string; question_id: string; skill_id: string; is_correct: boolean },
+    payload: { assessment_id: string; question_id: string; skill_id: string; is_correct: boolean; force_mc?: boolean },
   ): Promise<Response> => {
     // Fast-settle policy: avoid long blocking spinner loops on next-question fetch.
     const NEXT_REQUEST_TIMEOUTS_MS = [4000, 8000];
@@ -522,6 +526,7 @@ const AssessmentFlow: React.FC = () => {
       question_id: currentQuestion?.dash_metadata?.dash_question_id || `q_${questionNumber}`,
       skill_id: (currentQuestion?.dash_metadata?.skill_ids || [])[0] || '',
       is_correct: isCorrect,
+      force_mc: sessionStorage.getItem('dev_force_mc') === '1',
     };
     pendingAnswerRef.current = payload;
     if (isCorrect) setCorrectCount(prev => prev + 1);

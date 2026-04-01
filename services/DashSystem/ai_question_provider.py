@@ -42,39 +42,42 @@ DEFAULT_FORMAT_WEIGHTS = {
 
 # Formats suitable for fast_mode (assessment JIT): fast to generate, easy to validate
 FAST_MODE_FORMATS = ["radio_single", "numeric_input", "dropdown"]
+# MC-first: radio_single ≥60% across all subjects so QA can always verify the MC flow.
+# Numeric and dropdown retained as secondary options.
 FAST_MODE_WEIGHTS = {
-    "default": [50, 30, 20],    # radio, numeric, dropdown
-    "math":    [20, 50, 30],    # numeric_input heavy for computation
-    "science": [40, 35, 25],    # balanced
-    "english": [55, 10, 35],    # radio + dropdown for vocab/comprehension
-    "history": [50, 15, 35],    # radio + dropdown for recall
+    "default": [65, 20, 15],    # radio, numeric, dropdown
+    "math":    [65, 20, 15],    # was [20,50,30] — MC-first for verifiability
+    "science": [65, 20, 15],    # was [40,35,25]
+    "english": [65, 10, 25],    # was [55,10,35]
+    "history": [65, 10, 25],    # was [50,15,35]
 }
 
-# Subject-specific format weights — each subject emphasises its natural question types
+# Subject-specific format weights — each subject emphasises its natural question types.
+# MC guaranteed ≥60%: radio_single + radio_multi = 60 / ~100 total.
 SUBJECT_FORMAT_WEIGHTS = {
     "math": {
-        "radio_single": 8, "radio_multi": 4, "orderer": 4,
-        "numeric_input": 22, "dropdown": 4, "expression": 25,
-        "matcher": 4, "sorter": 4, "definition": 8,
-        "categorizer": 4, "number_line": 10, "table": 3,
+        "radio_single": 42, "radio_multi": 18, "orderer": 3,
+        "numeric_input": 13, "dropdown": 2, "expression": 9,
+        "matcher": 2, "sorter": 2, "definition": 2,
+        "categorizer": 2, "number_line": 4, "table": 1,
     },
     "science": {
-        "radio_single": 17, "radio_multi": 8, "orderer": 8,
-        "numeric_input": 12, "dropdown": 8, "expression": 8,
-        "matcher": 8, "sorter": 4, "definition": 8,
-        "categorizer": 10, "number_line": 3, "table": 6,
+        "radio_single": 42, "radio_multi": 18, "orderer": 5,
+        "numeric_input": 8, "dropdown": 5, "expression": 5,
+        "matcher": 5, "sorter": 2, "definition": 5,
+        "categorizer": 4, "number_line": 0, "table": 5,
     },
     "english": {
-        "radio_single": 13, "radio_multi": 4, "orderer": 4,
-        "numeric_input": 4, "dropdown": 8, "expression": 4,
-        "matcher": 18, "sorter": 8, "definition": 22,
-        "categorizer": 10, "number_line": 1, "table": 4,
+        "radio_single": 42, "radio_multi": 18, "orderer": 3,
+        "numeric_input": 2, "dropdown": 8, "expression": 2,
+        "matcher": 8, "sorter": 5, "definition": 8,
+        "categorizer": 5, "number_line": 0, "table": 3,
     },
     "history": {
-        "radio_single": 17, "radio_multi": 8, "orderer": 12,
-        "numeric_input": 4, "dropdown": 8, "expression": 4,
-        "matcher": 8, "sorter": 12, "definition": 8,
-        "categorizer": 10, "number_line": 1, "table": 8,
+        "radio_single": 42, "radio_multi": 18, "orderer": 8,
+        "numeric_input": 2, "dropdown": 5, "expression": 2,
+        "matcher": 5, "sorter": 8, "definition": 5,
+        "categorizer": 5, "number_line": 0, "table": 5,
     },
 }
 
@@ -222,6 +225,7 @@ class AIQuestionProvider:
         fast_mode: bool = False,
         subject: str = "",
         student_context: str = "",
+        force_format: Optional[str] = None,
     ) -> Optional[Dict[str, Any]]:
         """
         Get a single AI-generated Perseus question for the given skill + difficulty.
@@ -265,6 +269,7 @@ class AIQuestionProvider:
             fast_mode=fast_mode,
             subject=subject,
             student_context=student_context,
+            force_format=force_format,
         )
         if result:
             logger.info(f"[AI_PROVIDER] JIT GENERATED for skill={skill_name} diff={target_difficulty:.2f}")
@@ -404,9 +409,13 @@ class AIQuestionProvider:
         fast_mode: bool = False,
         subject: str = "",
         student_context: str = "",
+        force_format: Optional[str] = None,
     ) -> Optional[Dict[str, Any]]:
         """Generate a question on-demand via Gemini."""
-        if fast_mode:
+        if force_format and force_format in SUPPORTED_FORMATS:
+            # Dev override: always use this specific format (e.g. force_mc=true → radio_single)
+            fmt = force_format
+        elif fast_mode:
             # Fast mode (assessment): pick from 3 fast-to-validate formats
             detected = _detect_subject(skill_id, subject or skill_name)
             fast_weights = list(FAST_MODE_WEIGHTS.get(detected, FAST_MODE_WEIGHTS["default"]))

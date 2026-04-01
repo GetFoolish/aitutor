@@ -534,6 +534,7 @@ class AdaptiveAssessmentAnswer(BaseModel):
     question_id: str
     skill_id: str
     is_correct: bool
+    force_mc: bool = False  # dev flag: force next question to be radio_single
 
 
 class AssessmentPrefetchRequest(BaseModel):
@@ -2623,7 +2624,7 @@ def check_assessment_status(
 # ===== ADAPTIVE ASSESSMENT ENDPOINTS (CAT-style) =====
 
 @app.post("/assessment/start-adaptive/{subject}")
-def start_adaptive_assessment(subject: str, request: Request):
+def start_adaptive_assessment(subject: str, request: Request, force_mc: bool = False):
     """
     Start an adaptive (CAT-style) assessment. Returns assessment_id + first question.
     Questions are served one at a time; difficulty adjusts based on each answer.
@@ -2708,6 +2709,7 @@ def start_adaptive_assessment(subject: str, request: Request):
                     user_id=user_id,
                     subject=subject,
                     student_context=_frozen_student_context,
+                    force_format="radio_single" if force_mc else None,
                 )
             except Exception as e:
                 logger.warning(f"[ADAPTIVE_ASSESSMENT] JIT generation failed: {e}")
@@ -3487,6 +3489,7 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
                             exclude_question_ids=used_q_ids,
                             user_id=user_id,
                             subject=subject,
+                            force_format="radio_single" if payload.force_mc else None,
                         )
                         ai_result = future.result(timeout=jit_timeout)
                     finally:
@@ -3769,6 +3772,7 @@ def _assessment_prefetch_worker(assessment_id: str, user_id: str, current_diffic
                         exclude_question_ids=used_q_ids,
                         user_id=user_id,
                         subject=subject,
+                        force_format="radio_single" if payload.force_mc else None,
                     )
                     if ai_result:
                         jit_qid = ai_result["dash_metadata"]["dash_question_id"]

@@ -36,6 +36,7 @@ const DevLogin: React.FC = () => {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [forceMC, setForceMC] = useState(false);
 
   // Clear stale session on mount so each test starts fresh
   React.useEffect(() => {
@@ -136,6 +137,7 @@ const DevLogin: React.FC = () => {
       // 3. Navigate via React Router — avoids full page reload blank screen (Bug #1)
       sessionStorage.setItem('onboarding_complete', 'true');
       sessionStorage.setItem('selected_subject', finalSubject);
+      sessionStorage.setItem('dev_force_mc', forceMC ? '1' : '0');
 
       // Small delay to ensure localStorage writes complete before navigation
       await new Promise(resolve => setTimeout(resolve, 100));
@@ -440,6 +442,38 @@ const DevLogin: React.FC = () => {
         }}>
           {selectedSubject}
         </div>
+
+        {/* Dev toggle: Force MC */}
+        <label
+          htmlFor="force-mc-toggle"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            marginBottom: '20px',
+            cursor: 'pointer',
+            userSelect: 'none',
+            padding: '8px 14px',
+            border: `2px solid ${forceMC ? '#4f46e5' : borderColor}`,
+            background: forceMC ? '#ede9fe' : 'transparent',
+            color: forceMC ? '#4f46e5' : textColor,
+            fontWeight: 700,
+            fontSize: '13px',
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase' as const,
+            transition: 'all 100ms',
+          }}
+        >
+          <input
+            id="force-mc-toggle"
+            type="checkbox"
+            checked={forceMC}
+            onChange={e => setForceMC(e.target.checked)}
+            disabled={loading}
+            style={{ width: '16px', height: '16px', accentColor: '#4f46e5', cursor: 'pointer' }}
+          />
+          Force MC questions (QA mode)
+        </label>
 
         {/* Age grid */}
         <p style={{
