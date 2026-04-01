@@ -166,6 +166,7 @@ const AssessmentQuestion: React.FC<Props> = ({
   const [pendingCorrect, setPendingCorrect] = useState<boolean | null>(null);
   const [autoFitZoom, setAutoFitZoom] = useState(1);
   const startTimeRef = useRef<number>(Date.now());
+  const submittingRef = useRef<boolean>(false); // Synchronous guard against rapid double-submit
   const [viewportHeight, setViewportHeight] = useState<number>(() =>
     typeof window !== 'undefined' ? window.innerHeight : 1024
   );
@@ -178,7 +179,8 @@ const AssessmentQuestion: React.FC<Props> = ({
     viewportHeight <= 920 ? 0.98 :
     1;
   const actionDockStyle: React.CSSProperties = {
-    position: 'relative',
+    position: 'sticky',
+    bottom: 0,
     left: 0,
     width: '100%',
     zIndex: 60,
@@ -614,12 +616,14 @@ const AssessmentQuestion: React.FC<Props> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = () => {
-    if (isAnswered || isSubmitting) return; // Prevent double-submit
+    if (isAnswered || submittingRef.current) return; // Prevent double-submit (ref is synchronous, state is not)
+    submittingRef.current = true;
     if (!rendererRef.current) {
       console.error('[AssessmentQuestion] rendererRef is null — widget still loading, please wait');
       // Widget still loading — show a warning instead of force-marking incorrect
       setEmptyWarning(true);
       setTimeout(() => setEmptyWarning(false), 2000);
+      submittingRef.current = false;
       return;
     }
 
@@ -638,6 +642,7 @@ const AssessmentQuestion: React.FC<Props> = ({
       setEmptyWarning(true);
       setTimeout(() => setEmptyWarning(false), 3500);
       setIsSubmitting(false); // Ensure button is re-enabled
+      submittingRef.current = false;
       // Shake the submit button for visual feedback
       const btn = document.querySelector('[data-testid="assessment-submit-button"]') as HTMLElement;
       if (btn) {
@@ -755,6 +760,7 @@ const AssessmentQuestion: React.FC<Props> = ({
       setIsAnswered(false);
     } finally {
       setIsSubmitting(false);
+      submittingRef.current = false;
     }
   };
 

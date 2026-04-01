@@ -77,7 +77,7 @@ export default function Header({ sidebarOpen, onToggleSidebar, assessmentMode }:
     const logoSource = isDarkMode ? '/logo_white.png' : '/logo.png';
 
     return (
-        <header className="fixed top-0 left-0 right-0 h-[44px] lg:h-[48px] bg-[#FFFDF5] dark:bg-[#000000] border-b-[3px] lg:border-b-[4px] border-black dark:border-white z-40 flex items-center justify-between px-2 md:px-4 lg:px-5 shadow-[0_2px_0_0_rgba(0,0,0,1)] lg:shadow-[0_2px_0_0_rgba(0,0,0,1)] dark:shadow-[0_2px_0_0_rgba(255,255,255,0.3)] select-none">
+        <header className="fixed top-0 left-0 right-0 h-[44px] lg:h-[48px] bg-[#FFFDF5] dark:bg-[#000000] border-b-[3px] lg:border-b-[4px] border-black dark:border-white z-40 flex items-center justify-between pl-2 pr-4 md:pl-4 md:pr-6 lg:pl-5 lg:pr-7 shadow-[0_2px_0_0_rgba(0,0,0,1)] lg:shadow-[0_2px_0_0_rgba(0,0,0,1)] dark:shadow-[0_2px_0_0_rgba(255,255,255,0.3)] select-none overflow-hidden">
             {/* Left side - Logo */}
             <div
                 onClick={() => {

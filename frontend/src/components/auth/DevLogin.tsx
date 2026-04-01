@@ -44,15 +44,52 @@ const DevLogin: React.FC = () => {
     sessionStorage.removeItem('onboarding_complete');
   }, []);
 
+  // Update selectedSubject when customSubject changes (for automation compatibility)
+  React.useEffect(() => {
+    const trimmed = customSubject.trim();
+    const hasLetter = /[a-zA-Z]/.test(trimmed);
+
+    if (trimmed.length >= 2 && hasLetter) {
+      console.log('[DevLogin] useEffect: Setting selectedSubject to custom:', trimmed);
+      setSelectedSubject(trimmed);
+    } else if (trimmed.length === 0 && selectedSubject !== presetSubject) {
+      console.log('[DevLogin] useEffect: Restoring preset:', presetSubject);
+      setSelectedSubject(presetSubject);
+    }
+  }, [customSubject, presetSubject, selectedSubject]);
+
+  // Expose setter for automation/testing
+  React.useEffect(() => {
+    (window as any).__setCustomSubject = (subject: string) => {
+      console.log('[DevLogin] Automation: Setting custom subject to:', subject);
+      setCustomSubject(subject);
+    };
+    return () => {
+      delete (window as any).__setCustomSubject;
+    };
+  }, []);
+
   const handleLogin = async (age: number) => {
     setSelectedAge(age);
     setLoading(true);
     setError('');
 
+    // CRITICAL FIX: Read custom subject directly from DOM to support automation
+    // React state might not update in time when automated, so check DOM value
+    const customInput = document.querySelector('#custom-subject-input') as HTMLInputElement;
+    const customValue = customInput?.value?.trim() || '';
+
+    // Use DOM value if it's valid, otherwise use React state
+    const finalSubject = (customValue.length >= 2 && /[a-zA-Z]/.test(customValue))
+      ? customValue
+      : selectedSubject;
+
     console.log('[DevLogin] handleLogin called with:', {
       age,
       selectedSubject,
       customSubject,
+      customInputDOMValue: customValue,
+      finalSubjectUsed: finalSubject,
       presetSubject
     });
 
@@ -91,7 +128,7 @@ const DevLogin: React.FC = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${data.token}`
         },
-        body: JSON.stringify({ subject: selectedSubject, region: 'US' })
+        body: JSON.stringify({ subject: finalSubject, region: 'US' })
       }).catch((err) => {
         console.warn('[DevLogin] Subject switch failed (will retry in assessment):', err);
         // Don't block login - assessment flow will retry
@@ -99,12 +136,12 @@ const DevLogin: React.FC = () => {
 
       // 3. Navigate via React Router — avoids full page reload blank screen (Bug #1)
       sessionStorage.setItem('onboarding_complete', 'true');
-      sessionStorage.setItem('selected_subject', selectedSubject);
+      sessionStorage.setItem('selected_subject', finalSubject);
 
       // Small delay to ensure localStorage writes complete before navigation
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      history.push(`/app/assessment/${selectedSubject}`);
+      history.push(`/app/assessment/${finalSubject}`);
     } catch (err: any) {
       setError(err.message || 'Login failed');
       setLoading(false);
@@ -187,7 +224,8 @@ const DevLogin: React.FC = () => {
           textTransform: 'uppercase',
           letterSpacing: '0.1em',
           marginBottom: '20px',
-          boxShadow: `4px 4px 0 ${borderColor}`
+          cursor: 'default',
+          userSelect: 'none'
         }}>
           Dev Mode
         </div>
@@ -422,11 +460,11 @@ const DevLogin: React.FC = () => {
           marginBottom: '20px'
         }}>
           {AGES.map((age) => {
-            const isSelected = selectedAge === age && loading;
+            const isSelected = selectedAge === age;
             return (
               <button
                 key={age}
-                onClick={() => !loading && handleLogin(age)}
+                onClick={() => !loading && setSelectedAge(age)}
                 disabled={loading}
                 style={{
                   padding: '20px 10px',
@@ -434,7 +472,7 @@ const DevLogin: React.FC = () => {
                   minWidth: '56px',
                   border: `4px solid ${borderColor}`,
                   background: isSelected ? (isDark ? '#333' : '#ddd') : activeColor,
-                  boxShadow: loading ? `2px 2px 0 ${shadowColor}` : `4px 4px 0 ${shadowColor}`,
+                  boxShadow: isSelected ? `2px 2px 0 ${shadowColor}` : `4px 4px 0 ${shadowColor}`,
                   cursor: loading ? 'wait' : 'pointer',
                   transition: 'transform 100ms ease, box-shadow 100ms ease',
                   display: 'flex',
@@ -479,6 +517,32 @@ const DevLogin: React.FC = () => {
             );
           })}
         </div>
+
+        {/* Start Assessment sticky button */}
+        <button
+          onClick={() => selectedSubject && selectedAge !== null && handleLogin(selectedAge)}
+          disabled={!selectedSubject || selectedAge === null || loading}
+          style={{
+            position: 'sticky',
+            bottom: 0,
+            width: '100%',
+            padding: '16px 24px',
+            background: selectedSubject && selectedAge !== null && !loading ? '#FFD93D' : (isDark ? '#333' : '#ddd'),
+            border: `4px solid #000`,
+            boxShadow: selectedSubject && selectedAge !== null && !loading ? '4px 4px 0 #000' : 'none',
+            fontWeight: 900,
+            fontSize: '18px',
+            textTransform: 'uppercase' as const,
+            letterSpacing: '0.1em',
+            cursor: selectedSubject && selectedAge !== null && !loading ? 'pointer' : 'not-allowed',
+            color: '#000',
+            marginBottom: '20px',
+            transition: 'background 150ms ease, box-shadow 150ms ease',
+            fontFamily: "'Space Grotesk', -apple-system, sans-serif"
+          }}
+        >
+          {loading ? 'Starting...' : 'Start Assessment →'}
+        </button>
 
         {loading && (
           <div style={{

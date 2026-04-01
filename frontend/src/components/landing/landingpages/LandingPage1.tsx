@@ -48,18 +48,17 @@ const LandingPage1: React.FC<LandingPage1Props> = ({ onGetStarted }) => {
                 <button onClick={onGetStarted} className="lp1-btn-primary">
                   Start Free Trial
                 </button>
+                <button
+                  onClick={() => window.location.href = '/app/dev-login'}
+                  className="lp1-btn-primary"
+                  style={{ background: '#FF6B6B', color: '#fff', marginLeft: '12px' }}
+                >
+                  Get Early Access
+                </button>
               </div>
               <p className="lp1-hero-sub">No credit card required</p>
             </div>
 
-            {/* Floating Window Screenshot */}
-            <div className="lp1-hero-screenshot">
-              <img
-                src="/landing-screenshots/floating_window_screenshot.png"
-                alt="Floating window showing AI tutor helping with math problem"
-                className="lp1-screenshot-img"
-              />
-            </div>
           </div>
         </div>
       </section>
@@ -310,6 +309,306 @@ const LandingPage1: React.FC<LandingPage1Props> = ({ onGetStarted }) => {
           </div>
         </div>
       </footer>
+
+      <style>{`
+        .lp1-header {
+          padding: 16px 24px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          border-bottom: 4px solid #000;
+          background: #FFFDF5;
+        }
+        .lp1-container,
+        .lp1-container-narrow {
+          max-width: 960px;
+          margin: 0 auto;
+          padding: 0 24px;
+        }
+        .lp1-nav {
+          display: flex;
+          align-items: center;
+          gap: 24px;
+        }
+        .lp1-nav a {
+          font-weight: 700;
+          text-decoration: none;
+          color: #000;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+        .lp1-btn-header,
+        .lp1-btn-primary {
+          padding: 10px 20px;
+          border: 4px solid #000;
+          background: #FFD93D;
+          font-weight: 900;
+          text-transform: uppercase;
+          cursor: pointer;
+          box-shadow: 4px 4px 0 #000;
+          letter-spacing: 0.05em;
+        }
+        .lp1-hero {
+          padding: 60px 0;
+          text-align: center;
+        }
+        .lp1-hero-badge {
+          display: inline-block;
+          padding: 6px 16px;
+          border: 4px solid #000;
+          background: #FF6B6B;
+          color: #fff;
+          font-weight: 900;
+          font-size: 12px;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          margin-bottom: 20px;
+          box-shadow: 4px 4px 0 #000;
+        }
+        .lp1-hero-title {
+          font-size: 48px;
+          font-weight: 900;
+          text-transform: uppercase;
+          letter-spacing: -0.02em;
+          margin-bottom: 16px;
+          line-height: 1.1;
+        }
+        .lp1-hero-desc {
+          font-size: 18px;
+          font-weight: 600;
+          color: #555;
+          margin-bottom: 28px;
+          max-width: 600px;
+          margin-left: auto;
+          margin-right: auto;
+          line-height: 1.6;
+        }
+        .lp1-hero-cta {
+          margin-bottom: 12px;
+        }
+        .lp1-hero-sub {
+          font-size: 13px;
+          color: #888;
+          font-weight: 600;
+        }
+        .lp1-features,
+        .lp1-social,
+        .lp1-pricing {
+          padding: 60px 0;
+        }
+        .lp1-section-title-box {
+          text-align: center;
+          margin-bottom: 40px;
+        }
+        .lp1-section-title {
+          font-size: 32px;
+          font-weight: 900;
+          text-transform: uppercase;
+          letter-spacing: -0.02em;
+        }
+        .lp1-features-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 24px;
+        }
+        @media (max-width: 768px) {
+          .lp1-features-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+        .lp1-feature {
+          padding: 24px;
+          border: 4px solid #000;
+          background: #fff;
+          box-shadow: 4px 4px 0 #000;
+        }
+        .lp1-feature-icon {
+          width: 48px;
+          height: 48px;
+          border: 4px solid #000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #FFD93D;
+          margin-bottom: 16px;
+          box-shadow: 4px 4px 0 #000;
+        }
+        .lp1-feature h3 {
+          font-size: 18px;
+          font-weight: 900;
+          text-transform: uppercase;
+          margin-bottom: 8px;
+        }
+        .lp1-feature p {
+          font-size: 14px;
+          font-weight: 600;
+          color: #444;
+          line-height: 1.5;
+        }
+        .lp1-social-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 24px;
+        }
+        @media (max-width: 768px) {
+          .lp1-social-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+        .lp1-testimonial {
+          padding: 24px;
+          border: 4px solid #000;
+          background: #fff;
+          box-shadow: 4px 4px 0 #000;
+        }
+        .lp1-testimonial p {
+          font-size: 15px;
+          font-weight: 600;
+          color: #333;
+          margin: 12px 0;
+          line-height: 1.5;
+          font-style: italic;
+        }
+        .lp1-testimonial span {
+          font-size: 13px;
+          font-weight: 900;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+        .lp1-stars {
+          display: flex;
+          gap: 4px;
+          margin-bottom: 8px;
+        }
+        .lp1-pricing-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 24px;
+        }
+        @media (max-width: 768px) {
+          .lp1-pricing-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+        .lp1-pricing-card {
+          padding: 28px;
+          border: 4px solid #000;
+          background: #fff;
+          box-shadow: 4px 4px 0 #000;
+          position: relative;
+        }
+        .lp1-pricing-card-popular {
+          background: #FFD93D !important;
+          transform: scale(1.02);
+          box-shadow: 8px 8px 0 #000 !important;
+        }
+        .lp1-pricing-name {
+          font-size: 20px;
+          font-weight: 900;
+          text-transform: uppercase;
+          margin-bottom: 8px;
+        }
+        .lp1-pricing-price {
+          display: flex;
+          align-items: baseline;
+          gap: 4px;
+          margin-bottom: 8px;
+        }
+        .lp1-price-amount {
+          font-size: 36px;
+          font-weight: 900;
+        }
+        .lp1-price-period {
+          font-size: 14px;
+          font-weight: 700;
+          color: #666;
+        }
+        .lp1-pricing-tagline {
+          font-size: 13px;
+          font-weight: 600;
+          color: #666;
+          margin-bottom: 16px;
+        }
+        .lp1-pricing-features {
+          list-style: none;
+          padding: 0;
+          margin: 0 0 20px 0;
+        }
+        .lp1-pricing-features li {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 14px;
+          font-weight: 600;
+          padding: 6px 0;
+          border-bottom: 2px solid #000;
+        }
+        .lp1-btn-pricing {
+          width: 100%;
+          padding: 12px 20px;
+          border: 4px solid #000;
+          background: #000;
+          color: #fff;
+          font-weight: 900;
+          text-transform: uppercase;
+          cursor: pointer;
+          box-shadow: 4px 4px 0 #555;
+          letter-spacing: 0.05em;
+        }
+        .lp1-popular-badge {
+          position: absolute;
+          top: -14px;
+          right: 16px;
+          background: #FF6B6B;
+          color: #fff;
+          padding: 4px 12px;
+          font-size: 11px;
+          font-weight: 900;
+          text-transform: uppercase;
+          border: 3px solid #000;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+        .lp1-faq {
+          padding: 60px 0 80px;
+        }
+        .lp1-faq-item {
+          border: 4px solid #000;
+          margin-bottom: 8px;
+          box-shadow: 4px 4px 0 #000;
+          overflow: hidden;
+        }
+        .lp1-faq-question {
+          padding: 16px 20px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          cursor: pointer;
+          font-weight: 900;
+          font-size: 16px;
+          text-transform: uppercase;
+          background: #fff;
+          width: 100%;
+          border: none;
+        }
+        .lp1-faq-answer {
+          padding: 16px 20px;
+          border-top: 4px solid #000;
+          background: #FFFDF5;
+          font-size: 14px;
+          font-weight: 600;
+          line-height: 1.6;
+          color: #444;
+        }
+        .lp1-footer {
+          text-align: center;
+          padding: 40px 24px;
+          border-top: 4px solid #000;
+          font-size: 13px;
+          font-weight: 700;
+        }
+      `}</style>
     </div>
   );
 };

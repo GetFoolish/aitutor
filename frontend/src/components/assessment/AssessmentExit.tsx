@@ -23,11 +23,12 @@ const AssessmentExit: React.FC = () => {
   };
 
   const handleBackHome = () => {
-    // Clear session and go to main app
+    // Clear all session state and go to subject selector (not /app which auto-starts assessment)
     sessionStorage.removeItem('selected_subject');
     sessionStorage.removeItem('assessmentSubject');
     sessionStorage.removeItem('active_assessment');
-    history.push('/app');
+    sessionStorage.removeItem('onboarding_complete');
+    history.push('/app/dev-login?v=4');
   };
 
   return (

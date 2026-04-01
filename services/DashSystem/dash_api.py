@@ -2861,6 +2861,7 @@ def resume_assessment(
 
     jwt_payload = get_jwt_payload(request)
     user_id = jwt_payload.get("sub")
+    jwt_age = jwt_payload.get("age")
 
     # Find the session
     session = mongo_db.db["assessment_sessions"].find_one({
@@ -2949,9 +2950,26 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
     user_id = jwt_payload.get("sub")
     jwt_age = jwt_payload.get("age", 10)
 
-    session = mongo_db.db["assessment_sessions"].find_one({
-        "assessment_id": payload.assessment_id, "user_id": user_id, "status": "in_progress"
-    })
+    # Retry loop to handle read-after-write lag on MongoDB replica sets:
+    # the start-adaptive endpoint inserts the session and immediately returns the first
+    # question; the client can POST to /assessment/next before the insert has propagated
+    # to the node this request lands on.  Retry up to 3 times with short back-off.
+    _SESSION_LOOKUP_RETRIES = 6
+    _SESSION_LOOKUP_DELAY_S = 0.4
+    session = None
+    for _attempt in range(_SESSION_LOOKUP_RETRIES):
+        session = mongo_db.db["assessment_sessions"].find_one({
+            "assessment_id": payload.assessment_id, "user_id": user_id, "status": "in_progress"
+        })
+        if session:
+            break
+        if _attempt < _SESSION_LOOKUP_RETRIES - 1:
+            logger.warning(
+                f"[ASSESSMENT_NEXT] Session not found on attempt {_attempt + 1}/{_SESSION_LOOKUP_RETRIES} "
+                f"for assessment_id={payload.assessment_id} — retrying after {_SESSION_LOOKUP_DELAY_S}s"
+            )
+            time.sleep(_SESSION_LOOKUP_DELAY_S)
+
     if not session:
         # Defensive logging: check if session exists with different status or wrong user_id
         all_matching = list(mongo_db.db["assessment_sessions"].find({"assessment_id": payload.assessment_id}))

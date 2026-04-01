@@ -78,20 +78,51 @@ const LandingPageWrapper: React.FC = () => {
   if (isLoading || selectedPageIndex === null || !LandingPageComponent) {
     return (
       <div style={{
+        minHeight: '100vh',
         display: 'flex',
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        height: '100vh',
-        background: '#FFFDF5'
+        gap: '16px',
+        background: '#FFFDF5',
+        fontFamily: 'system-ui, -apple-system, sans-serif',
       }}>
-        <div>Loading...</div>
+        <div style={{
+          width: '200px',
+          height: '8px',
+          border: '3px solid #000',
+          backgroundColor: '#fff',
+          overflow: 'hidden',
+        }}>
+          <div style={{
+            height: '100%',
+            width: '40%',
+            backgroundColor: '#FFD93D',
+            animation: 'landing-loading-bar 1.5s ease-in-out infinite',
+          }} />
+        </div>
+        <div style={{
+          fontWeight: 900,
+          fontSize: '16px',
+          textTransform: 'uppercase',
+          letterSpacing: '0.1em',
+          color: '#000',
+        }}>
+          Loading...
+        </div>
+        <style>{`
+          @keyframes landing-loading-bar {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(350%); }
+          }
+        `}</style>
       </div>
     );
   }
 
   // Render landing page
   const handleGetStarted = () => {
-    history.push('/app/login');
+    history.push('/app/dev-login');
   };
 
   return <LandingPageComponent onGetStarted={handleGetStarted} />;

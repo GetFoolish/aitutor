@@ -8,6 +8,19 @@ import BackgroundShapes from '../background-shapes/BackgroundShapes';
 import FloatingControlPanel from '../floating-control-panel/FloatingControlPanel';
 import { TutorProvider } from '../../features/tutor';
 
+// Responsive helper: true when viewport ≤ 768px
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = React.useState(
+    typeof window !== 'undefined' ? window.innerWidth <= 768 : false
+  );
+  React.useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+  return isMobile;
+};
+
 const DASH_API_URL =
   import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 
@@ -30,6 +43,7 @@ const AssessmentFlow: React.FC = () => {
   const history = useHistory();
   const { subject } = useParams<Params>();
   const rootHeight = '100dvh';
+  const isMobile = useIsMobile();
 
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [assessmentId, setAssessmentId] = useState<string | null>(null);
@@ -433,7 +447,7 @@ const AssessmentFlow: React.FC = () => {
     payload: { assessment_id: string; question_id: string; skill_id: string; is_correct: boolean },
   ): Promise<Response> => {
     // Fast-settle policy: avoid long blocking spinner loops on next-question fetch.
-    const NEXT_REQUEST_TIMEOUTS_MS = [1200, 1500];
+    const NEXT_REQUEST_TIMEOUTS_MS = [4000, 8000];
 
     for (let attempt = 0; attempt < NEXT_REQUEST_TIMEOUTS_MS.length; attempt += 1) {
       const timeoutMs = NEXT_REQUEST_TIMEOUTS_MS[attempt];
@@ -519,6 +533,7 @@ const AssessmentFlow: React.FC = () => {
     };
     pendingAnswerRef.current = payload;
     setSubmitting(true);
+    setQuestionNumber(prev => prev + 1);
     setShowSubmittingOverlay(false);
     if (submitOverlayTimerRef.current) {
       clearTimeout(submitOverlayTimerRef.current);
@@ -793,18 +808,18 @@ const AssessmentFlow: React.FC = () => {
               {/* Assessment Mode Banner */}
               <div style={{
                 width: '100%',
-                marginTop: '56px',
+                marginTop: isMobile ? '44px' : '56px',
                 marginBottom: '10px'
               }}>
                 <div style={{
                   border: '4px solid #000000',
                   backgroundColor: '#FF6B6B',
-                  padding: '10px 16px',
+                  padding: isMobile ? '8px 10px' : '10px 16px',
                   boxShadow: '0 4px 0px 0px #000000',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '12px',
-                  margin: '0 10px',
+                  gap: isMobile ? '6px' : '12px',
+                  margin: isMobile ? '0 0' : '0 10px',
                 }}>
                   {/* Exit assessment — regular flex child, no absolute positioning */}
                   <button
@@ -816,16 +831,16 @@ const AssessmentFlow: React.FC = () => {
                     style={{
                       flexShrink: 0,
                       background: '#FFFFFF',
-                      border: '4px solid #000000',
+                      border: '3px solid #000000',
                       color: '#000000',
-                      fontSize: '16px',
+                      fontSize: isMobile ? '13px' : '16px',
                       fontWeight: 900,
-                      padding: '12px 20px',
+                      padding: isMobile ? '8px 12px' : '12px 20px',
                       cursor: 'pointer',
                       textTransform: 'uppercase',
-                      letterSpacing: '0.1em',
-                      boxShadow: '4px 4px 0 #000',
-                      minHeight: '48px',
+                      letterSpacing: '0.05em',
+                      boxShadow: '3px 3px 0 #000',
+                      minHeight: isMobile ? '40px' : '48px',
                       transition: 'transform 100ms ease, box-shadow 100ms ease',
                     }}
                     onMouseDown={(e) => {
@@ -853,14 +868,14 @@ const AssessmentFlow: React.FC = () => {
                       animation: 'pulse-dot 1.5s ease-in-out infinite'
                     }}></div>
                     <span style={{
-                      fontSize: '16px',
+                      fontSize: isMobile ? '12px' : '16px',
                       fontWeight: 900,
                       color: '#FFFFFF',
                       textTransform: 'uppercase',
-                      letterSpacing: '0.1em',
+                      letterSpacing: isMobile ? '0.05em' : '0.1em',
                       fontFamily: 'system-ui, -apple-system, sans-serif'
                     }}>
-                      ASSESSMENT MODE
+                      {isMobile ? 'ASSESSMENT' : 'ASSESSMENT MODE'}
                     </span>
                     <div style={{
                       width: '12px',
@@ -871,15 +886,32 @@ const AssessmentFlow: React.FC = () => {
                       animation: 'pulse-dot 1.5s ease-in-out infinite'
                     }}></div>
                   </div>
-                  {/* Right spacer to balance the Exit button */}
-                  <div style={{ width: '70px', flexShrink: 0 }}></div>
+                  {/* Right spacer to balance the Exit button — hidden on mobile */}
+                  {!isMobile && <div style={{ width: '70px', flexShrink: 0 }}></div>}
+                </div>
+              </div>
+
+              {/* Progress bar — Question X of Y */}
+              <div style={{ width: '100%', padding: isMobile ? '0' : '0 10px', marginBottom: '8px' }}>
+                <div
+                  role="progressbar"
+                  aria-valuenow={questionNumber}
+                  aria-valuemin={0}
+                  aria-valuemax={totalQuestions}
+                  aria-label={`Question ${questionNumber} of ${totalQuestions}`}
+                  style={{ border: '4px solid #000', boxShadow: '4px 4px 0 #000', background: '#fff', overflow: 'hidden', height: '32px', display: 'flex', alignItems: 'center', position: 'relative' }}
+                >
+                  <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${Math.min(100, (questionNumber / totalQuestions) * 100)}%`, background: '#FFD93D', transition: 'width 300ms ease' }} />
+                  <span style={{ position: 'relative', zIndex: 1, paddingLeft: '12px', fontWeight: 900, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    Question {questionNumber} of {totalQuestions}
+                  </span>
                 </div>
               </div>
 
               <div className="assessment-content-wrapper" style={{
-                paddingRight: 'max(100px, min(280px, 30vw))',
+                paddingRight: isMobile ? '0' : 'max(100px, min(280px, 30vw))',
                 paddingBottom: '10px',
-                maxWidth: 'calc(100% - 100px)',
+                maxWidth: isMobile ? '100%' : 'calc(100% - 100px)',
                 marginLeft: 0,
                 marginRight: 0,
                 width: '100%',
@@ -976,17 +1008,20 @@ const AssessmentFlow: React.FC = () => {
                             boxShadow: '4px 4px 0 #000000'
                           }}
                         >
-                          <span
-                            style={{
-                              fontSize: '16px',
-                              fontWeight: 800,
-                              color: '#000000',
-                              textTransform: 'uppercase',
-                              letterSpacing: '0.05em'
-                            }}
-                          >
-                            Loading next question...
-                          </span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <span style={{ display: 'inline-block', width: '18px', height: '18px', border: '3px solid #000', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.7s linear infinite', flexShrink: 0 }} />
+                            <span
+                              style={{
+                                fontSize: '16px',
+                                fontWeight: 800,
+                                color: '#000000',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.05em'
+                              }}
+                            >
+                              Loading next question...
+                            </span>
+                          </div>
                         </div>
                       </div>
                     )}
