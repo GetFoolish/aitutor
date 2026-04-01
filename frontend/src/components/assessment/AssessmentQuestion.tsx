@@ -12,6 +12,8 @@ import { reportQuestionAnalytics } from "../../lib/api-utils";
 import { scorePerseusQuestion, hasUserInput } from "../../lib/scoring-utils";
 // @ts-ignore — katex types require 'bundler' moduleResolution
 import katex from 'katex';
+// @ts-ignore
+import confetti from 'canvas-confetti';
 import 'katex/dist/katex.min.css';
 import '../question-display/mcq-fix.css';
 
@@ -676,6 +678,12 @@ const AssessmentQuestion: React.FC<Props> = ({
     setShowFeedback(true);
     setKeScore(score);
     setPendingCorrect(score.correct);
+    // Fire confetti on correct answers
+    if (score.correct) {
+      try {
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFEAA7'] });
+      } catch (_) { /* confetti not available in test env */ }
+    }
 
     // Mark choices with correct/incorrect feedback for visual highlighting
     setTimeout(() => {
@@ -791,7 +799,7 @@ const AssessmentQuestion: React.FC<Props> = ({
           <div className={`${ultraCompactViewport ? 'text-lg mb-0.5' : compactViewport ? 'text-xl mb-1' : 'text-2xl mb-2'} font-black text-black uppercase tracking-widest font-sans`}>
             QUESTION {effectiveQuestionNumber || 1} OF {totalQuestions || '?'}
           </div>
-          <div className={`${ultraCompactViewport ? 'text-sm' : compactViewport ? 'text-base' : 'text-lg'} font-bold text-black uppercase tracking-wide opacity-80`}>
+          <div className={`${ultraCompactViewport ? 'text-sm' : compactViewport ? 'text-base' : 'text-lg'} font-bold text-black tracking-wide opacity-80`}>
             Assessment in Progress
           </div>
         </div>
@@ -962,7 +970,7 @@ const AssessmentQuestion: React.FC<Props> = ({
           className={`${compactViewport ? 'mb-2' : 'mb-4'} border-[4px] border-black dark:border-white shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] overflow-hidden ${keScore.correct ? 'bg-[#E8F5E9]' : 'bg-[#FFEBEE]'}`}
           style={{ position: 'relative', zIndex: 20, isolation: 'isolate', backgroundColor: keScore.correct ? '#E8F5E9' : '#FFEBEE', flexShrink: 0 }}
         >
-          <div className={`${ultraCompactViewport ? 'px-4 py-2.5' : compactViewport ? 'px-5 py-3' : 'px-8 py-5'} flex items-center justify-center gap-4 ${!keScore.correct && question?.hints?.length ? 'border-b-[4px] border-black dark:border-white' : ''}`}>
+          <div className={`${ultraCompactViewport ? 'px-4 py-2.5' : compactViewport ? 'px-5 py-3' : 'px-8 py-5'} flex items-center justify-center gap-4 ${question?.hints?.length ? 'border-b-[4px] border-black dark:border-white' : ''}`}>
             {keScore.correct ? (
               <>
                 <CheckCircle2 size={ultraCompactViewport ? 28 : 32} className="text-[#2E7D32] dark:text-green-400 flex-shrink-0" />
@@ -979,11 +987,11 @@ const AssessmentQuestion: React.FC<Props> = ({
               </>
             )}
           </div>
-          {/* Show explanation hint when incorrect */}
-          {!keScore.correct && question?.hints?.length > 0 && (
+          {/* Show explanation hint for both correct and incorrect */}
+          {question?.hints?.length > 0 && (
             <div
               data-testid="assessment-explanation"
-              className="px-6 py-4 text-base leading-relaxed text-[#1F2937] dark:text-[#F9FAFB] bg-[#FFF3E0] dark:bg-[#3B2A14]"
+              className={`px-6 py-4 text-base leading-relaxed text-[#1F2937] dark:text-[#F9FAFB] ${keScore.correct ? 'bg-[#F1FBF2] dark:bg-[#1B3A1E]' : 'bg-[#FFF3E0] dark:bg-[#3B2A14]'}`}
               style={{
                 minHeight: ultraCompactViewport ? 56 : 72,
                 maxHeight: ultraCompactViewport ? 160 : compactViewport ? 200 : 260,
@@ -998,7 +1006,7 @@ const AssessmentQuestion: React.FC<Props> = ({
               <strong className="uppercase text-sm font-black tracking-wide">
                 Explanation:
               </strong>{' '}
-              <span>{renderTextWithLatex(question.hints?.length ? (question.hints[question.hints.length - 1]?.content || question.hints[0]?.content || '') : '')}</span>
+              <span>{renderTextWithLatex(question.hints[question.hints.length - 1]?.content || question.hints[0]?.content || '')}</span>
             </div>
           )}
         </div>
@@ -1021,6 +1029,16 @@ const AssessmentQuestion: React.FC<Props> = ({
           padding: 12px 16px !important;
           cursor: pointer !important;
           margin-bottom: 8px !important;
+        }
+        #question-content-container .perseus-widget-radio-fieldset .choice,
+        #question-content-container li.perseus-radio-option {
+          transition: all 0.15s ease !important;
+        }
+        #question-content-container .perseus-widget-radio-fieldset .choice:hover,
+        #question-content-container li.perseus-radio-option:hover {
+          background: #FFFDF5 !important;
+          box-shadow: 2px 2px 0 #000 !important;
+          cursor: pointer !important;
         }
         #question-content-container .perseus-widget-radio-fieldset .choice.perseus-radio-selected,
         #question-content-container li.perseus-radio-option.perseus-radio-selected {

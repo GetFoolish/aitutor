@@ -25,6 +25,8 @@ import BackgroundShapes from "./components/background-shapes/BackgroundShapes";
 import QuestionDisplay from "./components/question-display/QuestionDisplay";
 import Scratchpad from "./components/scratchpad/Scratchpad";
 import { HintProvider } from "./contexts/HintContext";
+import { StreakProvider } from "./contexts/StreakContext";
+import { StreakMessage } from "./components/daily-streak";
 import { Toaster } from "@/components/ui/sonner";
 import { useMediaMixer } from "./hooks/useMediaMixer";
 import { useMediaCapture } from "./hooks/useMediaCapture";
@@ -231,6 +233,7 @@ function App() {
           <AssessmentGuard subject="math" onStartAssessment={startAssessment}>
             <TutorProvider>
               <HintProvider>
+                <StreakMessage />
                 <Header
                   sidebarOpen={isSidebarOpen}
                   onToggleSidebar={toggleSidebar}

@@ -1,9 +1,17 @@
 /**
  * Auth guard component to protect routes
+ * Supports demo mode bypass via ?demo=true or DEMO_MODE localStorage
  */
 import React, { ReactNode } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Redirect } from 'react-router-dom';
+
+// Demo mode bypass for testing and screenshots
+const isDemoMode = () => {
+  if (typeof window === 'undefined') return false;
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get('demo') === 'true' || localStorage.getItem('DEMO_MODE') === 'true';
+};
 
 interface AuthGuardProps {
   children: ReactNode;
@@ -12,12 +20,18 @@ interface AuthGuardProps {
 const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
 
+  // DEMO MODE: Bypass authentication for testing/screenshots
+  if (isDemoMode()) {
+    console.log('🎬 AuthGuard: Demo mode active - bypassing authentication');
+    return <>{children}</>;
+  }
+
   if (isLoading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         height: '100vh',
         background: '#FFFDF5'
       }}>

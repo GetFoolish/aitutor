@@ -167,6 +167,7 @@ const DevLogin: React.FC = () => {
       fontFamily: "'Space Grotesk', -apple-system, sans-serif",
       overflow: 'auto',
       paddingTop: '80px',
+      paddingBottom: '80px',
       color: textColor,
       transition: 'background 200ms ease-out, color 200ms ease-out'
     }}>
@@ -183,7 +184,7 @@ const DevLogin: React.FC = () => {
           position: 'fixed',
           top: '16px',
           right: '16px',
-          zIndex: 10,
+          zIndex: 9,
           width: '48px',
           height: '48px',
           border: '4px solid currentColor',
@@ -195,7 +196,8 @@ const DevLogin: React.FC = () => {
           justifyContent: 'center',
           fontSize: '20px',
           fontWeight: 900,
-          boxShadow: '4px 4px 0 currentColor'
+          boxShadow: '4px 4px 0 currentColor',
+          overflow: 'hidden'
         }}
         title="Toggle dark mode"
       >
@@ -310,8 +312,10 @@ const DevLogin: React.FC = () => {
                 }}
                 disabled={loading}
                 style={{
-                  width: '120px',
-                  padding: '12px 16px',
+                  width: 'calc(50% - 6px)',
+                  minWidth: 0,
+                  maxWidth: '140px',
+                  padding: '10px 8px',
                   border: '2px solid #000',
                   background: isActive ? '#FF4B4B' : '#fff',
                   color: isActive ? '#fff' : '#000',
@@ -319,15 +323,20 @@ const DevLogin: React.FC = () => {
                   cursor: loading ? 'wait' : 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '8px',
+                  gap: '6px',
+                  overflow: 'hidden',
                 }}
               >
                 <span style={{ fontSize: '24px' }}>{subj.icon}</span>
                 <span style={{
-                  fontSize: '16px',
+                  fontSize: '13px',
                   fontWeight: 900,
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  minWidth: 0,
                 }}>
                   {subj.label}
                 </span>
@@ -445,8 +454,8 @@ const DevLogin: React.FC = () => {
         </p>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(7, 72px)',
-          gap: '8px',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(60px, 1fr))',
+          gap: '6px',
           marginBottom: '20px',
           justifyContent: 'center'
         }}>
@@ -458,8 +467,8 @@ const DevLogin: React.FC = () => {
                 onClick={() => !loading && setSelectedAge(age)}
                 disabled={loading}
                 style={{
-                  width: '72px',
-                  height: '72px',
+                  width: '100%',
+                  height: '60px',
                   minWidth: 'unset',
                   minHeight: 'unset',
                   padding: '0',

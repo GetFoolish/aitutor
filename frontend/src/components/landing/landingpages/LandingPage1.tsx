@@ -95,6 +95,29 @@ const LandingPage1: React.FC<LandingPage1Props> = ({ onGetStarted }) => {
       </section>
 
       {/* Social Proof */}
+      <section style={{ padding: '40px 20px', background: '#FFD93D', borderTop: '4px solid #000', borderBottom: '4px solid #000' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexWrap: 'wrap' as const, gap: '16px', justifyContent: 'center' }}>
+          {[
+            { number: '10,000+', label: 'Students' },
+            { number: '4.9★', label: 'Average Rating' },
+            { number: '95%', label: 'Say It Helped' },
+          ].map((stat, i) => (
+            <div key={i} style={{
+              border: '4px solid #000',
+              background: '#fff',
+              padding: '20px 32px',
+              boxShadow: '4px 4px 0 #000',
+              textAlign: 'center',
+              minWidth: '160px',
+            }}>
+              <div style={{ fontSize: '32px', fontWeight: 900, letterSpacing: '-0.02em' }}>{stat.number}</div>
+              <div style={{ fontSize: '14px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#666', marginTop: '4px' }}>{stat.label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Testimonials */}
       <section className="lp1-social">
         <div className="lp1-container">
           <div className="lp1-section-title-box lp1-section-title-box-pink">
@@ -276,6 +299,46 @@ const LandingPage1: React.FC<LandingPage1Props> = ({ onGetStarted }) => {
                     <p>{faq.a}</p>
                   </div>
                 )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Privacy Section */}
+      <section style={{ padding: '60px 20px', background: '#fff', borderTop: '4px solid #000' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <h2 style={{
+            fontSize: '28px',
+            fontWeight: 900,
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            marginBottom: '8px',
+            textAlign: 'center',
+          }}>
+            Built for Parents Too
+          </h2>
+          <p style={{ textAlign: 'center', color: '#666', marginBottom: '32px', fontSize: '16px' }}>
+            We take your child's privacy seriously.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+            {[
+              { icon: '🎥', text: 'Camera processed locally — never stored, never shared' },
+              { icon: '🛡️', text: 'COPPA compliant — safe for students under 13' },
+              { icon: '🔑', text: 'You control the data — delete anytime' },
+              { icon: '🚫', text: 'No ads, no selling data, ever' },
+            ].map((item, i) => (
+              <div key={i} style={{
+                border: '4px solid #000',
+                background: '#FFFDF5',
+                padding: '20px',
+                boxShadow: '4px 4px 0 #000',
+                display: 'flex',
+                gap: '12px',
+                alignItems: 'flex-start',
+              }}>
+                <span style={{ fontSize: '24px', flexShrink: 0 }}>{item.icon}</span>
+                <span style={{ fontSize: '15px', fontWeight: 700, lineHeight: 1.4 }}>{item.text}</span>
               </div>
             ))}
           </div>

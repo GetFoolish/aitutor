@@ -147,6 +147,13 @@ if (import.meta.env.DEV) {
   };
 }
 
+// Demo mode bypass - for testing and screenshots
+const isDemoMode = () => {
+  if (typeof window === 'undefined') return false;
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get('demo') === 'true' || localStorage.getItem('DEMO_MODE') === 'true';
+};
+
 // Component to decide between landing page and app
 const LandingPageOrApp: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -154,6 +161,12 @@ const LandingPageOrApp: React.FC = () => {
   // If user just came from assessment, always show the App (not the landing page)
   const params = new URLSearchParams(window.location.search);
   const fromAssessment = params.get('fromAssessment') === '1';
+
+  // DEMO MODE: Bypass auth for testing/screenshots
+  if (isDemoMode()) {
+    console.log('🎬 Demo mode active - bypassing authentication');
+    return <App />;
+  }
 
   if (isLoading) {
     return (

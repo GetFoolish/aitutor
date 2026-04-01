@@ -63,6 +63,7 @@ const AssessmentFlow: React.FC = () => {
   const [screenEnabled, setScreenEnabled] = useState(false);
   const [privacyMode, setPrivacyMode] = useState(false);
   const [showExitDialog, setShowExitDialog] = useState(false);
+  const [correctCount, setCorrectCount] = useState(0);
 
   // Inject alignment-fix CSS at runtime (CSS files may be cached by browser)
   useEffect(() => {
@@ -379,6 +380,7 @@ const AssessmentFlow: React.FC = () => {
       setQuestionNumber(data.question_number);
       setTotalQuestions(data.total_questions);
       setCurrentDifficulty(data.current_difficulty);
+      setCorrectCount(0);
       setLoading(false);
 
       // Track first question content fingerprint
@@ -531,6 +533,7 @@ const AssessmentFlow: React.FC = () => {
       is_correct: isCorrect,
     };
     pendingAnswerRef.current = payload;
+    if (isCorrect) setCorrectCount(prev => prev + 1);
     setSubmitting(true);
     setQuestionNumber(prev => prev + 1);
     setShowSubmittingOverlay(false);
@@ -810,7 +813,7 @@ const AssessmentFlow: React.FC = () => {
               }}>
                 <div style={{
                   border: '4px solid #000000',
-                  backgroundColor: '#FF6B6B',
+                  backgroundColor: '#4f46e5',
                   padding: isMobile ? '8px 10px' : '10px 16px',
                   boxShadow: '0 4px 0px 0px #000000',
                   display: 'flex',
@@ -851,6 +854,21 @@ const AssessmentFlow: React.FC = () => {
                   >
                     ✕ Exit
                   </button>
+                  {/* Running score badge */}
+                  <div style={{
+                    flexShrink: 0,
+                    background: 'rgba(255,255,255,0.15)',
+                    border: '2px solid rgba(255,255,255,0.5)',
+                    color: '#fff',
+                    fontSize: isMobile ? '11px' : '13px',
+                    fontWeight: 900,
+                    padding: isMobile ? '4px 8px' : '6px 12px',
+                    letterSpacing: '0.05em',
+                    minWidth: isMobile ? '52px' : '72px',
+                    textAlign: 'center' as const,
+                  }}>
+                    ✓ {correctCount}
+                  </div>
                   <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
                     <div style={{
                       width: '12px',

@@ -46,6 +46,7 @@ export default function SettingsDialog({
   className?: string;
 }) {
   const { config, setConfig, connected } = useTutorContext();
+  const { theme, setTheme } = useTheme();
   const [userPrompt, setUserPrompt] = useState("");
   const [webSearchEnabled, setWebSearchEnabled] = useState(loadWebSearchEnabled);
 
@@ -184,6 +185,35 @@ export default function SettingsDialog({
             <TTSProviderSelector />
 
             <div className="space-y-2">
+              <Label htmlFor="theme-selector">Theme</Label>
+              <Select value={theme} onValueChange={(value: "light" | "dark" | "system") => setTheme(value)}>
+                <SelectTrigger id="theme-selector" className="w-full">
+                  <SelectValue placeholder="Select theme" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="light">
+                    <div className="flex items-center gap-2">
+                      <Sun className="h-4 w-4" />
+                      <span>Light</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="dark">
+                    <div className="flex items-center gap-2">
+                      <Moon className="h-4 w-4" />
+                      <span>Dark</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="system">
+                    <div className="flex items-center gap-2">
+                      <Monitor className="h-4 w-4" />
+                      <span>System</span>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="system-instructions">System Instructions</Label>
               <Textarea
                 id="system-instructions"
@@ -219,6 +249,18 @@ export default function SettingsDialog({
                   </div>
                 ))}
               </div>
+            </div>
+
+            <div className="mt-6 pt-4 border-t">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full flex items-center justify-center gap-2"
+                onClick={() => history.push("/")}
+              >
+                <Home className="h-4 w-4" />
+                Back to Home
+              </Button>
             </div>
           </div>
         </DialogContent>

@@ -1,0 +1,409 @@
+/**
+ * Streak Counter Styles
+ * Neo-brutalism styling with fire animation
+ */
+
+.streak-counter-wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.streak-counter {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: #FFFDF5;
+  border: 2px solid #000000;
+  border-radius: 0;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 1);
+  font-family: 'Space Grotesk', sans-serif;
+
+  &:hover {
+    transform: translate(0.5px, 0.5px);
+    box-shadow: none;
+    background: #FFD93D;
+  }
+
+  &.compact {
+    padding: 2px 6px;
+    font-size: 12px;
+    gap: 2px;
+  }
+
+  // Intensity states
+  &.dormant {
+    .fire-emoji {
+      filter: grayscale(0.7) opacity(0.5);
+    }
+    .streak-count {
+      color: #888;
+    }
+  }
+
+  &.low {
+    .fire-emoji {
+      filter: none;
+      animation: flicker 2s ease-in-out infinite;
+    }
+  }
+
+  &.medium {
+    background: #FFF3CD;
+    .fire-emoji {
+      animation: flicker 1s ease-in-out infinite, glow 2s ease-in-out infinite;
+    }
+  }
+
+  &.high {
+    background: #FFEB3B;
+    .fire-emoji {
+      animation: flicker 0.5s ease-in-out infinite, glow 1s ease-in-out infinite, pulse 1.5s ease-in-out infinite;
+    }
+  }
+
+  &.blazing {
+    background: linear-gradient(135deg, #FF6B6B 0%, #FFD93D 50%, #FF6B6B 100%);
+    background-size: 200% 200%;
+    animation: gradient-shift 3s ease infinite;
+    .fire-emoji {
+      animation: flicker 0.3s ease-in-out infinite, glow 0.5s ease-in-out infinite, pulse 1s ease-in-out infinite, wiggle 0.5s ease-in-out infinite;
+    }
+    .streak-count {
+      color: #000;
+      text-shadow: 1px 1px 0 #FFD93D;
+    }
+  }
+
+  // Animation state
+  &.animating {
+    animation: celebrate 0.5s ease-out;
+    .fire-emoji {
+      animation: burst 0.5s ease-out, rotate 0.5s ease-out;
+    }
+    .streak-count {
+      animation: count-up 0.5s ease-out;
+    }
+  }
+}
+
+.fire-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fire-emoji {
+  font-size: 18px;
+  line-height: 1;
+  display: inline-block;
+}
+
+.fire-particle {
+  position: absolute;
+  font-size: 10px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.streak-counter.animating {
+  .fire-particle {
+    animation: particle-rise 0.8s ease-out forwards;
+  }
+  .fire-particle-1 {
+    left: -10px;
+    animation-delay: 0s;
+  }
+  .fire-particle-2 {
+    top: -10px;
+    animation-delay: 0.1s;
+  }
+  .fire-particle-3 {
+    right: -10px;
+    animation-delay: 0.2s;
+  }
+}
+
+.streak-count {
+  font-weight: 800;
+  color: #000;
+  font-size: inherit;
+}
+
+.freeze-indicator {
+  font-size: 12px;
+  margin-left: 2px;
+}
+
+// Tooltip
+.streak-tooltip {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #FFFDF5;
+  border: 2px solid #000;
+  box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 1);
+  padding: 12px;
+  min-width: 200px;
+  z-index: 100;
+  animation: tooltip-appear 0.2s ease-out;
+
+  .tooltip-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #000;
+  }
+
+  .tooltip-fire {
+    font-size: 24px;
+  }
+
+  .tooltip-title {
+    font-weight: 800;
+    font-size: 16px;
+  }
+
+  .tooltip-stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .stat {
+    text-align: center;
+    flex: 1;
+    padding: 8px;
+    background: #FFD93D;
+    border: 2px solid #000;
+
+    .stat-value {
+      display: block;
+      font-weight: 800;
+      font-size: 20px;
+    }
+
+    .stat-label {
+      display: block;
+      font-size: 10px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+  }
+
+  .freeze-info {
+    background: #E3F2FD;
+    border: 2px solid #000;
+    padding: 8px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .tooltip-footer {
+    text-align: center;
+    font-size: 12px;
+    color: #666;
+    font-weight: 500;
+  }
+}
+
+// Keyframe animations
+@keyframes flicker {
+  0%, 100% {
+    transform: scaleY(1) scaleX(1);
+  }
+  25% {
+    transform: scaleY(1.05) scaleX(0.98);
+  }
+  50% {
+    transform: scaleY(0.95) scaleX(1.02);
+  }
+  75% {
+    transform: scaleY(1.03) scaleX(0.97);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 2px rgba(255, 107, 107, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 8px rgba(255, 200, 50, 0.8));
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes wiggle {
+  0%, 100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes burst {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-15deg);
+  }
+  75% {
+    transform: rotate(15deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes celebrate {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.1) translateY(-2px);
+  }
+  50% {
+    transform: scale(1.15) translateY(-4px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes count-up {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes particle-rise {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes tooltip-appear {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+// Dark mode support
+:global(.dark) {
+  .streak-counter {
+    background: #1a1a1a;
+    border-color: #fff;
+    box-shadow: 1px 1px 0 0 rgba(255, 255, 255, 0.3);
+
+    .streak-count {
+      color: #fff;
+    }
+
+    &:hover {
+      background: #FFD93D;
+      .streak-count {
+        color: #000;
+      }
+    }
+
+    &.medium {
+      background: #3d3d00;
+    }
+
+    &.high {
+      background: #665c00;
+    }
+
+    &.blazing {
+      .streak-count {
+        color: #fff;
+      }
+    }
+  }
+
+  .streak-tooltip {
+    background: #1a1a1a;
+    border-color: #fff;
+    box-shadow: 3px 3px 0 0 rgba(255, 255, 255, 0.3);
+    color: #fff;
+
+    .tooltip-header {
+      border-color: #fff;
+    }
+
+    .stat {
+      background: #333;
+      border-color: #fff;
+    }
+
+    .freeze-info {
+      background: #1a3a5c;
+      border-color: #fff;
+    }
+
+    .tooltip-footer {
+      color: #aaa;
+    }
+  }
+}

@@ -36,6 +36,7 @@ import {
     AvatarFallback,
     AvatarImage,
 } from "@/components/ui/avatar";
+import { StreakCounter } from "@/components/daily-streak";
 
 interface HeaderProps {
     sidebarOpen: boolean;
@@ -102,6 +103,9 @@ export default function Header({ sidebarOpen, onToggleSidebar, assessmentMode }:
 
             {/* Right side - Actions */}
             <div className="flex items-center gap-1.5 md:gap-2">
+                {/* Daily Streak Counter */}
+                <StreakCounter />
+
                 <Button
                     type="button"
                     variant="ghost"
