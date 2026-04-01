@@ -4,7 +4,6 @@ import { apiUtils } from '../../lib/api-utils';
 import AssessmentQuestion from './AssessmentQuestion';
 import AssessmentResults from './AssessmentResults';
 import Header from '../../components/header/Header';
-import BackgroundShapes from '../background-shapes/BackgroundShapes';
 import FloatingControlPanel from '../floating-control-panel/FloatingControlPanel';
 import { TutorProvider } from '../../features/tutor';
 
@@ -584,8 +583,6 @@ const AssessmentFlow: React.FC = () => {
         justifyContent: 'flex-start',
       }}
     >
-      <BackgroundShapes />
-
       <Header
         sidebarOpen={false}
         onToggleSidebar={() => {}}

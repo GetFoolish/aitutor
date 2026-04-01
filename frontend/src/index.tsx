@@ -333,7 +333,7 @@ root.render(
                 <Route path="/landing/:id" component={LandingPageWrapper} /> {/* Dynamic landing page routes */}
                 <Route path="/app/:profileId" component={LandingPageOrApp} />
                 <Route path="/app" exact component={LandingPageOrApp} />
-                <Route path="/" exact render={() => <Redirect to="/comingsoon" />} />
+                <Route path="/" exact component={LandingPageOrApp} />
                 <Route component={NotFound} /> {/* 404 catch-all (Bug #42) */}
               </Switch>
             </Suspense>

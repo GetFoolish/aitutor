@@ -40,6 +40,12 @@ button:focus-visible,
   box-shadow: 3px 3px 0 rgba(255, 255, 255, 0.3) !important;
 }
 
+/* KaTeX/MathJax font override — keep numbers in body font, not serif math font */
+.katex, .katex *, .math, .math * {
+  font-family: 'Space Grotesk', -apple-system, sans-serif !important;
+  font-size: inherit !important;
+}
+
 html {
   overflow: hidden;
 }
