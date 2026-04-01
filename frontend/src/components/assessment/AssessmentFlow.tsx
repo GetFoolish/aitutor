@@ -792,7 +792,7 @@ const AssessmentFlow: React.FC = () => {
           )}
 
           {!completed && (
-            <div style={{ position: 'relative', flex: '1 1 auto', minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <div style={{ position: 'relative', flex: '1 1 auto', minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', backgroundColor: '#fff' }}>
               {/* Assessment Mode Banner */}
               <div style={{
                 width: '100%',
@@ -840,7 +840,7 @@ const AssessmentFlow: React.FC = () => {
                       e.currentTarget.style.transform = 'translate(0, 0)';
                     }}
                   >
-                    ✕ Exit
+                    Exit
                   </button>
                   {/* Running score badge */}
                   <div style={{

@@ -22,11 +22,9 @@
 /* Prevent all choices from highlighting when one is clicked */
 .framework-perseus .choice,
 #question-content-container .choice {
-    /* Reset any global hover states that might affect all choices */
-    transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.1s ease;
-    /* Neo-brutalism styling for radio buttons */
-    border: 4px solid #000 !important;
-    box-shadow: 4px 4px 0 #000 !important;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+    border: 1px solid #e0e0e0 !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.07) !important;
     margin-bottom: 10px !important;
     padding: 14px 18px !important;
     min-height: 48px !important;
@@ -34,48 +32,42 @@
 }
 
 /* Dark mode radio buttons */
-:global(.dark) .framework-perseus .choice,
 html.dark .framework-perseus .choice {
-    border-color: #fff !important;
-    box-shadow: 4px 4px 0 #fff !important;
-    background-color: #000 !important;
+    border-color: #374151 !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+    background-color: #1f2937 !important;
 }
 
 /* Only highlight the actually selected choice */
 .framework-perseus .choice:has(> button[aria-pressed="true"]),
 #question-content-container .choice:has(> button[aria-pressed="true"]) {
-    /* Ensure selected state is visually distinct */
-    background-color: #FFD93D !important;
-    border-color: #000 !important;
-    border-width: 5px !important;
-    transform: translate(2px, 2px);
-    box-shadow: 3px 3px 0 #000 !important;
+    background-color: #FF4B4B !important;
+    border-color: #FF4B4B !important;
+    box-shadow: 0 2px 8px rgba(255,75,75,0.3) !important;
+    color: white !important;
 }
 
 /* Dark mode selected */
-.dark .framework-perseus .choice:has(> button[aria-pressed="true"]),
 html.dark .framework-perseus .choice:has(> button[aria-pressed="true"]),
-.dark #question-content-container .choice:has(> button[aria-pressed="true"]),
 html.dark #question-content-container .choice:has(> button[aria-pressed="true"]) {
-    background-color: #FFD93D !important;
-    border-color: #fff !important;
-    border-width: 5px !important;
-    box-shadow: 3px 3px 0 #fff !important;
+    background-color: #FF4B4B !important;
+    border-color: #FF4B4B !important;
+    box-shadow: 0 2px 8px rgba(255,75,75,0.4) !important;
+    color: white !important;
 }
 
-/* Ensure selected radio highlight renders as a complete 4-sided box */
+/* Remove conflicting blue outline on selected radio */
 #question-content-container .perseus-radio-selected,
 #question-content-container .perseus-radio-option.perseus-radio-selected {
-    outline: 2px solid #1f6feb !important;
-    outline-offset: -2px;
-    box-sizing: border-box;
+    outline: none !important;
 }
 
-/* Ensure hover only affects the hovered choice, not siblings */
+/* Hover only affects the hovered choice */
 @media (hover: hover) {
     .framework-perseus .choice:hover:not(:has(> button[aria-pressed="true"])),
     #question-content-container .choice:hover:not(:has(> button[aria-pressed="true"])) {
-        background-color: rgba(0, 0, 0, 0.04);
+        background-color: #fafafa !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
     }
 }
 
@@ -384,7 +376,7 @@ html.dark [data-testid="assessment-explanation"] * {
     opacity: 1 !important;
 }
 
-/* Fix: Tiny numeric-input box (Bug #55) — make inputs large enough to be usable.
+/* Fix: Tiny numeric-input box — make inputs large enough to be usable.
    Use clamp() so inline cloze inputs don't break sentence flow. */
 #question-content-container .framework-perseus input[type="text"] {
     min-width: clamp(80px, 15vw, 140px) !important;
@@ -392,6 +384,14 @@ html.dark [data-testid="assessment-explanation"] * {
     padding: 6px 10px !important;
     font-size: 16px !important;
     box-sizing: border-box;
+    border: 1px solid #d0d0d0 !important;
+    border-radius: 4px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+    outline: none !important;
+}
+#question-content-container .framework-perseus input[type="text"]:focus {
+    border-color: #4f46e5 !important;
+    box-shadow: 0 0 0 2px rgba(79,70,229,0.15) !important;
 }
 
 /* Keep visual-heavy prompts from forcing page scroll in assessment viewport.
@@ -420,43 +420,33 @@ html.dark [data-testid="assessment-explanation"] * {
 }
 
 /* Post-answer feedback: highlight correct and incorrect choices */
-/* Plain CSS — no :global() (that's CSS Modules syntax, not valid in plain .css) */
 .framework-perseus .choice[data-feedback="correct"],
 #question-content-container .choice[data-feedback="correct"] {
-    background-color: #4ADE80 !important;  /* Green */
-    border-color: #000 !important;
-    border-width: 5px !important;
-    box-shadow: 4px 4px 0 #000 !important;
-    pointer-events: none !important;  /* Disable clicks after answer */
+    background-color: #4ADE80 !important;
+    border-color: #22C55E !important;
+    box-shadow: 0 2px 8px rgba(34,197,94,0.3) !important;
+    pointer-events: none !important;
 }
 
 .framework-perseus .choice[data-feedback="incorrect"],
 #question-content-container .choice[data-feedback="incorrect"] {
-    background-color: #FF6B6B !important;  /* Red */
-    border-color: #000 !important;
-    border-width: 5px !important;
-    box-shadow: 4px 4px 0 #000 !important;
-    opacity: 0.7 !important;
-    pointer-events: none !important;  /* Disable clicks after answer */
+    background-color: #FF6B6B !important;
+    border-color: #EF4444 !important;
+    box-shadow: 0 2px 8px rgba(239,68,68,0.3) !important;
+    opacity: 0.8 !important;
+    pointer-events: none !important;
 }
 
-/* Dark mode variations */
-.dark .framework-perseus .choice[data-feedback="correct"],
 html.dark .framework-perseus .choice[data-feedback="correct"],
-.dark #question-content-container .choice[data-feedback="correct"],
 html.dark #question-content-container .choice[data-feedback="correct"] {
     background-color: #22C55E !important;
-    border-color: #fff !important;
-    box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.3) !important;
+    border-color: #16A34A !important;
 }
 
-.dark .framework-perseus .choice[data-feedback="incorrect"],
 html.dark .framework-perseus .choice[data-feedback="incorrect"],
-.dark #question-content-container .choice[data-feedback="incorrect"],
 html.dark #question-content-container .choice[data-feedback="incorrect"] {
     background-color: #EF4444 !important;
-    border-color: #fff !important;
-    box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.3) !important;
+    border-color: #DC2626 !important;
 }
 
 /* Prevent re-selection after feedback */
@@ -470,31 +460,27 @@ html.dark #question-content-container .choice[data-feedback="incorrect"] {
 /* Target Perseus radio options directly */
 li.perseus-radio-option[data-feedback="correct"] {
     background-color: #4ADE80 !important;
-    border: 5px solid #000 !important;
-    box-shadow: 4px 4px 0 #000 !important;
+    border: 1px solid #22C55E !important;
+    box-shadow: 0 2px 8px rgba(34,197,94,0.3) !important;
     pointer-events: none !important;
 }
 
 li.perseus-radio-option[data-feedback="incorrect"] {
     background-color: #FF6B6B !important;
-    border: 5px solid #000 !important;
-    box-shadow: 4px 4px 0 #000 !important;
+    border: 1px solid #EF4444 !important;
+    box-shadow: 0 2px 8px rgba(239,68,68,0.3) !important;
     opacity: 0.8 !important;
     pointer-events: none !important;
 }
 
-.dark li.perseus-radio-option[data-feedback="correct"],
 html.dark li.perseus-radio-option[data-feedback="correct"] {
     background-color: #22C55E !important;
-    border-color: #fff !important;
-    box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.3) !important;
+    border-color: #16A34A !important;
 }
 
-.dark li.perseus-radio-option[data-feedback="incorrect"],
 html.dark li.perseus-radio-option[data-feedback="incorrect"] {
     background-color: #EF4444 !important;
-    border-color: #fff !important;
-    box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.3) !important;
+    border-color: #DC2626 !important;
 }
 
 /* ======================================================================

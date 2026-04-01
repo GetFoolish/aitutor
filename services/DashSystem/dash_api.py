@@ -3117,7 +3117,7 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
                     cleaned[0].setdefault("dash_metadata", {})["dash_question_id"] = latest_served_qid
                     return {
                         "completed": False,
-                        "question_number": session.get("questions_asked", 1),
+                        "question_number": session.get("questions_asked", 0) + 1,
                         "total_questions": session.get("max_questions", 10),
                         "question": cleaned[0],
                         "current_difficulty": round(session.get("current_difficulty", 0.5), 3),
@@ -3700,7 +3700,7 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
 
     return {
         "completed": False,
-        "question_number": questions_asked,
+        "question_number": questions_asked + 1,
         "total_questions": session.get("max_questions", 10),
         "question": q_data,
         "current_difficulty": round(new_diff, 3),

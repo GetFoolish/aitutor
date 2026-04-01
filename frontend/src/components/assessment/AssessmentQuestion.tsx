@@ -189,9 +189,9 @@ const AssessmentQuestion: React.FC<Props> = ({
     zIndex: 60,
     marginTop: compactViewport ? '4px' : '8px',
     padding: ultraCompactViewport ? '1px' : compactViewport ? '3px' : '6px',
-    border: ultraCompactViewport ? '2px solid #000' : '3px solid #000',
-    background: 'rgba(255,255,255,0.96)',
-    boxShadow: '2px 2px 0 #000',
+    border: '1px solid #e0e0e0',
+    background: 'rgba(255,255,255,0.98)',
+    boxShadow: '0 -2px 8px rgba(0,0,0,0.06)',
     pointerEvents: 'auto',
   };
   const postAnswerActionDockStyle: React.CSSProperties = {
@@ -201,8 +201,8 @@ const AssessmentQuestion: React.FC<Props> = ({
     zIndex: 70,
     marginTop: compactViewport ? '4px' : '8px',
     padding: ultraCompactViewport ? '1px' : compactViewport ? '3px' : '6px',
-    border: ultraCompactViewport ? '2px solid #000' : '3px solid #000',
-    background: 'rgba(255,255,255,0.96)',
+    border: '1px solid #e0e0e0',
+    background: 'rgba(255,255,255,0.98)',
     boxShadow: '2px 2px 0 #000',
     pointerEvents: 'auto',
   };
@@ -316,10 +316,11 @@ const AssessmentQuestion: React.FC<Props> = ({
     if (typeof q.question.content === 'string') {
       q.question.content = q.question.content
         .replace(/^(?:look at|examine|see|observe|study|check out)\s+(?:the\s+)?(?:picture|image|diagram|illustration|photo|figure)s?\b[^.!?\n]*[.!?]\s*/gim, '')
-        // Fix currency: $50$ → $50 (LaTeX-wrapped numbers that should be plain currency)
-        .replace(/\$(\d+(?:[.,]\d+)?)\$/g, '\$$1')
-        // Fix run-together words: "10and" → "10 and"
-        .replace(/(\d)and\b/g, '$1 and ')
+        // Fix digit-led LaTeX that's really plain text: $50$, $50plus$, $30per$ etc.
+        // Strip dollar signs when content starts with a digit and has no real LaTeX operators
+        .replace(/\$(\d[^$\\{}^_]*)\$/g, (_, inner) => inner)
+        // Separate run-together digit+word: "50plus" → "50 plus", "10and" → "10 and"
+        .replace(/(\d)([a-z])/gi, '$1 $2')
         .trim();
     }
     const hasRadioWidget = Object.values(q.question.widgets || {}).some((w: any) => w?.type === 'radio');
@@ -788,7 +789,7 @@ const AssessmentQuestion: React.FC<Props> = ({
   return (
     <div
       ref={questionCardRef}
-      className="framework-perseus mt-0"
+      className="framework-perseus mt-0 bg-white dark:bg-neutral-900"
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -801,9 +802,9 @@ const AssessmentQuestion: React.FC<Props> = ({
       {/* Enhanced Question Header with Progress */}
       <div
         ref={headerBlockRef}
-        className={`${ultraCompactViewport ? 'mb-1' : compactViewport ? 'mb-2' : 'mb-3'} border-[4px] border-black dark:border-white bg-white dark:bg-neutral-900 shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] overflow-hidden`}
+        className={`${ultraCompactViewport ? 'mb-1' : compactViewport ? 'mb-2' : 'mb-3'} border border-gray-200 dark:border-gray-700 bg-white dark:bg-neutral-900 shadow-sm overflow-hidden`}
       >
-        <div className={`${ultraCompactViewport ? 'px-3 py-2' : compactViewport ? 'px-4 py-3' : 'px-6 py-5'} text-center border-b-[4px] border-black dark:border-white`}>
+        <div className={`${ultraCompactViewport ? 'px-3 py-2' : compactViewport ? 'px-4 py-3' : 'px-6 py-5'} text-center border-b border-gray-200 dark:border-gray-700`}>
           <div className={`${ultraCompactViewport ? 'text-lg mb-0.5' : compactViewport ? 'text-xl mb-1' : 'text-2xl mb-2'} font-black text-black uppercase tracking-widest font-sans`}>
             QUESTION {effectiveQuestionNumber || 1} OF {totalQuestions || '?'}
           </div>
@@ -822,7 +823,7 @@ const AssessmentQuestion: React.FC<Props> = ({
             style={{
               height: '100%',
               width: `${progressPercentage}%`,
-              background: '#FF4B4B',
+              background: '#4f46e5',
               transition: 'width 0.3s ease',
             }}
           />
@@ -840,7 +841,7 @@ const AssessmentQuestion: React.FC<Props> = ({
         <div ref={contentBlockRef} style={contentBlockStyle}>
           <div
             id="question-content-container"
-            className={`border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 text-black dark:text-white ${ultraCompactViewport ? 'p-3 mb-2' : compactViewport ? 'p-4 mb-3' : 'p-5 md:p-6 lg:p-7 mb-4'} shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.4)]`}
+            className={`border border-gray-200 dark:border-gray-700 bg-white dark:bg-neutral-800 text-black dark:text-white ${ultraCompactViewport ? 'p-3 mb-2' : compactViewport ? 'p-4 mb-3' : 'p-5 md:p-6 lg:p-7 mb-4'} shadow-sm`}
             style={{
               overflow: 'visible',
               maxWidth: '100%',
@@ -880,7 +881,7 @@ const AssessmentQuestion: React.FC<Props> = ({
                     <div
                       key={idx}
                       data-testid="assessment-inline-hint"
-                      className={`${ultraCompactViewport ? 'py-2 px-3 text-sm' : compactViewport ? 'py-3 px-4 text-base' : 'py-4 px-5 text-lg'} mb-3 border-[4px] border-black dark:border-white bg-[#FFF9C4] dark:bg-amber-900/40 shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] leading-relaxed break-words text-[#111827] dark:text-[#F9FAFB]`}
+                      className={`${ultraCompactViewport ? 'py-2 px-3 text-sm' : compactViewport ? 'py-3 px-4 text-base' : 'py-4 px-5 text-lg'} mb-3 border border-yellow-200 dark:border-yellow-700 bg-[#FFF9C4] dark:bg-amber-900/40 shadow-sm leading-relaxed break-words text-[#111827] dark:text-[#F9FAFB]`}
                     >
                       <strong className="text-sm font-black uppercase tracking-wide">
                         Hint {idx + 1}:
@@ -896,7 +897,7 @@ const AssessmentQuestion: React.FC<Props> = ({
                   tabIndex={0}
                   disabled={isSubmitting}
                   onClick={() => setHintsShown(h => h + 1)}
-                  className={`${ultraCompactViewport ? 'py-3 px-5 text-sm' : 'py-4 px-6 text-base'} font-black uppercase tracking-wide bg-white dark:bg-neutral-900 text-black dark:text-white border-[4px] border-black dark:border-white cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] mb-3 hover:bg-[#FFFDF5] dark:hover:bg-neutral-800 hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] transition-all duration-100 active:translate-x-2 active:translate-y-2 active:shadow-none`}
+                  className={`${ultraCompactViewport ? 'py-3 px-5 text-sm' : 'py-4 px-6 text-base'} font-black uppercase tracking-wide bg-white dark:bg-neutral-900 text-black dark:text-white border border-gray-300 dark:border-gray-600 cursor-pointer shadow-sm mb-3 hover:bg-[#FFFDF5] dark:hover:bg-neutral-800 hover:shadow-md transition-all duration-100`}
                 >
                   Show Hint ({hintsShown + 1}/{(question.hints || []).length})
                 </button>
@@ -908,13 +909,13 @@ const AssessmentQuestion: React.FC<Props> = ({
 
       {!isAnswered && brokenWidgetOnly && (
         <div className={`${compactViewport ? 'mb-3' : 'mb-5'} relative z-10`} style={{ flexShrink: 0 }}>
-          <div className="mb-4 py-4 px-6 border-[4px] border-black dark:border-white bg-[#FFF3E0] dark:bg-orange-900/30 text-base font-black text-center text-black dark:text-orange-200 uppercase tracking-wide shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
+          <div className="mb-4 py-4 px-6 border border-orange-200 dark:border-orange-700 bg-[#FFF3E0] dark:bg-orange-900/30 text-base font-black text-center text-black dark:text-orange-200 uppercase tracking-wide shadow-sm">
             Drag-and-drop questions are not supported yet
           </div>
           <button
             onClick={() => onAnswer(false)}
             disabled={isSubmitting}
-            className="w-full py-4 px-6 text-base font-black uppercase tracking-widest bg-[#E0E0E0] text-black border-[4px] border-black cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] transition-all duration-100 font-sans hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] active:translate-x-2 active:translate-y-2 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-4 px-6 text-base font-black uppercase tracking-widest bg-[#E0E0E0] text-black border-0 cursor-pointer shadow-sm transition-all duration-100 font-sans hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Skip Question
           </button>
@@ -933,14 +934,14 @@ const AssessmentQuestion: React.FC<Props> = ({
             tabIndex={0}
             onClick={handleSubmit}
             disabled={isAnswered || isSubmitting}
-            className={`${ultraCompactViewport ? 'py-2.5 px-4 text-sm' : compactViewport ? 'py-3 px-5 text-base' : 'py-5 px-8 text-lg'} w-full font-black uppercase tracking-widest bg-[#FF4B4B] text-white border-[4px] border-black dark:border-white cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 font-sans hover:bg-[#FF3333] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)]`}
+            className={`${ultraCompactViewport ? 'py-2.5 px-4 text-sm' : compactViewport ? 'py-3 px-5 text-base' : 'py-5 px-8 text-lg'} w-full font-black uppercase tracking-widest bg-[#FF4B4B] text-white border-0 cursor-pointer shadow-md transition-all duration-100 font-sans hover:bg-[#FF3333] hover:shadow-lg active:shadow-sm disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             Submit Answer
           </button>
           {emptyWarning && (
             <div
               id="empty-submit-warning"
-              className="mt-3 py-4 px-5 border-[4px] border-black dark:border-white bg-[#FFF3E0] dark:bg-orange-900/40 shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] text-base font-black text-[#E65100] dark:text-orange-300 uppercase tracking-wide text-center animate-bounce"
+              className="mt-3 py-4 px-5 border border-orange-200 dark:border-orange-700 bg-[#FFF3E0] dark:bg-orange-900/40 shadow-sm text-base font-black text-[#E65100] dark:text-orange-300 uppercase tracking-wide text-center animate-bounce"
               style={{ animationDuration: '0.5s', animationIterationCount: '4' }}
             >
               Please select or enter an answer first
@@ -953,10 +954,10 @@ const AssessmentQuestion: React.FC<Props> = ({
       {showFeedback && keScore && (
         <div
           ref={feedbackRef}
-          className={`${compactViewport ? 'mb-2' : 'mb-4'} border-[4px] border-black dark:border-white shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] overflow-hidden ${keScore.correct ? 'bg-[#E8F5E9]' : 'bg-[#FFEBEE]'}`}
+          className={`${compactViewport ? 'mb-2' : 'mb-4'} border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden ${keScore.correct ? 'bg-[#E8F5E9]' : 'bg-[#FFEBEE]'}`}
           style={{ position: 'relative', zIndex: 20, isolation: 'isolate', backgroundColor: keScore.correct ? '#E8F5E9' : '#FFEBEE', flexShrink: 0, flexGrow: 0 }}
         >
-          <div className={`${ultraCompactViewport ? 'px-4 py-2.5' : compactViewport ? 'px-5 py-3' : 'px-8 py-5'} flex items-center justify-center gap-4 ${question?.hints?.length ? 'border-b-[4px] border-black dark:border-white' : ''}`}>
+          <div className={`${ultraCompactViewport ? 'px-4 py-2.5' : compactViewport ? 'px-5 py-3' : 'px-8 py-5'} flex items-center justify-center gap-4 ${question?.hints?.length ? 'border-b border-gray-200 dark:border-gray-700' : ''}`}>
             {keScore.correct ? (
               <>
                 <CheckCircle2 size={ultraCompactViewport ? 28 : 32} className="text-[#2E7D32] dark:text-green-400 flex-shrink-0" />
@@ -1009,7 +1010,7 @@ const AssessmentQuestion: React.FC<Props> = ({
           <button
             data-testid="assessment-next-button"
             onClick={handleNext}
-            className={`${ultraCompactViewport ? 'py-2.5 px-4 text-sm' : compactViewport ? 'py-3 px-5 text-base' : 'py-5 px-8 text-lg'} w-full font-black uppercase tracking-widest bg-[#FF4B4B] text-white border-[4px] border-black dark:border-white cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 font-sans hover:bg-[#FF3333] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none`}
+            className={`${ultraCompactViewport ? 'py-2.5 px-4 text-sm' : compactViewport ? 'py-3 px-5 text-base' : 'py-5 px-8 text-lg'} w-full font-black uppercase tracking-widest bg-[#FF4B4B] text-white border-0 cursor-pointer shadow-md transition-all duration-100 font-sans hover:bg-[#FF3333] hover:shadow-lg active:shadow-sm`}
           >
             {isFinalQuestion ? 'Finish Assessment' : 'Next Question →'}
           </button>
