@@ -2662,6 +2662,13 @@ def start_adaptive_assessment(subject: str, request: Request):
             }
 
         user_profile = dash_system.load_user_or_create(user_id, age=jwt_age if jwt_age else 5)
+        # Always sync age/grade from JWT (dev-login sends selected age; existing profiles may be stale)
+        if jwt_age and user_profile.age != jwt_age:
+            from managers.user_manager import calculate_grade_from_age
+            user_profile.age = jwt_age
+            user_profile.current_grade = calculate_grade_from_age(jwt_age)
+            dash_system.user_manager.save_user(user_profile)
+            logger.info(f"[AGE_UPDATE] Synced user {user_id} to age={jwt_age}, grade={user_profile.current_grade}")
         current_time = time.time()
         grade_name = user_profile.current_grade.replace("GRADE_", "Grade ").replace("K", "Kindergarten")
 
@@ -3755,7 +3762,6 @@ def _assessment_prefetch_worker(assessment_id: str, user_id: str, current_diffic
                     user_id, current_time,
                     exclude_question_ids=used_q_ids,
                     user_profile=user_profile,
-                    exclude_skill_ids=used_skill_ids[-3:] if len(used_skill_ids) >= 3 else None,
                     fast_mode=True,
                 )
 

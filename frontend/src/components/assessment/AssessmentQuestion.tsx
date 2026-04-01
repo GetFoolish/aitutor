@@ -789,9 +789,9 @@ const AssessmentQuestion: React.FC<Props> = ({
         display: 'flex',
         flexDirection: 'column',
         width: '100%',
-        maxWidth: 'calc(100% - 100px)',
-        overflow: 'visible',
-        paddingBottom: '80px',
+        maxWidth: '100%',
+        height: '100%',
+        overflow: 'hidden',
       }}
     >
       {/* Enhanced Question Header with Progress */}
@@ -803,14 +803,11 @@ const AssessmentQuestion: React.FC<Props> = ({
           <div className={`${ultraCompactViewport ? 'text-lg mb-0.5' : compactViewport ? 'text-xl mb-1' : 'text-2xl mb-2'} font-black text-black uppercase tracking-widest font-sans`}>
             QUESTION {effectiveQuestionNumber || 1} OF {totalQuestions || '?'}
           </div>
-          <div className={`${ultraCompactViewport ? 'text-sm' : compactViewport ? 'text-base' : 'text-lg'} font-bold text-black tracking-wide opacity-80`}>
-            Assessment in Progress
-          </div>
         </div>
 
         {/* Progress Bar */}
         <div
-          className="h-4 bg-white dark:bg-neutral-800 border-t-[4px] border-black dark:border-white relative overflow-hidden"
+          style={{ height: '6px', background: '#e5e5e5', overflow: 'hidden' }}
           role="progressbar"
           aria-valuenow={effectiveQuestionNumber}
           aria-valuemin={1}
@@ -818,15 +815,13 @@ const AssessmentQuestion: React.FC<Props> = ({
           aria-label={`Question ${effectiveQuestionNumber} of ${totalQuestions}`}
         >
           <div
-            className="h-full border-r-[4px] border-black dark:border-white transition-all duration-300 ease-out"
             style={{
+              height: '100%',
               width: `${progressPercentage}%`,
-              backgroundColor: '#FF4B4B'
+              background: '#FF4B4B',
+              transition: 'width 0.3s ease',
             }}
           />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-sm font-black text-black dark:text-white uppercase tracking-wide z-10">
-            {Math.round(progressPercentage)}%
-          </div>
         </div>
       </div>
 
@@ -837,7 +832,7 @@ const AssessmentQuestion: React.FC<Props> = ({
         </div>
       )}
 
-      <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', overflow: 'visible' }}>
+      <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', overflow: 'auto', minHeight: 0 }}>
         <div ref={contentBlockRef} style={contentBlockStyle}>
           <div
             id="question-content-container"
@@ -908,7 +903,7 @@ const AssessmentQuestion: React.FC<Props> = ({
       </div>
 
       {!isAnswered && brokenWidgetOnly && (
-        <div className={`${compactViewport ? 'mb-3' : 'mb-5'} relative z-10`}>
+        <div className={`${compactViewport ? 'mb-3' : 'mb-5'} relative z-10`} style={{ flexShrink: 0 }}>
           <div className="mb-4 py-4 px-6 border-[4px] border-black dark:border-white bg-[#FFF3E0] dark:bg-orange-900/30 text-base font-black text-center text-black dark:text-orange-200 uppercase tracking-wide shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
             Drag-and-drop questions are not supported yet
           </div>
@@ -927,7 +922,7 @@ const AssessmentQuestion: React.FC<Props> = ({
           ref={actionDockRef}
           data-testid="assessment-action-dock"
           className={ultraCompactViewport ? 'mb-1' : compactViewport ? 'mb-2' : 'mb-4'}
-          style={actionDockStyle}
+          style={{ ...actionDockStyle, flexShrink: 0 }}
         >
           <button
             data-testid="assessment-submit-button"
@@ -955,7 +950,7 @@ const AssessmentQuestion: React.FC<Props> = ({
         <div
           ref={feedbackRef}
           className={`${compactViewport ? 'mb-2' : 'mb-4'} border-[4px] border-black dark:border-white shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] overflow-hidden ${keScore.correct ? 'bg-[#E8F5E9]' : 'bg-[#FFEBEE]'}`}
-          style={{ position: 'relative', zIndex: 20, isolation: 'isolate', backgroundColor: keScore.correct ? '#E8F5E9' : '#FFEBEE', flexShrink: 0 }}
+          style={{ position: 'relative', zIndex: 20, isolation: 'isolate', backgroundColor: keScore.correct ? '#E8F5E9' : '#FFEBEE', flexShrink: 0, flexGrow: 0 }}
         >
           <div className={`${ultraCompactViewport ? 'px-4 py-2.5' : compactViewport ? 'px-5 py-3' : 'px-8 py-5'} flex items-center justify-center gap-4 ${question?.hints?.length ? 'border-b-[4px] border-black dark:border-white' : ''}`}>
             {keScore.correct ? (
@@ -1005,7 +1000,7 @@ const AssessmentQuestion: React.FC<Props> = ({
           ref={actionDockRef}
           data-testid="assessment-action-dock"
           className={ultraCompactViewport ? 'mb-1' : compactViewport ? 'mb-2' : 'mb-4'}
-          style={postAnswerActionDockStyle}
+          style={{ ...postAnswerActionDockStyle, flexShrink: 0 }}
         >
           <button
             data-testid="assessment-next-button"

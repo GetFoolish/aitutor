@@ -12,6 +12,7 @@ import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { apiUtils } from '../../lib/api-utils';
 import BackgroundShapes from '../background-shapes/BackgroundShapes';
+import TeachrLogo from '../landing/TeachrLogo';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -284,21 +285,28 @@ const UserOnboardingFlow: React.FC = () => {
         padding: '40px 20px',
         textAlign: 'center',
         maxWidth: '700px',
+        width: '100%',
         margin: '0 auto',
-        minHeight: '100vh',
+        minHeight: 'auto',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         position: 'relative',
         zIndex: 1
       }}>
+        {/* Branding */}
+        <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'center' }}>
+          <TeachrLogo size="large" />
+        </div>
+
         {/* Main Card */}
         <div style={{
           border: '5px solid #000000',
           backgroundColor: '#FFFDF5',
           padding: '40px 32px',
           boxShadow: '4px 4px 0px 0px #000000',
-          width: '100%'
+          width: '100%',
+          boxSizing: 'border-box' as const
         }}>
           {/* Title */}
           <h1 style={{
@@ -329,17 +337,17 @@ const UserOnboardingFlow: React.FC = () => {
             transform: checklistVisible ? 'translateY(0)' : 'translateY(-10px)',
             transition: 'opacity 0.5s ease-out, transform 0.5s ease-out'
           }}>
-            <ChecklistItem 
+            <ChecklistItem
               checked={checklistStatus.age}
-              label="Checking your Age"
+              label="Checking your age"
             />
-            <ChecklistItem 
+            <ChecklistItem
               checked={checklistStatus.learningLevel}
-              label="Checking your current learning level"
+              label="Checking your learning level"
             />
-            <ChecklistItem 
+            <ChecklistItem
               checked={checklistStatus.region}
-              label="Checking your Region"
+              label="Checking your region"
             />
           </div>
 
@@ -365,7 +373,7 @@ const UserOnboardingFlow: React.FC = () => {
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit(handleInfoSubmitted)}>
+              <form method="post" onSubmit={handleSubmit(handleInfoSubmitted)}>
                 <div style={{
                   display: 'flex',
                   flexDirection: 'column',
@@ -631,15 +639,14 @@ const UserOnboardingFlow: React.FC = () => {
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full h-12 text-base"
+                    className="w-full h-12 text-base tracking-wide"
                     style={{
                       textTransform: 'uppercase',
                       fontWeight: 700,
-                      letterSpacing: '0.05em',
                       marginTop: '8px',
                       border: '4px solid #000000',
-                      backgroundColor: '#FF6B6B',
-                      color: '#FFFFFF',
+                      backgroundColor: '#FFD93D',
+                      color: '#000000',
                       boxShadow: '4px 4px 0px 0px #000000',
                       transition: 'all 100ms ease-out'
                     }}

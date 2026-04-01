@@ -139,11 +139,12 @@ const MissingInfoForm: React.FC<MissingInfoFormProps> = ({
         padding: '40px 20px',
         textAlign: 'center',
         maxWidth: '600px',
+        width: '100%',
         margin: '0 auto',
-        minHeight: '100vh',
+        minHeight: 'auto',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         position: 'relative',
         zIndex: 1
       }}>
@@ -180,7 +181,7 @@ const MissingInfoForm: React.FC<MissingInfoFormProps> = ({
         </div>
 
         {/* Form Card - Neo-brutalist style */}
-        <form onSubmit={handleSubmit(onSubmitForm)}>
+        <form method="post" onSubmit={handleSubmit(onSubmitForm)}>
           <div style={{
             border: '5px solid var(--neo-black, #000000)',
             backgroundColor: 'var(--neo-bg, #FFFDF5)',
@@ -440,15 +441,14 @@ const MissingInfoForm: React.FC<MissingInfoFormProps> = ({
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full h-12 text-base"
+              className="w-full h-12 text-base tracking-wide"
               style={{
                 textTransform: 'uppercase',
                 fontWeight: 700,
-                letterSpacing: '0.05em',
                 marginTop: '8px',
                 border: '4px solid #000000',
-                backgroundColor: '#FF6B6B',
-                color: '#FFFFFF',
+                backgroundColor: '#FFD93D',
+                color: '#000000',
                 boxShadow: '4px 4px 0px 0px #000000',
                 transition: 'all 100ms ease-out'
               }}

@@ -4,8 +4,6 @@ import { apiUtils } from '../../lib/api-utils';
 import AssessmentQuestion from './AssessmentQuestion';
 import AssessmentResults from './AssessmentResults';
 import Header from '../../components/header/Header';
-import FloatingControlPanel from '../floating-control-panel/FloatingControlPanel';
-import { TutorProvider } from '../../features/tutor';
 
 // Responsive helper: true when viewport ≤ 768px
 const useIsMobile = () => {
@@ -58,10 +56,6 @@ const AssessmentFlow: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [showSubmittingOverlay, setShowSubmittingOverlay] = useState(false);
   const [loadPhase, setLoadPhase] = useState<'fast' | 'generating' | 'slow'>('fast');
-  const [isScratchpadOpen, setIsScratchpadOpen] = useState(false);
-  const [cameraEnabled, setCameraEnabled] = useState(false);
-  const [screenEnabled, setScreenEnabled] = useState(false);
-  const [privacyMode, setPrivacyMode] = useState(false);
   const [showExitDialog, setShowExitDialog] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
 
@@ -98,12 +92,6 @@ const AssessmentFlow: React.FC = () => {
     skill_id: string;
     is_correct: boolean;
   } | null>(null);
-  const floatingVideoRef = useRef<HTMLVideoElement>(null);
-  const floatingRenderCanvasRef = useRef<HTMLCanvasElement | null>(null);
-  const floatingMixerCanvasRef = useRef<HTMLCanvasElement | null>(null);
-  const floatingProcessedEdgesRef = useRef<ImageData | null>(null);
-
-
   // Simple content fingerprint for client-side duplicate detection
   const contentFingerprint = useCallback((q: Question): string => {
     const content = q?.question?.content || '';
@@ -575,7 +563,7 @@ const AssessmentFlow: React.FC = () => {
         position: 'fixed',
         inset: 0,
         overflowX: 'hidden',
-        overflowY: 'auto',
+        overflowY: 'hidden',
         display: 'flex',
         flexDirection: 'column',
         height: rootHeight,
@@ -804,7 +792,7 @@ const AssessmentFlow: React.FC = () => {
           )}
 
           {!completed && (
-            <div style={{ position: 'relative', flex: '1 1 auto', minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'visible' }}>
+            <div style={{ position: 'relative', flex: '1 1 auto', minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
               {/* Assessment Mode Banner */}
               <div style={{
                 width: '100%',
@@ -906,17 +894,17 @@ const AssessmentFlow: React.FC = () => {
 
 
               <div className="assessment-content-wrapper" style={{
-                paddingRight: isMobile ? '0' : 'max(100px, min(280px, 30vw))',
-                paddingBottom: '10px',
-                maxWidth: isMobile ? '100%' : 'calc(100% - 100px)',
+                paddingRight: '0',
+                paddingBottom: '0',
+                maxWidth: '100%',
                 marginLeft: 0,
                 marginRight: 0,
                 width: '100%',
                 flex: '1 1 auto',
                 display: 'flex',
                 flexDirection: 'column',
-                overflow: 'visible',
-                minHeight: 'min-content',
+                overflow: 'hidden',
+                minHeight: 0,
               }}>
                 {nextQuestionError && (
                   <div style={{
@@ -975,7 +963,7 @@ const AssessmentFlow: React.FC = () => {
                   </div>
                 )}
                 {currentQuestion && (
-                  <div style={{ flex: '1 1 auto', minHeight: 'min-content', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+                  <div style={{ flex: '1 1 auto', minHeight: 0, display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
                     <AssessmentQuestion
                       question={currentQuestion}
                       questionNumber={questionNumber}
@@ -1028,27 +1016,6 @@ const AssessmentFlow: React.FC = () => {
             </div>
           )}
         </>
-      )}
-
-      {!loading && !startError && !completed && (
-        <TutorProvider assessmentMode={true}>
-          <FloatingControlPanel
-            renderCanvasRef={floatingRenderCanvasRef}
-            videoRef={floatingVideoRef}
-            supportsVideo={true}
-            onPaintClick={() => setIsScratchpadOpen((prev) => !prev)}
-            isPaintActive={isScratchpadOpen}
-            cameraEnabled={cameraEnabled}
-            screenEnabled={screenEnabled}
-            onToggleCamera={setCameraEnabled}
-            onToggleScreen={setScreenEnabled}
-            privacyMode={privacyMode}
-            onTogglePrivacy={setPrivacyMode}
-            mediaMixerCanvasRef={floatingMixerCanvasRef}
-            processedEdgesRef={floatingProcessedEdgesRef}
-            assessmentMode={true}
-          />
-        </TutorProvider>
       )}
 
       {/* Exit confirmation dialog */}

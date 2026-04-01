@@ -1,12 +1,14 @@
 .auth-container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+  align-items: flex-start;
+  min-height: 100%;
   background: #FFFDF5;
   padding: 20px;
-  position: relative;
-  overflow: hidden;
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
 
   // Dot pattern background
   &::before {
