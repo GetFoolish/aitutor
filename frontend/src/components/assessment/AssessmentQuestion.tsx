@@ -778,7 +778,8 @@ const AssessmentQuestion: React.FC<Props> = ({
         flexDirection: 'column',
         width: '100%',
         maxWidth: 'calc(100% - 100px)',
-        overflow: 'visible'
+        overflow: 'visible',
+        paddingBottom: '80px',
       }}
     >
       {/* Enhanced Question Header with Progress */}
