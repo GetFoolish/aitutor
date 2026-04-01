@@ -14,6 +14,7 @@ import { scorePerseusQuestion, hasUserInput } from "../../lib/scoring-utils";
 import katex from 'katex';
 // @ts-ignore
 import confetti from 'canvas-confetti';
+import { playCorrectSound, playWrongSound } from '../../utils/sounds';
 import 'katex/dist/katex.min.css';
 import '../question-display/mcq-fix.css';
 
@@ -678,6 +679,8 @@ const AssessmentQuestion: React.FC<Props> = ({
     setShowFeedback(true);
     setKeScore(score);
     setPendingCorrect(score.correct);
+    // Sound feedback
+    if (score.correct) { playCorrectSound(); } else { playWrongSound(); }
     // Fire confetti on correct answers
     if (score.correct) {
       try {
