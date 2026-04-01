@@ -31,11 +31,25 @@
     background-color: #fff !important;
 }
 
-/* Dark mode radio buttons */
+/* Dark mode radio buttons — must use ID selector to beat #question-content-container .choice { bg:white } */
+html.dark #question-content-container .choice,
 html.dark .framework-perseus .choice {
-    border-color: #374151 !important;
+    border-color: #444 !important;
     box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
-    background-color: #1f2937 !important;
+    background-color: #2a2a2a !important;
+    color: #f3f4f6 !important;
+}
+
+/* EXIT button in assessment banner: light mode white, dark mode semi-transparent */
+.assessment-exit-btn {
+    background: white;
+    border: 2px solid rgba(0,0,0,0.4);
+    color: #000;
+}
+html.dark .assessment-exit-btn {
+    background: rgba(0,0,0,0.5) !important;
+    border-color: rgba(255,255,255,0.5) !important;
+    color: #fff !important;
 }
 
 /* Only highlight the actually selected choice */

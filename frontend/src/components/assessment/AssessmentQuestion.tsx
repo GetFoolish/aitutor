@@ -694,68 +694,71 @@ const AssessmentQuestion: React.FC<Props> = ({
       } catch (_) { /* confetti not available in test env */ }
     }
 
-    // Mark choices with correct/incorrect feedback for visual highlighting
-    setTimeout(() => {
+    // Mark choices with correct/incorrect feedback for visual highlighting.
+    // Use inline style with !important priority (beats all CSS) + data-feedback for semantics.
+    // Two attempts: immediate + 300ms fallback (handles slow Perseus renders).
+    const applyFeedbackColors = () => {
       const container = document.getElementById('question-content-container');
-      if (!container) return;
+      if (!container) return false;
 
-      // Perseus renders choices as div.choice inside a fieldset
-      // Try multiple selectors to handle different Perseus DOM structures
       let choiceElements = container.querySelectorAll('.perseus-widget-radio-fieldset .choice');
-      if (choiceElements.length === 0) {
-        choiceElements = container.querySelectorAll('li.perseus-radio-option');
-      }
-      if (choiceElements.length === 0) {
-        choiceElements = container.querySelectorAll('[class*="choice"]');
-      }
+      if (choiceElements.length === 0) choiceElements = container.querySelectorAll('li.perseus-radio-option');
+      if (choiceElements.length === 0) choiceElements = container.querySelectorAll('[class*="choice"]');
+      if (choiceElements.length === 0) return false;
 
       const widgets = questionData.widgets || {};
-
-      // Find radio widget
       const radioWidgetKey = Object.keys(widgets).find(key => widgets[key]?.type === 'radio');
-      if (radioWidgetKey && widgets[radioWidgetKey]?.options?.choices) {
-        const choices = widgets[radioWidgetKey].options.choices;
-        // Get user selection — could be choicesSelected (boolean array) or selectedChoiceIds
-        const rawInput = (userInput as Record<string, any>)[radioWidgetKey] || {};
-        const userSelection = rawInput.choicesSelected || [];
-        const selectedIds = rawInput.selectedChoiceIds || [];
+      if (!radioWidgetKey || !widgets[radioWidgetKey]?.options?.choices) return false;
 
-        choiceElements.forEach((el, idx) => {
-          if (idx < choices.length) {
-            const choice = choices[idx];
-            // Check boolean array first, fall back to selectedChoiceIds
-            const isUserSelected = userSelection[idx] === true ||
-              selectedIds.includes(String(idx)) ||
-              selectedIds.includes(`choice-${idx}`);
+      const choices = widgets[radioWidgetKey].options.choices;
+      const rawInput = (userInput as Record<string, any>)[radioWidgetKey] || {};
+      const userSelection = rawInput.choicesSelected || [];
+      const selectedIds = rawInput.selectedChoiceIds || [];
 
-            if (choice?.correct) {
-              // Mark correct answers with green
-              el.setAttribute('data-feedback', 'correct');
-              // Add a visible "✓ Correct Answer" label if user got it wrong
-              if (!isCorrect && !el.querySelector('.correct-answer-label')) {
-                const label = document.createElement('div');
-                label.className = 'correct-answer-label';
-                label.style.cssText = 'margin-top:6px;padding:3px 8px;background:#166534;color:#fff;font-weight:900;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;display:inline-block;border:2px solid #000;box-sizing:border-box;';
-                label.textContent = '✓ Correct Answer';
-                // Insert as last child to keep it inside the choice container
-                el.appendChild(label);
-              }
-            } else if (isUserSelected && !choice?.correct) {
-              // Mark user's incorrect selection with red
-              el.setAttribute('data-feedback', 'incorrect');
-              if (!el.querySelector('.incorrect-answer-label')) {
-                const label = document.createElement('div');
-                label.className = 'incorrect-answer-label';
-                label.style.cssText = 'margin-top:6px;padding:3px 8px;background:#991B1B;color:#fff;font-weight:900;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;display:inline-block;border:2px solid #000;box-sizing:border-box;';
-                label.textContent = '✗ Your Answer';
-                // Insert as last child to keep it inside the choice container
-                el.appendChild(label);
-              }
-            }
+      choiceElements.forEach((el, idx) => {
+        if (idx >= choices.length) return;
+        const choice = choices[idx];
+        const isUserSelected = userSelection[idx] === true ||
+          selectedIds.includes(String(idx)) ||
+          selectedIds.includes(`choice-${idx}`);
+        const htmlEl = el as HTMLElement;
+
+        if (choice?.correct) {
+          el.setAttribute('data-feedback', 'correct');
+          // Force green via inline !important — beats any CSS specificity battle
+          htmlEl.style.setProperty('background-color', '#4ADE80', 'important');
+          htmlEl.style.setProperty('border-color', '#22C55E', 'important');
+          htmlEl.style.setProperty('color', '#166534', 'important');
+          if (!isCorrect && !el.querySelector('.correct-answer-label')) {
+            const label = document.createElement('div');
+            label.className = 'correct-answer-label';
+            label.style.cssText = 'margin-top:6px;padding:3px 8px;background:#166534;color:#fff;font-weight:900;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;display:inline-block;box-sizing:border-box;';
+            label.textContent = '✓ Correct Answer';
+            el.appendChild(label);
           }
-        });
-      }
-    }, 200); // Delay to ensure Perseus DOM is fully rendered before applying feedback
+        } else if (isUserSelected && !choice?.correct) {
+          el.setAttribute('data-feedback', 'incorrect');
+          htmlEl.style.setProperty('background-color', '#FF6B6B', 'important');
+          htmlEl.style.setProperty('border-color', '#EF4444', 'important');
+          htmlEl.style.setProperty('color', '#fff', 'important');
+          if (!el.querySelector('.incorrect-answer-label')) {
+            const label = document.createElement('div');
+            label.className = 'incorrect-answer-label';
+            label.style.cssText = 'margin-top:6px;padding:3px 8px;background:#991B1B;color:#fff;font-weight:900;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;display:inline-block;box-sizing:border-box;';
+            label.textContent = '✗ Your Answer';
+            el.appendChild(label);
+          }
+        }
+      });
+      return true;
+    };
+
+    // Run immediately, then retry once after 300ms in case Perseus is still rendering
+    if (!applyFeedbackColors()) {
+      setTimeout(applyFeedbackColors, 300);
+    } else {
+      setTimeout(applyFeedbackColors, 300); // second pass to catch late Perseus DOM updates
+    }
 
     // Fire-and-forget analytics reporting
     const questionId = question?.dash_metadata?.dash_question_id || `assessment_q_${questionNumber}`;
@@ -795,8 +798,8 @@ const AssessmentQuestion: React.FC<Props> = ({
         flexDirection: 'column',
         width: '100%',
         maxWidth: '100%',
-        height: '100%',
-        overflow: 'hidden',
+        height: 'auto',
+        paddingBottom: '16px',
       }}
     >
       {/* Enhanced Question Header with Progress */}

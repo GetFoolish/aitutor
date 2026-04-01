@@ -4,6 +4,7 @@ import { apiUtils } from '../../lib/api-utils';
 import AssessmentQuestion from './AssessmentQuestion';
 import AssessmentResults from './AssessmentResults';
 import Header from '../../components/header/Header';
+import '../question-display/mcq-fix.css';
 
 // Responsive helper: true when viewport ≤ 768px
 const useIsMobile = () => {
@@ -512,10 +513,12 @@ const AssessmentFlow: React.FC = () => {
   }, [applyNextResponse, requestNextQuestion, submitting]);
 
   const handleAnswer = async (isCorrect: boolean) => {
-    if (!currentQuestion || !assessmentId || submitting) return;
+    // Use ref so we never fail due to stale-closure assessmentId state
+    const currentAssessmentId = assessmentIdRef.current;
+    if (!currentQuestion || !currentAssessmentId || submitting) return;
 
     const payload = {
-      assessment_id: assessmentId,
+      assessment_id: currentAssessmentId,
       question_id: currentQuestion?.dash_metadata?.dash_question_id || `q_${questionNumber}`,
       skill_id: (currentQuestion?.dash_metadata?.skill_ids || [])[0] || '',
       is_correct: isCorrect,
@@ -572,6 +575,7 @@ const AssessmentFlow: React.FC = () => {
         padding: 0,
         alignItems: 'stretch',
         justifyContent: 'flex-start',
+        backgroundColor: '#fff',
       }}
     >
       <Header
@@ -812,15 +816,13 @@ const AssessmentFlow: React.FC = () => {
                   {/* Exit assessment — regular flex child, no absolute positioning */}
                   <button
                     type="button"
+                    className="assessment-exit-btn"
                     onClick={(e) => {
                       e.stopPropagation();
                       setShowExitDialog(true);
                     }}
                     style={{
                       flexShrink: 0,
-                      background: 'white',
-                      border: '2px solid #000',
-                      color: '#000',
                       fontSize: isMobile ? '12px' : '14px',
                       fontWeight: 900,
                       padding: isMobile ? '6px 12px' : '8px 16px',
@@ -947,7 +949,7 @@ const AssessmentFlow: React.FC = () => {
                   </div>
                 )}
                 {currentQuestion && (
-                  <div style={{ flex: '1 1 auto', minHeight: 0, display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ flex: '1 1 auto', minHeight: 0, display: 'flex', flexDirection: 'column', position: 'relative', overflowY: 'auto', overflowX: 'hidden' }}>
                     <AssessmentQuestion
                       question={currentQuestion}
                       questionNumber={questionNumber}
