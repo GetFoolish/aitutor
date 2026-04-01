@@ -857,15 +857,7 @@ const AssessmentFlow: React.FC = () => {
                   }}>
                     ✓ {correctCount}
                   </div>
-                  <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
-                    <div style={{
-                      width: '12px',
-                      height: '12px',
-                      backgroundColor: '#FFFFFF',
-                      border: '2px solid #000000',
-                      borderRadius: '50%',
-                      animation: 'pulse-dot 1.5s ease-in-out infinite'
-                    }}></div>
+                  <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <span style={{
                       fontSize: isMobile ? '12px' : '16px',
                       fontWeight: 900,
@@ -878,14 +870,6 @@ const AssessmentFlow: React.FC = () => {
                         ? `GRADE ${currentDifficulty < 0.3 ? '3-4' : currentDifficulty < 0.5 ? '5-6' : currentDifficulty < 0.7 ? '7-8' : '9-10'} ${subject.toUpperCase()}`
                         : `GRADE ${currentDifficulty < 0.3 ? '3-4' : currentDifficulty < 0.5 ? '5-6' : currentDifficulty < 0.7 ? '7-8' : '9-10'} ${subject.toUpperCase()} ASSESSMENT`}
                     </span>
-                    <div style={{
-                      width: '12px',
-                      height: '12px',
-                      backgroundColor: '#FFFFFF',
-                      border: '2px solid #000000',
-                      borderRadius: '50%',
-                      animation: 'pulse-dot 1.5s ease-in-out infinite'
-                    }}></div>
                   </div>
                   {/* Right spacer to balance the Exit button — hidden on mobile */}
                   {!isMobile && <div style={{ width: '70px', flexShrink: 0 }}></div>}

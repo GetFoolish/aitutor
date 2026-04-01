@@ -316,6 +316,10 @@ const AssessmentQuestion: React.FC<Props> = ({
     if (typeof q.question.content === 'string') {
       q.question.content = q.question.content
         .replace(/^(?:look at|examine|see|observe|study|check out)\s+(?:the\s+)?(?:picture|image|diagram|illustration|photo|figure)s?\b[^.!?\n]*[.!?]\s*/gim, '')
+        // Fix currency: $50$ → $50 (LaTeX-wrapped numbers that should be plain currency)
+        .replace(/\$(\d+(?:[.,]\d+)?)\$/g, '\$$1')
+        // Fix run-together words: "10and" → "10 and"
+        .replace(/(\d)and\b/g, '$1 and ')
         .trim();
     }
     const hasRadioWidget = Object.values(q.question.widgets || {}).some((w: any) => w?.type === 'radio');
@@ -594,7 +598,7 @@ const AssessmentQuestion: React.FC<Props> = ({
   const contentBlockStyle: React.CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
-    overflowY: 'visible',
+    overflowY: 'hidden',
     overflowX: 'hidden',
     paddingRight: compactViewport ? '2px' : '4px',
     transformOrigin: 'top left',

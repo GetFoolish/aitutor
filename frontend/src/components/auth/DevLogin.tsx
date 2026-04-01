@@ -477,16 +477,18 @@ const DevLogin: React.FC = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '2px',
-                  border: '2px solid #000',
-                  background: isSelected ? '#FF4B4B' : activeColor,
-                  boxShadow: '4px 4px 0 #000',
+                  border: isSelected ? '3px solid #FF4B4B' : '2px solid #000',
+                  background: isSelected ? '#FF4B4B' : '#FFFFFF',
+                  boxShadow: isSelected ? '3px 3px 0 #FF4B4B' : '2px 2px 0 #000',
                   cursor: loading ? 'wait' : 'pointer',
+                  transform: isSelected ? 'translateY(-2px)' : 'none',
+                  transition: 'all 80ms ease-out',
                 }}
               >
                 <span style={{
                   fontSize: age >= 10 ? '22px' : '28px',
                   fontWeight: 900,
-                  color: '#fff',
+                  color: isSelected ? '#fff' : '#000',
                   textShadow: 'none'
                 }}>
                   {age}
@@ -494,7 +496,7 @@ const DevLogin: React.FC = () => {
                 <span style={{
                   fontSize: '10px',
                   fontWeight: 700,
-                  color: 'rgba(255,255,255,0.9)',
+                  color: isSelected ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.6)',
                   textTransform: 'uppercase',
                   whiteSpace: 'nowrap',
                   letterSpacing: '0.05em'

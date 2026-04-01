@@ -149,7 +149,10 @@ async def dev_login(request: DevLoginRequest):
         "email": f"{user_id}@dev.teachr.live",
         "name": name,
         "google_id": user_id,
+        "age": request.age,
     })
+    import logging as _logging
+    _logging.getLogger(__name__).info(f"[JWT_AGE] dev-login token age={request.age} for user {user_profile.user_id}")
 
     return {
         "token": jwt_token,

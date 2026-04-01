@@ -1281,7 +1281,6 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
             current_time,
             exclude_question_ids=selected_question_ids,
             user_profile=user_profile,
-            fast_mode=True,
         )
         if q1:
             selected_questions.append(q1)
@@ -1345,7 +1344,6 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
                         age=user_profile.age if user_profile.age else 7,
                         exclude_question_ids=exclude_snapshot,
                         user_id=user_id,
-                        fast_mode=True,
                         subject=active_subject,
                     )
                     if ai_result:
@@ -1416,7 +1414,6 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
                     current_time,
                     exclude_question_ids=selected_question_ids,
                     user_profile=user_profile,
-                    fast_mode=True,
                 )
                 if q:
                     selected_questions.append(q)
@@ -1502,7 +1499,6 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
             current_time,
             exclude_question_ids=selected_question_ids,
             user_profile=user_profile,
-            fast_mode=True,
         )
         if not q:
             break
@@ -2047,7 +2043,6 @@ def recommend_next_questions(request: Request, req: RecommendNextRequest):
                     grade_level=skill.grade_level.name,
                     age=user_profile.age if user_profile.age else 7,
                     exclude_question_ids=collected_ids, user_id=user_id,
-                    fast_mode=True,
                     subject=active_subject,
                 )
                 if ai_result:
@@ -2359,7 +2354,6 @@ def start_assessment(
                         age=student_age,
                         exclude_question_ids=exclude_question_ids,
                         user_id=user_id,
-                        fast_mode=True,
                         subject=dash_system.subject or "",
                     )
                     if ai_result:
@@ -2712,7 +2706,6 @@ def start_adaptive_assessment(subject: str, request: Request):
                     age=user_profile.age if user_profile.age else 10,
                     exclude_question_ids=exclude_question_ids or [],
                     user_id=user_id,
-                    fast_mode=True,
                     subject=subject,
                     student_context=_frozen_student_context,
                 )
@@ -2813,7 +2806,6 @@ def start_adaptive_assessment(subject: str, request: Request):
                 user_id,
                 current_time,
                 user_profile=user_profile,
-                fast_mode=True,
                 force_grade_range=True,
             )
 
@@ -2825,7 +2817,6 @@ def start_adaptive_assessment(subject: str, request: Request):
                 user_id,
                 current_time,
                 user_profile=user_profile,
-                fast_mode=True,
             )
 
         if not first_q:
@@ -2857,7 +2848,6 @@ def start_adaptive_assessment(subject: str, request: Request):
                     user_id,
                     current_time,
                     user_profile=user_profile,
-                    fast_mode=True,
                     exclude_question_ids=[first_q.question_id],
                 )
                 if alt_q:
@@ -2987,14 +2977,13 @@ def resume_assessment(
 
     # Get the next question for them to answer
     # Use the existing get_next_question_flexible logic
-    # Signature: (student_id, current_time, exclude_question_ids, force_grade_range, user_profile, exclude_skill_ids, fast_mode)
+    # Signature: (student_id, current_time, exclude_question_ids, force_grade_range, user_profile)
     current_time = time.time()
     try:
         next_q = dash_system.get_next_question_flexible(
             user_id,
             current_time,
             exclude_question_ids=session.get("used_question_ids", []),
-            fast_mode=True,
         )
 
         if not next_q:
@@ -3437,8 +3426,6 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
                         used_q_ids,  # exclude_question_ids
                         False,       # force_grade_range
                         user_profile,
-                        used_skill_ids[-3:] if len(used_skill_ids) >= 3 else None,
-                        True,        # fast_mode
                     )
                     next_q = future.result(timeout=pool_lookup_timeout)
                 except concurrent.futures.TimeoutError:
@@ -3499,7 +3486,6 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
                             age=user_profile.age if user_profile.age else 10,
                             exclude_question_ids=used_q_ids,
                             user_id=user_id,
-                            fast_mode=True,
                             subject=subject,
                         )
                         ai_result = future.result(timeout=jit_timeout)
@@ -3762,7 +3748,6 @@ def _assessment_prefetch_worker(assessment_id: str, user_id: str, current_diffic
                     user_id, current_time,
                     exclude_question_ids=used_q_ids,
                     user_profile=user_profile,
-                    fast_mode=True,
                 )
 
             # Check for duplicate
@@ -3783,7 +3768,6 @@ def _assessment_prefetch_worker(assessment_id: str, user_id: str, current_diffic
                         age=user_profile.age if user_profile.age else 10,
                         exclude_question_ids=used_q_ids,
                         user_id=user_id,
-                        fast_mode=True,
                         subject=subject,
                     )
                     if ai_result:
@@ -3888,7 +3872,6 @@ def _learning_prefetch_worker(user_id: str, subject: str, exclude_question_ids: 
             user_id, current_time,
             exclude_question_ids=exclude_question_ids,
             user_profile=user_profile,
-            fast_mode=True,
         )
 
         if not q:
@@ -4820,7 +4803,6 @@ def _prewarm_assessment_questions(user_id: str, subject: str, region: str):
                         age=age,
                         exclude_question_ids=[],
                         user_id=user_id,
-                        fast_mode=True,
                         subject=subject,
                     )
                     if ai_result:
@@ -4841,7 +4823,6 @@ def _prewarm_assessment_questions(user_id: str, subject: str, region: str):
                     user_id,
                     current_time,
                     user_profile=profile,
-                    fast_mode=True,
                     force_grade_range=True,
                 )
 
