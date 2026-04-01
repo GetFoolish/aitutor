@@ -801,7 +801,7 @@ const AssessmentQuestion: React.FC<Props> = ({
           className="h-4 bg-white dark:bg-neutral-800 border-t-[4px] border-black dark:border-white relative overflow-hidden"
           role="progressbar"
           aria-valuenow={effectiveQuestionNumber}
-          aria-valuemin={0}
+          aria-valuemin={1}
           aria-valuemax={totalQuestions}
           aria-label={`Question ${effectiveQuestionNumber} of ${totalQuestions}`}
         >
