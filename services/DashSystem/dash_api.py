@@ -325,11 +325,11 @@ async def startup_event():
 
         # Quality tracking feedback loop
         from services.DashSystem.quality_tracker import QualityTracker
-        quality_tracker = QualityTracker(mongo_db.db, mongo_db.questions_db)
+        quality_tracker = QualityTracker(mongo_db.db, mongo_db.db)
         logger.info("QualityTracker initialized")
 
         # DASH init — tolerant of 0 skills on fresh DB
-        dash_system = DASHSystem(content_engine=content_v1_engine)
+        dash_system = DASHSystem()
         qi_count = len(dash_system.question_index) if dash_system.question_index else 0
         ai_mode = "AI" if dash_system.use_ai_questions else "Khan"
         logger.info(
@@ -341,7 +341,7 @@ async def startup_event():
             from services.DashSystem.content_generation_service import ContentGenerationService
             content_service = ContentGenerationService(
                 db_ai_tutor=mongo_db.db,
-                db_questions=mongo_db.questions_db,
+                db_questions=mongo_db.db,
                 content_engine=content_v1_engine,
                 verifier=content_v1_engine.verifier if hasattr(content_v1_engine, "verifier") else None,
             )
@@ -363,7 +363,7 @@ async def startup_event():
                 for subject in popular_subjects:
                     try:
                         # Get sample skills for this subject
-                        skills = list(mongo_db.questions_db.skills.find({
+                        skills = list(mongo_db.db.skills.find({
                             "subject": subject
                         }).limit(10))
 

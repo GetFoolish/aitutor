@@ -56,15 +56,7 @@ def get_current_user(request: Request) -> str:
     token = auth_header.split(" ")[1]
 
     try:
-<<<<<<< HEAD
-        payload = jwt.decode(
-            token,
-            JWT_SECRET,
-            algorithms=[JWT_ALGORITHM]
-        )
-=======
         payload = _decode_auth_token(token)
->>>>>>> origin/main
         user_id = payload.get("sub")
 
         if not user_id:
