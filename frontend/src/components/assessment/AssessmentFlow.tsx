@@ -595,7 +595,7 @@ const AssessmentFlow: React.FC = () => {
           <div style={{
             width: '200px',
             height: '8px',
-            border: '4px solid #000',
+            border: '1px solid #e0e0e0',
             backgroundColor: '#fff',
             overflow: 'hidden'
           }}>
@@ -639,13 +639,13 @@ const AssessmentFlow: React.FC = () => {
             }}
             style={{
               padding: '10px 24px',
-              border: '4px solid #000',
+              border: '1px solid #e0e0e0',
               background: '#fff',
               cursor: 'pointer',
               fontWeight: 700,
               fontSize: '14px',
               textTransform: 'uppercase',
-              boxShadow: '4px 4px 0 #000',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
               minHeight: '48px',
             }}
           >
@@ -661,9 +661,9 @@ const AssessmentFlow: React.FC = () => {
               }}
               style={{
                 padding: '10px 28px',
-                border: '4px solid #000',
+                border: '1px solid #e0e0e0',
                 background: '#FFD93D',
-                boxShadow: '4px 4px 0 #000',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
                 cursor: 'pointer',
                 fontWeight: 700,
                 fontSize: '14px',
@@ -696,13 +696,13 @@ const AssessmentFlow: React.FC = () => {
         }}>
           <div style={{
             padding: '12px 24px',
-            border: '4px solid #000',
+            border: '1px solid rgba(255,255,255,0.3)',
             background: '#FF6B6B',
             color: '#fff',
             fontWeight: 700,
             fontSize: '14px',
             textTransform: 'uppercase',
-            boxShadow: '4px 4px 0 #000'
+            boxShadow: '0 2px 8px rgba(0,0,0,0.12)'
           }}>
             {startError}
           </div>
@@ -711,9 +711,9 @@ const AssessmentFlow: React.FC = () => {
             disabled={loading}
             style={{
               padding: '12px 32px',
-              border: '4px solid #000',
+              border: '1px solid #e0e0e0',
               background: loading ? '#ddd' : '#FFD93D',
-              boxShadow: '4px 4px 0 #000',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
               cursor: loading ? 'wait' : 'pointer',
               fontWeight: 700,
               fontSize: '14px',
@@ -732,14 +732,14 @@ const AssessmentFlow: React.FC = () => {
             }}
             style={{
               padding: '10px 24px',
-              border: '4px solid #000',
+              border: '1px solid #e0e0e0',
               background: '#fff',
               cursor: 'pointer',
               fontWeight: 700,
               fontSize: '14px',
               textTransform: 'uppercase',
               marginTop: '8px',
-              boxShadow: '4px 4px 0 #000',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
               minHeight: '48px',
             }}
           >
@@ -749,14 +749,14 @@ const AssessmentFlow: React.FC = () => {
             onClick={() => { history.replace('/app'); }}
             style={{
               padding: '10px 24px',
-              border: '4px solid #000',
+              border: '1px solid #e0e0e0',
               background: '#E0E0E0',
               cursor: 'pointer',
               fontWeight: 700,
               fontSize: '14px',
               textTransform: 'uppercase',
               marginTop: '4px',
-              boxShadow: '4px 4px 0 #000',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
               minHeight: '48px',
             }}
           >
@@ -800,10 +800,10 @@ const AssessmentFlow: React.FC = () => {
                 marginBottom: '10px'
               }}>
                 <div style={{
-                  border: '4px solid #000000',
+                  border: '1px solid rgba(255,255,255,0.15)',
                   backgroundColor: '#4f46e5',
                   padding: isMobile ? '8px 10px' : '10px 16px',
-                  boxShadow: '0 4px 0px 0px #000000',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: isMobile ? '6px' : '12px',
@@ -892,12 +892,12 @@ const AssessmentFlow: React.FC = () => {
               }}>
                 {nextQuestionError && (
                   <div style={{
-                    border: '4px solid #000000',
+                    border: '1px solid rgba(255,255,255,0.3)',
                     backgroundColor: '#FF6B6B',
                     color: '#fff',
                     padding: '14px 16px',
                     marginBottom: '20px',
-                    boxShadow: '4px 4px 0 #000',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
                     textAlign: 'center'
                   }}>
                     <div style={{
@@ -914,7 +914,7 @@ const AssessmentFlow: React.FC = () => {
                       disabled={submitting}
                       style={{
                         padding: '10px 24px',
-                        border: '4px solid #000',
+                        border: '1px solid #e0e0e0',
                         background: '#FFD93D',
                         color: '#000',
                         cursor: submitting ? 'not-allowed' : 'pointer',
@@ -922,7 +922,7 @@ const AssessmentFlow: React.FC = () => {
                         fontSize: '14px',
                         textTransform: 'uppercase',
                         opacity: submitting ? 0.7 : 1,
-                        boxShadow: '4px 4px 0 #000',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
                         minHeight: '48px',
                       }}
                     >
@@ -933,10 +933,10 @@ const AssessmentFlow: React.FC = () => {
                 {!currentQuestion && !nextQuestionError && (
                   <div style={{ textAlign: 'center', padding: '40px 20px' }}>
                     <div style={{
-                      border: '4px solid #000',
+                      border: '1px solid #e0e0e0',
                       backgroundColor: '#FFD93D',
                       padding: '20px',
-                      boxShadow: '4px 4px 0 #000',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
                       fontWeight: 800,
                       fontSize: '14px',
                       textTransform: 'uppercase',
@@ -972,13 +972,13 @@ const AssessmentFlow: React.FC = () => {
                           style={{
                             textAlign: 'center',
                             padding: '12px 18px',
-                            border: '4px solid #000000',
+                            border: '1px solid #e0e0e0',
                             backgroundColor: '#FFD93D',
-                            boxShadow: '4px 4px 0 #000000'
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.12)'
                           }}
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <span style={{ display: 'inline-block', width: '18px', height: '18px', border: '3px solid #000', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.7s linear infinite', flexShrink: 0 }} />
+                            <span style={{ display: 'inline-block', width: '18px', height: '18px', border: '3px solid #4f46e5', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.7s linear infinite', flexShrink: 0 }} />
                             <span
                               style={{
                                 fontSize: '16px',
@@ -1010,7 +1010,7 @@ const AssessmentFlow: React.FC = () => {
         >
           <div
             role="dialog"
-            className="bg-white dark:bg-neutral-800 border-[4px] border-black dark:border-white shadow-[8px_8px_0_0_#000] dark:shadow-[8px_8px_0_0_rgba(255,255,255,0.3)] p-8 max-w-md mx-4"
+            className="bg-white dark:bg-neutral-800 border border-gray-200 dark:border-gray-700 shadow-xl p-8 max-w-md mx-4 rounded-lg"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-2xl font-black uppercase tracking-tight text-black dark:text-white mb-4">
@@ -1022,13 +1022,13 @@ const AssessmentFlow: React.FC = () => {
             <div className="flex gap-4">
               <button
                 onClick={confirmExit}
-                className="flex-1 py-3 px-6 font-black uppercase tracking-widest text-base bg-red-500 dark:bg-red-600 text-white border-[4px] border-black dark:border-white shadow-[4px_4px_0_0_#000] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_#000] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all duration-100"
+                className="flex-1 py-3 px-6 font-black uppercase tracking-wide text-base bg-red-500 dark:bg-red-600 text-white border border-red-400 dark:border-red-700 shadow-md hover:bg-red-600 dark:hover:bg-red-700 hover:shadow-sm active:shadow-none transition-all duration-100 rounded"
               >
                 Yes, Exit
               </button>
               <button
                 onClick={() => setShowExitDialog(false)}
-                className="flex-1 py-3 px-6 font-black uppercase tracking-widest text-base bg-gray-200 dark:bg-neutral-700 text-black dark:text-white border-[4px] border-black dark:border-white shadow-[4px_4px_0_0_#000] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_#000] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all duration-100"
+                className="flex-1 py-3 px-6 font-black uppercase tracking-wide text-base bg-gray-200 dark:bg-neutral-700 text-black dark:text-white border border-gray-300 dark:border-neutral-600 shadow-md hover:bg-gray-300 dark:hover:bg-neutral-600 hover:shadow-sm active:shadow-none transition-all duration-100 rounded"
               >
                 Cancel
               </button>

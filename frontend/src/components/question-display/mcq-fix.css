@@ -56,6 +56,16 @@ html.dark #question-content-container .choice:has(> button[aria-pressed="true"])
     color: white !important;
 }
 
+/* Fix #3: Letter badge (A/B/C/D) must be white on coral selected background */
+.framework-perseus .choice:has(> button[aria-pressed="true"]) [class*="letter"],
+#question-content-container .choice:has(> button[aria-pressed="true"]) [class*="letter"],
+.framework-perseus .choice:has(> button[aria-pressed="true"]) [class*="Letter"],
+#question-content-container .choice:has(> button[aria-pressed="true"]) [class*="Letter"] {
+    color: white !important;
+    border-color: rgba(255,255,255,0.5) !important;
+    background: rgba(255,255,255,0.2) !important;
+}
+
 /* Remove conflicting blue outline on selected radio */
 #question-content-container .perseus-radio-selected,
 #question-content-container .perseus-radio-option.perseus-radio-selected {

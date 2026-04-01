@@ -102,7 +102,7 @@ export default function Header({ sidebarOpen, onToggleSidebar, assessmentMode }:
             </div>
 
             {/* Right side - Actions */}
-            <div className="flex items-center gap-1.5 md:gap-2">
+            <div className="flex items-center gap-1 md:gap-1.5">
                 {/* Daily Streak Counter */}
                 <StreakCounter />
 
@@ -110,7 +110,8 @@ export default function Header({ sidebarOpen, onToggleSidebar, assessmentMode }:
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="w-10 h-10 md:w-12 md:h-12 border-[4px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[4px_4px_0_0_rgba(0,0,0,1)] lg:shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 text-black dark:text-white dark:hover:text-black"
+                    data-testid="theme-toggle"
+                    className="w-9 h-9 md:w-10 md:h-10 border border-gray-200 dark:border-gray-700 bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] shadow-sm transition-all duration-100 text-black dark:text-white dark:hover:text-black"
                     onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                 >
                     <Sun className="h-[0.9rem] w-[0.9rem] md:h-[1rem] md:w-[1rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
@@ -120,7 +121,7 @@ export default function Header({ sidebarOpen, onToggleSidebar, assessmentMode }:
 
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="relative h-7 w-7 md:h-8 md:w-8 lg:h-8 lg:w-8 p-0 border-[4px] border-black dark:border-white bg-[#FF6B6B] hover:bg-[#FF6B6B] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[4px_4px_0_0_rgba(0,0,0,1)] lg:shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] transition-all duration-100">
+                        <Button variant="ghost" className="relative h-7 w-7 md:h-8 md:w-8 lg:h-8 lg:w-8 p-0 border border-gray-200 dark:border-gray-700 bg-[#FF6B6B] hover:bg-[#FF6B6B] shadow-sm transition-all duration-100">
                             <Avatar className="h-full w-full border-none">
                                 <AvatarFallback className="bg-transparent text-white font-black text-xs">{(user?.name || 'S').charAt(0).toUpperCase()}</AvatarFallback>
                             </Avatar>
@@ -179,7 +180,7 @@ export default function Header({ sidebarOpen, onToggleSidebar, assessmentMode }:
                         variant="ghost"
                         size="icon"
                         title={sidebarOpen ? "Hide Grades Panel" : "Show Grades Panel"}
-                        className="w-10 h-10 md:w-12 md:h-12 border-[4px] border-black dark:border-white bg-[#FFD93D] hover:bg-[#FFD93D] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[4px_4px_0_0_rgba(0,0,0,1)] lg:shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 text-black"
+                        className="w-9 h-9 md:w-10 md:h-10 border border-gray-200 dark:border-gray-700 bg-[#FFD93D] hover:bg-[#FFD93D] shadow-sm transition-all duration-100 text-black"
                         onClick={onToggleSidebar}
                     >
                         {sidebarOpen ? (
