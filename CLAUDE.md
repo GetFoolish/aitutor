@@ -1,24 +1,65 @@
-# AI Tutor Project - Claude Code Rules
+# Teachr.Live — Claude Code Rules
 
-## Critical API Signature Rules
+## The Cardinal Rule
 
-### 1. Never Add Parameters Without Verification
-**NEVER** add parameters to Python API calls without checking the actual function signature first.
+**Fix code. Do not write about code.**
 
-Before calling any function in `dash_system.py`, ALWAYS:
-1. Read the function definition to see what parameters it accepts
-2. Check existing calls to that function for examples
-3. Only use parameters that are explicitly defined
+When given a bug: fix it, run the build, commit. No markdown files. No QA reports. No analysis docs. No new .md files of any kind. If you find yourself writing a report instead of fixing code — STOP. Fix the code.
 
-### 2. Check Both Sides of API Calls
-When modifying API endpoints or function calls:
-- Check the **backend function signature** in `services/DashSystem/dash_system.py`
-- Check the **frontend API call** in `frontend/src/` components
-- Check the **FastAPI endpoint** in `services/DashSystem/dash_api.py`
-- Ensure all three layers use the same parameter names and types
+## Ship Gate
 
-### 3. `get_next_question_flexible()` Signature
-This function is called frequently. Its ONLY valid parameters are:
+Before saying "done" on ANY task, you must pass ALL of these:
+
+```bash
+cd frontend && npm run build          # Must pass with 0 errors
+cd frontend && npm run lint           # Must pass
+cd .. && python3 -m pytest tests/ -x  # Must pass
+```
+
+If any of these fail, fix them before reporting done. Never say "done" when the build is broken.
+
+## Verification Protocol (Stolen from Verification Specialist Pattern)
+
+After every fix, give a verdict:
+- PASS — build green, feature works end-to-end, visually correct
+- PARTIAL — build green but edge case still broken (describe exactly what)
+- FAIL — build broken or regression introduced
+
+Never report PASS unless you've actually run the build and it passed.
+
+## Design System — Non-Negotiable
+
+Every UI element must follow these rules EXACTLY. No exceptions.
+
+```css
+/* Borders */
+border: 2px solid #000000;
+border-radius: 0px;
+
+/* Shadows */
+box-shadow: 4px 4px 0px #000000;
+
+/* Primary color */
+--primary: #FF4B4B;
+
+/* Background */
+--bg: #FFFDF5;
+
+/* Typography scale */
+H1: 32px bold uppercase letter-spacing:0.1em
+H2: 12px bold uppercase letter-spacing:0.15em color:#666
+Body: 16px regular
+Caption: 13px color:#666
+Button: 14px bold uppercase
+
+/* Spacing — 8px grid ONLY */
+/* All margins/paddings must be: 8, 16, 24, 32, 40, 48px */
+```
+
+## Critical API Rules
+
+### `get_next_question_flexible()` — Only Valid Parameters
+
 ```python
 def get_next_question_flexible(
     self,
@@ -32,135 +73,68 @@ def get_next_question_flexible(
 ) -> Optional[Question]:
 ```
 
-**DO NOT** pass: `difficulty`, `grade`, `subject`, `used_skill_ids` - these are NOT valid parameters.
+DO NOT pass: `difficulty`, `grade`, `subject`, `used_skill_ids` — these do not exist.
 
-## UI/UX Rules
+### Three-Layer API Rule
 
-### 4. AssessmentFlow Must Work End-to-End
-Always test that `AssessmentFlow.tsx` can:
-- Load question 1
-- Submit an answer
-- Load question 2
-- Complete the full assessment flow
+When changing any endpoint, check ALL THREE layers:
+1. Backend function signature in `services/DashSystem/dash_system.py`
+2. FastAPI endpoint in `services/DashSystem/dash_api.py`
+3. Frontend fetch in `frontend/src/` components
 
-Never close a task until you've verified the assessment can get past question 1.
+All three must agree on parameter names and types.
 
-### 5. Toolbar Overlap Issues
-Check for floating UI elements that can overlap with content:
-- `FloatingControlPanel` at bottom-right
-- Dropdowns and popovers
-- Hint panels
-- Feedback boxes
+## Assessment Flow — Must Work End-to-End
 
-Use `z-index` carefully and test on small viewports (≤920px height).
+The assessment must pass this full flow before any task is "done":
+1. /app/dev-login → select subject → select age → START ASSESSMENT button turns active
+2. Question loads within 10 seconds
+3. Select answer → Submit → correct/incorrect feedback shows
+4. Next question loads
+5. Complete 10 questions → results screen shows
+6. Exit button → confirmation dialog → navigates home cleanly
 
-## Testing Rules
+Never close a task until this entire flow works.
 
-### 6. Run Integration Tests
-Before claiming "done", run:
-```bash
-venv/bin/python tests/test_integration.py
+## What "Done" Means
+
+Done = build passes + lint passes + tests pass + full assessment flow works + no console errors.
+
+NOT done = "I made the changes" or "it should work now" without running verification.
+
+## Banned Actions
+
+- Creating .md files (QA reports, bug reports, analysis docs, anything)
+- Saying "done" without running the build
+- Adding TODO comments instead of fixing things
+- Partial fixes ("I fixed the main issue, the edge case can be addressed later")
+- Writing console.log debug statements and leaving them in
+
+## Commit Message Format
+
+```
+fix: <what was broken> — <what you did>
+polish: <what you improved>
+feat: <what you added>
 ```
 
-### 7. Check Browser Console
-Always check the browser console for:
-- React errors (red text)
-- Network errors (failed API calls)
-- Perseus widget errors (ErrorBoundary warnings)
+One commit per logical change. Always include what was verified.
 
-## Code Quality Rules
+## File Size Rule (from Phantom)
 
-### 8. Batch Similar Bugs
-If you find a bug in one component (e.g., toolbar overlap):
-1. Search the entire codebase for the same pattern
-2. Fix all instances at once
-3. Don't fix bugs one at a time
+Files over 300 lines must be split. If approaching 250 lines, plan the split.
 
-### 9. Perseus Widget Fields
-When modifying Perseus questions, ensure ALL required fields are present:
-- `numeric-input`: MUST have `coefficient`, `static`, `labelText`, `size`
-- `radio`: MUST have sanitized choices with no pre-selected state
-- `dropdown`: MUST have 1-based indexing (0 = placeholder)
+## Toolbar Overlap
 
-### 10. Context Before Fixing
-When asked to fix a bug:
-1. Read the FULL error message including stack trace
-2. Read the relevant function signatures
-3. Check what arguments are ACTUALLY being passed
-4. Fix the mismatch - don't guess
-
-## MongoDB Rules
-
-### 11. Use Environment Variables
-- MongoDB is on Atlas (cloud), NOT localhost
-- ALWAYS use `MONGODB_URI` from `.env`
-- Never hardcode `mongodb://localhost:27017`
-
-### 12. JWT Claims
-- JWT `sub` field contains `user_id` (NOT `userId`)
-- Auth middleware uses `get_current_user()` which returns `sub`
-
-## Performance Rules
-
-### 13. Parallel Operations
-When multiple independent operations are needed:
-- Use `ThreadPoolExecutor` with timeouts
-- Don't block on slow operations
-- Cache results when possible
-
-### 14. Question Generation
-- Pool-first: check `content_pool` collection
-- JIT fallback: only when pool is empty
-- Never block assessment flow on question generation
-
-## Documentation Rules
-
-### 15. Update Memory After Fixes
-After fixing a recurring bug class:
-1. Document the pattern in `MEMORY.md`
-2. Include validation count
-3. Make it actionable for future sessions
-
-### 16. No Silent Failures
-Never:
-- Catch exceptions without logging
-- Return `None` without explanation
-- Fail silently on critical paths
-
-Always log errors with enough context to debug.
-
----
-
-## Quick Reference: Common Function Signatures
-
-### DASHSystem Methods
-```python
-# Get next question
-get_next_question_flexible(student_id, current_time, exclude_question_ids, force_grade_range, user_profile, exclude_skill_ids, fast_mode)
-
-# Record attempt
-record_attempt(student_id, question_id, skill_ids, correct, difficulty, time_spent)
-
-# Get recommendations
-get_skill_recommendations(student_id, current_time, limit)
+FloatingControlPanel is on the right side. Main content must always have:
+```css
+padding-right: 72px; /* accounts for toolbar width */
 ```
+Test on viewports ≤ 920px height.
 
-### ContentV1Engine Methods
-```python
-# Pop from pool
-pop_assessment_question(skill_id, difficulty_tier, user_id)
-pop_learning_question(skill_id, difficulty_tier, user_id)
+## Perseus Widget Fields
 
-# Ensure pool exists
-ensure_pool(skill_id, user_id)
-```
-
-### AIQuestionProvider Methods
-```python
-# Get question (JIT fallback)
-get_question_for_skill(skill_id, skill_name, target_difficulty, grade_level, age, exclude_question_ids, user_id, fast_mode, subject)
-```
-
----
-
-**Remember: When in doubt, READ THE ACTUAL FUNCTION SIGNATURE before calling it.**
+When modifying Perseus questions, ALL required fields must be present:
+- `content`, `widgets`, `images` in question
+- `type`, `options` in each widget
+- Never remove fields, only add them
