@@ -796,7 +796,14 @@ const AssessmentQuestion: React.FC<Props> = ({
         </div>
 
         {/* Progress Bar */}
-        <div className="h-4 bg-white dark:bg-neutral-800 border-t-[4px] border-black dark:border-white relative overflow-hidden">
+        <div
+          className="h-4 bg-white dark:bg-neutral-800 border-t-[4px] border-black dark:border-white relative overflow-hidden"
+          role="progressbar"
+          aria-valuenow={effectiveQuestionNumber}
+          aria-valuemin={0}
+          aria-valuemax={totalQuestions}
+          aria-label={`Question ${effectiveQuestionNumber} of ${totalQuestions}`}
+        >
           <div
             className="h-full border-r-[4px] border-black dark:border-white transition-all duration-300 ease-out"
             style={{
