@@ -62,6 +62,7 @@
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
+    "country-list": "^2.4.1",
     "date-fns": "^4.1.0",
     "dotenv-flow": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
@@ -118,6 +119,7 @@
     "perf:bundle": "npm run build && npx vite-bundle-visualizer"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.1",
     "@lhci/cli": "^0.15.1",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -131,22 +133,21 @@
     "@types/react-router-dom": "^5.3.3",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@types/underscore": "^1.13.0",
-    "@eslint/js": "^9.39.1",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^5.2.0",
     "globals": "^16.4.0",
+    "jsdom": "^26.1.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.17",
     "terser": "^5.44.1",
     "ts-node": "^10.9.2",
-    "typescript-eslint": "^8.46.2",
     "typescript": "^5.6.3",
+    "typescript-eslint": "^8.46.2",
     "vite": "^7.2.4",
     "vite-bundle-visualizer": "^1.2.1",
-    "vitest": "^3.2.4",
-    "jsdom": "^26.1.0"
+    "vitest": "^3.2.4"
   },
   "overrides": {
     "typescript": "^5.6.3",
