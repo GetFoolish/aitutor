@@ -5,6 +5,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Dark mode: ensure html and body have dark background */
+html.dark,
+html.dark body {
+  background-color: #111;
+}
+
 /* FloatingControlPanel: show on desktop, hide on mobile (Bug #44) */
 .floating-toolbar-panel {
   display: block;

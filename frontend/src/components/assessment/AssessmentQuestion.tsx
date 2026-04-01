@@ -148,13 +148,15 @@ interface Props {
   questionNumber: number;
   totalQuestions: number;
   onAnswer: (isCorrect: boolean) => void;
+  onCorrectAnswer?: () => void;
 }
 
 const AssessmentQuestion: React.FC<Props> = ({
   question,
   questionNumber,
   totalQuestions,
-  onAnswer
+  onAnswer,
+  onCorrectAnswer,
 }) => {
   const rendererRef = useRef<ServerItemRenderer>(null);
   const questionCardRef = useRef<HTMLDivElement>(null);
@@ -692,6 +694,7 @@ const AssessmentQuestion: React.FC<Props> = ({
       try {
         confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFEAA7'] });
       } catch (_) { /* confetti not available in test env */ }
+      onCorrectAnswer?.();
     }
 
     // Mark choices with correct/incorrect feedback for visual highlighting.
@@ -798,8 +801,8 @@ const AssessmentQuestion: React.FC<Props> = ({
         flexDirection: 'column',
         width: '100%',
         maxWidth: '100%',
-        height: 'auto',
-        paddingBottom: '16px',
+        height: '100%',
+        overflow: 'hidden',
       }}
     >
       {/* Enhanced Question Header with Progress */}
@@ -840,7 +843,7 @@ const AssessmentQuestion: React.FC<Props> = ({
         </div>
       )}
 
-      <div style={{ flex: '0 1 auto', display: 'flex', flexDirection: 'column', overflow: 'auto', minHeight: 0, maxHeight: 'min(55vh, 380px)' }}>
+      <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', overflow: 'auto', minHeight: 0 }}>
         <div ref={contentBlockRef} style={contentBlockStyle}>
           <div
             id="question-content-container"

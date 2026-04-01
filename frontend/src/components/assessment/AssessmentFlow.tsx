@@ -955,6 +955,7 @@ const AssessmentFlow: React.FC = () => {
                       questionNumber={questionNumber}
                       totalQuestions={totalQuestions}
                       onAnswer={handleAnswer}
+                      onCorrectAnswer={() => setCorrectCount(prev => prev + 1)}
                     />
                     {submitting && showSubmittingOverlay && (
                       <div
