@@ -121,6 +121,14 @@ function FloatingControlPanel({
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const [isCollapsed, setIsCollapsed] = useState(true);
+
+  // Auto-collapse toolbar when entering assessment mode
+  useEffect(() => {
+    if (assessmentMode) {
+      setIsCollapsed(true);
+    }
+  }, [assessmentMode]);
+
   const [sessionTime, setSessionTime] = useState(0);
   const [popoverPosition, setPopoverPosition] = useState<"left" | "right">("right");
   const [mediaMixerStatus, setMediaMixerStatus] = useState<{

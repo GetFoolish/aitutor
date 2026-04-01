@@ -886,7 +886,9 @@ const AssessmentFlow: React.FC = () => {
                       letterSpacing: isMobile ? '0.05em' : '0.1em',
                       fontFamily: 'system-ui, -apple-system, sans-serif'
                     }}>
-                      {isMobile ? 'ASSESSMENT' : 'ASSESSMENT MODE'}
+                      {isMobile
+                        ? `GRADE ${currentDifficulty < 0.3 ? '3-4' : currentDifficulty < 0.5 ? '5-6' : currentDifficulty < 0.7 ? '7-8' : '9-10'} ${subject.toUpperCase()}`
+                        : `GRADE ${currentDifficulty < 0.3 ? '3-4' : currentDifficulty < 0.5 ? '5-6' : currentDifficulty < 0.7 ? '7-8' : '9-10'} ${subject.toUpperCase()} ASSESSMENT`}
                     </span>
                     <div style={{
                       width: '12px',

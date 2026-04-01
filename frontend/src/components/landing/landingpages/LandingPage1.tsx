@@ -94,6 +94,75 @@ const LandingPage1: React.FC<LandingPage1Props> = ({ onGetStarted }) => {
         </div>
       </section>
 
+      {/* SEE IT IN ACTION */}
+      <section style={{ padding: '60px 20px', background: '#FFFDF5', borderTop: '4px solid #000' }}>
+        <div style={{ maxWidth: '680px', margin: '0 auto', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>
+            See It In Action
+          </h2>
+          <p style={{ color: '#666', marginBottom: '32px', fontSize: '16px' }}>
+            Real questions. Instant feedback. No waiting.
+          </p>
+          <div style={{ border: '4px solid #000', background: '#fff', boxShadow: '8px 8px 0 #000', textAlign: 'left' }}>
+            {/* Mock assessment header */}
+            <div style={{ background: '#4f46e5', padding: '12px 20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span style={{ background: 'white', color: '#000', fontWeight: 900, fontSize: '12px', padding: '4px 10px', textTransform: 'uppercase' }}>✕ Exit</span>
+              <span style={{ color: 'white', fontWeight: 900, fontSize: '14px', textTransform: 'uppercase', letterSpacing: '0.1em', flex: 1, textAlign: 'center' }}>GRADE 5-6 MATH ASSESSMENT</span>
+              <span style={{ color: 'white', fontWeight: 900, fontSize: '12px' }}>✓ 3</span>
+            </div>
+            {/* Mock question header */}
+            <div style={{ background: 'white', borderBottom: '3px solid #000', padding: '16px 24px', textAlign: 'center' }}>
+              <div style={{ fontWeight: 900, fontSize: '18px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>QUESTION 4 OF 10</div>
+              <div style={{ height: '8px', background: '#f0f0f0', border: '2px solid #000', marginTop: '12px', overflow: 'hidden' }}>
+                <div style={{ width: '40%', height: '100%', background: '#FF4B4B' }} />
+              </div>
+            </div>
+            {/* Mock question */}
+            <div style={{ padding: '24px', borderBottom: '3px solid #000' }}>
+              <p style={{ fontWeight: 700, fontSize: '18px', marginBottom: '16px' }}>Which of the following is a primary source?</p>
+              <p style={{ color: '#666', fontSize: '14px', marginBottom: '12px' }}>Choose 1 answer:</p>
+              {['A diary written during WWII', 'A textbook about WWII', 'A documentary film', 'An encyclopedia entry'].map((opt, i) => (
+                <div key={i} style={{
+                  border: i === 0 ? '3px solid #FF4B4B' : '2px solid #000',
+                  background: i === 0 ? '#FF4B4B' : '#fff',
+                  color: i === 0 ? 'white' : '#000',
+                  padding: '12px 16px',
+                  marginBottom: '8px',
+                  cursor: 'pointer',
+                  fontWeight: i === 0 ? 700 : 400,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}>
+                  <span style={{ fontWeight: 900, minWidth: '24px' }}>{String.fromCharCode(65 + i)})</span>
+                  {opt}
+                  {i === 0 && <span style={{ marginLeft: 'auto', fontWeight: 900 }}>✓</span>}
+                </div>
+              ))}
+            </div>
+            {/* Mock feedback */}
+            <div style={{ background: '#E8F5E9', padding: '16px 24px', borderBottom: '3px solid #000', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span style={{ color: '#2E7D32', fontSize: '24px' }}>✓</span>
+              <span style={{ color: '#2E7D32', fontWeight: 900, fontSize: '18px', textTransform: 'uppercase' }}>Correct!</span>
+            </div>
+            {/* Mock next button */}
+            <div style={{ padding: '16px 24px' }}>
+              <div style={{ background: '#FF4B4B', color: 'white', fontWeight: 900, fontSize: '16px', textTransform: 'uppercase', letterSpacing: '0.1em', padding: '14px 24px', textAlign: 'center', border: '3px solid #000', boxShadow: '4px 4px 0 #000', cursor: 'pointer' }}>
+                Next Question →
+              </div>
+            </div>
+          </div>
+          <div style={{ marginTop: '32px', border: '4px solid #000', boxShadow: '8px 8px 0 #000', overflow: 'hidden' }}>
+            <img src="/app-screenshot.png" alt="Teachr app screenshot" style={{ width: '100%', display: 'block' }} />
+          </div>
+          <p style={{ marginTop: '20px', fontSize: '14px', color: '#666' }}>
+            <a href="/app/dev-login" style={{ fontWeight: 700, color: '#4f46e5', textDecoration: 'underline' }}>
+              Try a live demo →
+            </a>
+          </p>
+        </div>
+      </section>
+
       {/* Social Proof */}
       <section style={{ padding: '40px 20px', background: '#FFD93D', borderTop: '4px solid #000', borderBottom: '4px solid #000' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexWrap: 'wrap' as const, gap: '16px', justifyContent: 'center' }}>
