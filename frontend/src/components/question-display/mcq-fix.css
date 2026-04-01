@@ -19,13 +19,32 @@
     /* normal — Perseus inline styles apply */
 }
 
+/* Remove default browser fieldset border from Perseus radio container */
+.framework-perseus .perseus-widget-radio-fieldset,
+#question-content-container .perseus-widget-radio-fieldset {
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Strip dark border from the inner button element inside each choice */
+.framework-perseus .choice > button,
+#question-content-container .choice > button {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    text-align: left !important;
+}
+
 /* Prevent all choices from highlighting when one is clicked */
 .framework-perseus .choice,
 #question-content-container .choice {
     transition: background-color 0.15s ease, box-shadow 0.15s ease;
-    border: 1px solid #e0e0e0 !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.07) !important;
-    margin-bottom: 10px !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: none !important;
+    margin-bottom: 8px !important;
     padding: 14px 18px !important;
     min-height: 48px !important;
     background-color: #fff !important;
@@ -34,8 +53,8 @@
 /* Dark mode radio buttons — must use ID selector to beat #question-content-container .choice { bg:white } */
 html.dark #question-content-container .choice,
 html.dark .framework-perseus .choice {
-    border-color: #444 !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+    border-color: #374151 !important;
+    box-shadow: none !important;
     background-color: #2a2a2a !important;
     color: #f3f4f6 !important;
 }

@@ -904,7 +904,7 @@ const AssessmentQuestion: React.FC<Props> = ({
                   tabIndex={0}
                   disabled={isSubmitting}
                   onClick={() => setHintsShown(h => h + 1)}
-                  className={`${ultraCompactViewport ? 'py-3 px-5 text-sm' : 'py-4 px-6 text-base'} font-black uppercase tracking-wide bg-white dark:bg-neutral-900 text-black dark:text-white border border-gray-300 dark:border-gray-600 cursor-pointer shadow-sm mb-3 hover:bg-[#FFFDF5] dark:hover:bg-neutral-800 hover:shadow-md transition-all duration-100`}
+                  className={`${ultraCompactViewport ? 'py-3 px-5 text-sm' : 'py-4 px-6 text-base'} font-black uppercase tracking-wide bg-white dark:bg-neutral-900 text-black dark:text-white border border-gray-200 dark:border-gray-700 cursor-pointer shadow-none mb-3 hover:bg-[#FFFDF5] dark:hover:bg-neutral-800 transition-all duration-100`}
                 >
                   Show Hint ({hintsShown + 1}/{(question.hints || []).length})
                 </button>
