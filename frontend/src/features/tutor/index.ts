@@ -11,7 +11,7 @@
  */
 
 // Context and Provider
-export { TutorProvider, useTutorContext } from './TutorContext';
+export { TutorProvider, useTutorContext, useOptionalTutorContext } from './TutorContext';
 export type { TutorProviderProps } from './TutorContext';
 
 // React Hook

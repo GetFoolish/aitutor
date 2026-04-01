@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,164 +19,25 @@ import { PerseusI18nContextProvider } from "../../package/perseus/src/components
 import { mockStrings } from "../../package/perseus/src/strings";
 import { KEScore } from "@khanacademy/perseus-core";
 import { toast } from "sonner";
-import { CheckCircle2, XCircle, Sparkles, ChevronRight } from "lucide-react";
+import { CheckCircle2, XCircle, Sparkles } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useHint } from "../../contexts/HintContext";
-import { useOptionalTutorContext } from "../../features/tutor";
-import { apiUtils, reportQuestionAnalytics } from "../../lib/api-utils";
-import { scorePerseusQuestion, hasUserInput } from "../../lib/scoring-utils";
+import { apiUtils } from "../../lib/api-utils";
 import { jwtUtils } from "../../lib/jwt-utils";
 import HintDisplay from "../hint-display/HintDisplay";
 import HintButton from "../hint-button/HintButton";
-import AudioPlayButton, { extractAudioWord } from "../AudioPlayButton";
-import '../question-display/mcq-fix.css';
 
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 const TEACHING_ASSISTANT_API_URL = import.meta.env.VITE_TEACHING_ASSISTANT_API_URL || 'http://localhost:8002';
-const EMPTY_ASSESSMENT_QUESTIONS: PerseusItem[] = [];
-const INITIAL_QUESTION_TIMEOUT_MS = 6000;
-const INITIAL_QUESTION_BATCH_SIZE = 1;
-const PREFETCH_BATCH_SIZE = 6;
-const RECOMMEND_NEXT_TIMEOUT_MS = 1800;
-
-// Widget types that use deprecated string refs and are broken in React 18
-// Note: orderer widget works fine in Perseus, only matcher is truly broken
-const BROKEN_WIDGET_TYPES = new Set(['matcher']);
-
-const stripWrappingQuotes = (value: unknown): string => {
-    const text = typeof value === 'string' ? value.trim() : String(value ?? '').trim();
-    if (text.length >= 2) {
-        const first = text[0];
-        const last = text[text.length - 1];
-        if ((first === '"' && last === '"') || (first === "'" && last === "'")) {
-            return text.slice(1, -1).trim();
-        }
-    }
-    return text;
-};
-
-const sanitizeChoicesArray = (choices: any[]): any[] => {
-    return (choices || []).map((choice: any, index: number) => {
-        if (typeof choice === 'string') {
-            return { id: `choice-${index}`, content: stripWrappingQuotes(choice), correct: false };
-        }
-        if (!choice || typeof choice !== 'object') {
-            return { id: `choice-${index}`, content: stripWrappingQuotes(choice), correct: false };
-        }
-        return {
-            ...choice,
-            id: typeof choice.id === 'string' && choice.id.trim() ? choice.id : `choice-${index}`,
-            content: stripWrappingQuotes(choice.content),
-            correct: Boolean(choice.correct),
-            // CRITICAL: Clear any pre-selection state from AI generation
-            selected: undefined,
-            checked: undefined,
-            crossedOut: false,
-        };
-    });
-};
-
-const questionKey = (item: any): string => {
-    const dashId = item?.dash_metadata?.dash_question_id;
-    if (dashId && typeof dashId === "string") {
-        return `id:${dashId}`;
-    }
-    const content = String(item?.question?.content ?? "");
-    const widgets = JSON.stringify(item?.question?.widgets ?? {});
-    return `content:${content}|widgets:${widgets}`;
-};
-
-const mergeUniqueQuestions = (existing: PerseusItem[], incoming: any[]): PerseusItem[] => {
-    const seen = new Set(existing.map((q) => questionKey(q)));
-    const dedupedIncoming = (incoming || []).filter((q) => {
-        const key = questionKey(q);
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-    });
-    if (!dedupedIncoming.length) return existing;
-    return [...existing, ...dedupedIncoming];
-};
-
-const normalizeInlineWidgetLayout = (container: HTMLElement) => {
-    const inlineContainers = container.querySelectorAll<HTMLElement>('.perseus-widget-container.widget-inline-block');
-    inlineContainers.forEach((el) => {
-        el.style.setProperty('display', 'inline-flex', 'important');
-        el.style.setProperty('vertical-align', 'baseline', 'important');
-        el.style.setProperty('align-items', 'baseline', 'important');
-        el.style.setProperty('width', 'auto', 'important');
-        el.style.setProperty('max-width', 'min(52vw, 320px)', 'important');
-    });
-
-    const inlineDropdowns = container.querySelectorAll<HTMLElement>('.perseus-widget-container.widget-inline-block .perseus-dropdown');
-    inlineDropdowns.forEach((el) => {
-        el.style.setProperty('display', 'inline-flex', 'important');
-        el.style.setProperty('max-width', 'min(52vw, 320px)', 'important');
-        el.style.setProperty('width', 'auto', 'important');
-    });
-
-    const inlineComboboxButtons = container.querySelectorAll<HTMLElement>(
-        '.perseus-widget-container.widget-inline-block .perseus-dropdown > button[role="combobox"]'
-    );
-    inlineComboboxButtons.forEach((btn) => {
-        btn.style.setProperty('min-width', 'clamp(120px, 18vw, 220px)', 'important');
-        btn.style.setProperty('max-width', 'min(52vw, 320px)', 'important');
-        btn.style.setProperty('width', 'auto', 'important');
-        btn.style.setProperty('min-height', '38px', 'important');
-        btn.style.setProperty('height', 'auto', 'important');
-        btn.style.setProperty('padding', '6px 10px', 'important');
-        btn.style.setProperty('line-height', '1.2', 'important');
-        btn.style.setProperty('font-size', '14px', 'important');
-        btn.style.setProperty('align-items', 'flex-start', 'important');
-    });
-
-    const inlineValueSpans = container.querySelectorAll<HTMLElement>(
-        '.perseus-widget-container.widget-inline-block .perseus-dropdown > button[role="combobox"] > span:first-child'
-    );
-    inlineValueSpans.forEach((span) => {
-        span.style.setProperty('white-space', 'normal', 'important');
-        span.style.setProperty('overflow', 'visible', 'important');
-        span.style.setProperty('text-overflow', 'clip', 'important');
-        span.style.setProperty('word-break', 'break-word', 'important');
-    });
-
-    const inlineTextInputs = container.querySelectorAll<HTMLInputElement>(
-        '.perseus-widget-container.widget-inline-block input[type="text"]'
-    );
-    inlineTextInputs.forEach((input) => {
-        input.style.setProperty('min-width', 'clamp(120px, 16vw, 220px)', 'important');
-        input.style.setProperty('max-width', 'min(52vw, 320px)', 'important');
-        input.style.setProperty('width', 'auto', 'important');
-        input.style.setProperty('font-size', '14px', 'important');
-    });
-};
 
 interface RendererComponentProps {
     onSkillChange?: (skill: string) => void;
-    onQuestionChange?: (questionId: string | null) => void;
-    watchedVideoIds?: string[];
-    onAnswerSubmitted?: () => void;
-    // Assessment mode props
-    assessmentMode?: boolean;
-    assessmentQuestions?: any[];
-    onAssessmentAnswer?: (questionId: string, isCorrect: boolean) => void;
-    currentQuestionIndex?: number;
 }
 
-const RendererComponent = ({ 
-    onSkillChange, 
-    onQuestionChange,
-    watchedVideoIds = [],
-    onAnswerSubmitted,
-    assessmentMode = false,
-    assessmentQuestions,
-    onAssessmentAnswer,
-    currentQuestionIndex = 0
-}: RendererComponentProps) => {
+const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
     const { user } = useAuth();
-    const { setTotalHints, setCurrentHintIndex, currentHintIndex, showHints, setShowHints, setResponsiveHint } = useHint();
+    const { setTotalHints, setCurrentHintIndex, showHints, setShowHints } = useHint();
     const queryClient = useQueryClient();
-    const tutorCtx = useOptionalTutorContext();
     const [perseusItems, setPerseusItems] = useState<PerseusItem[]>([]);
     const [item, setItem] = useState(0);
     const [endOfTest, setEndOfTest] = useState(false);
@@ -188,199 +49,62 @@ const RendererComponent = ({
     const [isError, setIsError] = useState(false);
     const [error, setError] = useState<Error | null>(null);
     const [isLoadingNextBatch, setIsLoadingNextBatch] = useState(false);
-    const [viewportHeight, setViewportHeight] = useState<number>(() =>
-        typeof window !== "undefined" ? window.innerHeight : 900
-    );
-    const [autoFitZoom, setAutoFitZoom] = useState(1);
     const rendererRef = useRef<ServerItemRenderer>(null);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
-    const questionStackRef = useRef<HTMLDivElement>(null);
-    const currentItemRef = useRef(0);
-    const mountedRef = useRef(true);
-    const fetchRequestRef = useRef(0);
-    const safeAssessmentQuestions = assessmentQuestions ?? EMPTY_ASSESSMENT_QUESTIONS;
-    const compactViewport = viewportHeight <= 900;
-    const contentZoom =
-        viewportHeight <= 700 ? 0.9 :
-        viewportHeight <= 760 ? 0.94 :
-        viewportHeight <= 840 ? 0.96 :
-        viewportHeight <= 920 ? 0.98 :
-        1;
 
     // Get user_id from auth context
     const user_id = user?.user_id || 'mongodb_test_user';
 
-    // Keyboard support: Enter key submits answer
-    useEffect(() => {
-        const handleKeyPress = (e: KeyboardEvent) => {
-            if (e.key === 'Enter' && !isAnswered && !isLoading && perseusItems.length > 0) {
-                const target = e.target as HTMLElement;
-                // Don't trigger if in textarea or contenteditable
-                if (target.tagName === 'TEXTAREA' || target.isContentEditable) return;
-                e.preventDefault();
-                handleSubmit();
-            }
-        };
-        document.addEventListener('keydown', handleKeyPress);
-        return () => document.removeEventListener('keydown', handleKeyPress);
-    }, [isAnswered, isLoading, perseusItems.length]);
-
-    const fetchRecommendNext = async (
-        currentQuestionIds: string[],
-        count: number,
-        timeoutMs: number = RECOMMEND_NEXT_TIMEOUT_MS,
-    ): Promise<any[]> => {
-        if (!currentQuestionIds.length) return [];
-        const controller = new AbortController();
-        const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
-        try {
-            const response = await apiUtils.post(
-                `${DASH_API_URL}/api/questions/recommend-next`,
-                {
-                    current_question_ids: currentQuestionIds,
-                    count,
-                },
-                { signal: controller.signal },
-            );
-            if (!response.ok) return [];
-            const payload = await response.json();
-            return Array.isArray(payload) ? payload : [];
-        } catch (err) {
-            if ((err as any)?.name !== 'AbortError') {
-                console.error('Error fetching recommend-next batch:', err);
-            }
-            return [];
-        } finally {
-            window.clearTimeout(timeoutId);
-        }
-    };
-
     // Fetch questions using apiUtils with JWT authentication
     useEffect(() => {
-        // In assessment mode, use provided questions instead of fetching
-        if (assessmentMode) {
-            setPerseusItems(safeAssessmentQuestions);
-            setItem(currentQuestionIndex);
-            setIsLoading(false);
-            setIsAnswered(false);
-            setShowFeedback(false);
-            setStartTime(Date.now());
-            return;
-        }
-
-        // If we already have questions rendered, don't bounce back to global loading.
-        if (perseusItems.length > 0) {
-            setIsLoading(false);
-            return;
-        }
-
         const fetchQuestions = async () => {
             if (!jwtUtils.getToken()) {
                 setIsLoading(false);
                 return;
             }
 
-            const requestId = ++fetchRequestRef.current;
             setIsLoading(true);
             setIsError(false);
             setError(null);
 
-            let storedSubject = "";
-            try { storedSubject = localStorage.getItem("selected_subject") || ""; } catch { /* private browsing */ }
-            const selectedSubject = (
-                sessionStorage.getItem("selected_subject") ||
-                storedSubject ||
-                ""
-            ).trim();
-            if (selectedSubject) {
-                // Best-effort warm-up to reduce first-question cold start latency.
-                void apiUtils.post(`${DASH_API_URL}/api/start-subject`, {
-                    subject: selectedSubject,
-                    region: "US",
-                }).catch(() => null);
-            }
-
-            const prefetchFollowUps = async (seedQuestions: any[]) => {
-                const currentQuestionIds = (seedQuestions || [])
-                    .map((q: any) => q?.dash_metadata?.dash_question_id || "")
-                    .filter(Boolean);
-                if (!currentQuestionIds.length) {
-                    return;
-                }
-                try {
-                    const nextQuestions = await fetchRecommendNext(
-                        currentQuestionIds,
-                        PREFETCH_BATCH_SIZE,
-                        1400,
-                    );
-                    if (nextQuestions.length === 0) {
-                        return;
-                    }
-                    if (mountedRef.current && requestId === fetchRequestRef.current) {
-                        setPerseusItems((prev) => mergeUniqueQuestions(prev, nextQuestions));
-                    }
-                } catch {
-                    // Best-effort prefetch; keep first-question path fast.
-                }
-            };
-
             // Retry logic for connection errors with exponential backoff
-            const maxRetries = 1;
+            const maxRetries = 3;
             let retryCount = 0;
             
             const attemptFetch = async (): Promise<void> => {
                 try {
-                    // Load questions directly — parallel preloaded + fresh fetch
-                    // Race: whichever returns valid questions first wins
-                    // Load a smaller first batch for faster first paint; next batch is prefetched as user advances.
-                    const freshPromise = apiUtils.get(`${DASH_API_URL}/api/questions/${INITIAL_QUESTION_BATCH_SIZE}`);
-                    const preloadedPromise = apiUtils.get(`${DASH_API_URL}/api/questions/preloaded`)
-                        .then(async (r) => {
-                            if (!r.ok) return null;
-                            const d = await r.json();
-                            return d && d.length > 0 ? d : null;
-                        })
-                        .catch(() => null);
-
-                    // Check preloaded first (fast DB lookup), but don't wait long
-                    const preloadedData = await Promise.race([
-                        preloadedPromise,
-                        new Promise<null>(resolve => setTimeout(() => resolve(null), 300)), // 300ms max wait
-                    ]);
-
-                    if (preloadedData && mountedRef.current && requestId === fetchRequestRef.current) {
-                        setPerseusItems(preloadedData);
-                        setItem(0);
-                        setEndOfTest(false);
-                        setIsAnswered(false);
-                        setStartTime(Date.now());
-                        setIsLoading(false);
-                        void prefetchFollowUps(preloadedData);
-                        return;
+                    // First, check for pre-loaded questions
+                    const preloadedResponse = await apiUtils.get(`${DASH_API_URL}/api/questions/preloaded`);
+                    if (preloadedResponse.ok) {
+                        const preloadedData = await preloadedResponse.json();
+                        if (preloadedData && preloadedData.length > 0) {
+                            setPerseusItems(preloadedData);
+                            setItem(0);
+                            setEndOfTest(false);
+                            setIsAnswered(false);
+                            setStartTime(Date.now());
+                            setIsLoading(false);
+                            return; // Use pre-loaded questions
+                        }
+                    } else if (preloadedResponse.status === 422) {
+                        // 422 means validation error, but we can still try fallback
+                        console.warn('Pre-loaded questions endpoint returned 422, using fallback');
                     }
-
-                    // Use the already-started fresh fetch with a timeout for cold starts.
-                    const timeoutPromise = new Promise<never>((_, reject) =>
-                        setTimeout(() => reject(new Error('Question generation is still in progress. Please retry in a moment.')), INITIAL_QUESTION_TIMEOUT_MS)
-                    );
-                    const response = await Promise.race([freshPromise, timeoutPromise]);
-
+                    
+                    // Fallback: Load initial 5 questions
+                    const response = await apiUtils.get(`${DASH_API_URL}/api/questions/5`);
+                    
                     if (!response.ok) {
+                        // Don't retry on HTTP error codes (401, 403, 404, 500, etc.)
                         throw new Error(`Failed to fetch questions: ${response.status}`);
                     }
 
                     const data = await response.json();
-                    if (!data || data.length === 0) {
-                        throw new Error('No questions available yet — the system may still be generating content for this subject');
-                    }
-                    if (mountedRef.current && requestId === fetchRequestRef.current) {
-                        setPerseusItems(data);
-                        setItem(0);
-                        setEndOfTest(false);
-                        setIsAnswered(false);
-                        setStartTime(Date.now());
-                        void prefetchFollowUps(data);
-                    }
+                    setPerseusItems(data);
+                    setItem(0);
+                    setEndOfTest(false);
+                    setIsAnswered(false);
+                    setStartTime(Date.now());
                 } catch (err) {
                     // Check if it's a network/connection error that we should retry
                     const isNetworkError = err instanceof TypeError && 
@@ -390,7 +114,7 @@ const RendererComponent = ({
                     
                     if (isNetworkError && retryCount < maxRetries) {
                         retryCount++;
-                        const backoffDelay = retryCount * 1000; // 1s
+                        const backoffDelay = Math.pow(2, retryCount) * 1000; // Exponential backoff: 2s, 4s, 8s
                         console.log(`Retrying fetch (attempt ${retryCount}/${maxRetries}) after ${backoffDelay}ms...`);
                         await new Promise(resolve => setTimeout(resolve, backoffDelay));
                         return attemptFetch(); // Retry
@@ -405,19 +129,15 @@ const RendererComponent = ({
                 await attemptFetch();
             } catch (err) {
                 console.error('Error fetching questions:', err);
-                if (mountedRef.current && requestId === fetchRequestRef.current) {
-                    setIsError(true);
-                    setError(err instanceof Error ? err : new Error('Unknown error'));
-                }
+                setIsError(true);
+                setError(err instanceof Error ? err : new Error('Unknown error'));
             } finally {
-                if (mountedRef.current && requestId === fetchRequestRef.current) {
-                    setIsLoading(false);
-                }
+                setIsLoading(false);
             }
         };
 
         fetchQuestions();
-    }, [user_id, assessmentMode, currentQuestionIndex, assessmentQuestions, perseusItems.length]);
+    }, [user_id]);
 
     // Fetch questions using apiUtils with JWT authentication
     useEffect(() => {
@@ -429,58 +149,11 @@ const RendererComponent = ({
         }
     }, [isError, error]);
 
-    // Cleanup: mark component as unmounted to prevent stale state updates
-    useEffect(() => {
-        return () => { mountedRef.current = false; };
-    }, []);
-
-    useEffect(() => {
-        const onResize = () => setViewportHeight(window.innerHeight);
-        window.addEventListener("resize", onResize);
-        return () => window.removeEventListener("resize", onResize);
-    }, []);
-
-    // Enforce compact inline widget geometry for sentence-embedded dropdown/text widgets.
-    // This runs after each question render to override widget-internal style drift.
-    useEffect(() => {
-        const container = document.getElementById("question-content-container");
-        if (!container) return;
-
-        let cancelled = false;
-        const applyLayout = () => {
-            if (cancelled) return;
-            normalizeInlineWidgetLayout(container);
-        };
-
-        const raf1 = requestAnimationFrame(applyLayout);
-        const raf2 = requestAnimationFrame(applyLayout);
-        const timeoutId = window.setTimeout(applyLayout, 40);
-        const observer = new MutationObserver(() => applyLayout());
-        observer.observe(container, {
-            childList: true,
-            subtree: true,
-            attributes: true,
-            attributeFilter: ['class', 'style', 'aria-expanded'],
-        });
-
-        return () => {
-            cancelled = true;
-            cancelAnimationFrame(raf1);
-            cancelAnimationFrame(raf2);
-            window.clearTimeout(timeoutId);
-            observer.disconnect();
-        };
-    }, [perseusItems, item, isAnswered, isLoading, compactViewport, contentZoom]);
-
-    // Log when question is displayed (once per item change) and emit question ID
+    // Log when question is displayed (once per item change)
     useEffect(() => {
         if (perseusItems.length > 0 && !isLoading) {
             const currentItem = perseusItems[item];
             const metadata = (currentItem as any).dash_metadata || {};
-            const dashQuestionId = metadata.dash_question_id || null;
-
-            // Emit question ID change for LearningAssetsPanel
-            onQuestionChange?.(dashQuestionId);
 
             // Log question displayed
             apiUtils.post(`${DASH_API_URL}/api/question-displayed`, {
@@ -489,42 +162,17 @@ const RendererComponent = ({
             }).catch((err) => {
                 console.error('Failed to log question displayed:', err);
             });
-        } else {
-            // No question loaded, emit null
-            onQuestionChange?.(null);
         }
-    }, [item, perseusItems, isLoading, user_id, onQuestionChange]);
+    }, [item, perseusItems, isLoading, user_id]);
 
-    // Update current module (unit_id) and URL when question changes
+    // Mock skill state update
     useEffect(() => {
-        if (onSkillChange && perseusItems.length > 0 && !isLoading) {
-            const currentItem = perseusItems[item];
-            const metadata = (currentItem as any).dash_metadata || {};
-            // Extract unit_id from metadata - this is the "current module"
-            const unitId = metadata.unit_id || null;
-            const mongodbId = metadata.mongodb_id || null;
-            
-            console.log('[RendererComponent] Question metadata:', {
-                question_id: metadata.dash_question_id,
-                unit_id: unitId,
-                lesson_id: metadata.lesson_id,
-                exercise_id: metadata.exercise_id,
-                skill_names: metadata.skill_names,
-                mongodb_id: mongodbId
-            });
-            
-            if (unitId) {
-                onSkillChange(unitId);
-            } else {
-                console.warn('[RendererComponent] No unit_id found in metadata!');
-            }
-            
-            // Update URL to /app/{mongodb_id}
-            if (mongodbId && !assessmentMode) {
-                window.history.replaceState(null, '', `/app/${mongodbId}`);
-            }
+        if (onSkillChange) {
+            // Mock variable as requested
+            const mockSkill = "counting_100";
+            onSkillChange(mockSkill);
         }
-    }, [item, perseusItems, isLoading, onSkillChange, assessmentMode]);
+    }, [onSkillChange]);
 
     // Trigger feedback animation and auto-scroll
     useEffect(() => {
@@ -560,20 +208,23 @@ const RendererComponent = ({
                 return; // No valid question IDs
             }
             
-            // Request next questions with a strict timeout to avoid long UI stalls.
-            let newQuestions = await fetchRecommendNext(
-                currentQuestionIds,
-                PREFETCH_BATCH_SIZE,
-                RECOMMEND_NEXT_TIMEOUT_MS,
-            );
-            if (newQuestions.length === 0) {
-                // Quick fallback: ask for a smaller batch to settle faster.
-                newQuestions = await fetchRecommendNext(currentQuestionIds, 3, 1200);
+            // Request next 5 questions
+            const response = await apiUtils.post(`${DASH_API_URL}/api/questions/recommend-next`, {
+                current_question_ids: currentQuestionIds,
+                count: 5
+            });
+            
+            if (!response.ok) {
+                console.warn('Failed to fetch next batch:', response.status);
+                setIsLoadingNextBatch(false);
+                return;
             }
+            
+            const newQuestions = await response.json();
             
             // Only update if we got new questions (non-empty response means questions changed)
             if (newQuestions.length > 0) {
-                setPerseusItems(prev => mergeUniqueQuestions(prev, newQuestions));
+                setPerseusItems(prev => [...prev, ...newQuestions]);
             }
         } catch (err) {
             console.error('Error loading next batch:', err);
@@ -587,17 +238,17 @@ const RendererComponent = ({
             const index = prev + 1;
 
             if (index >= perseusItems.length) {
-                if (!assessmentMode) {
-                    loadNextBatch();
-                    return prev;
-                }
                 setEndOfTest(true);
                 return prev; // stay at last valid index
             }
 
-            // Load next batch earlier so user doesn't hit the end and wait.
-            if (index >= perseusItems.length - 4) {
+            // Load next batch when 2 questions remaining
+            if (index === perseusItems.length - 2) {
                 loadNextBatch();
+            }
+
+            if (index === perseusItems.length - 1) {
+                setEndOfTest(true);
             }
 
             setIsAnswered(false);
@@ -608,40 +259,10 @@ const RendererComponent = ({
     };
 
     const handleSubmit = async () => {
-        if (rendererRef.current && perseusItem?.question) {
-            // Session guard: in normal (non-assessment) mode, require an active tutor session
-            if (!assessmentMode && tutorCtx !== undefined && !tutorCtx.connected) {
-                toast.info("Start a session to record your answer", {
-                    description: "Click the Start Session button to begin your AI tutor session."
-                });
-                return;
-            }
-
-            // getUserInput() returns UserInputMap (the new object format)
+        if (rendererRef.current) {
             const userInput = rendererRef.current.getUserInput();
-            const itemData = perseusItem; // Full item with question AND answer
-            const question = itemData.question;
-
-            // Empty submission guard: check if user actually entered/selected something
-            if (!hasUserInput(question.widgets || {}, userInput)) {
-                toast.error("Please select or enter an answer first");
-                return;
-            }
-
-            console.log('[SCORING] User input:', JSON.stringify(userInput, null, 2));
-
-            // Custom scoring via shared utility (Perseus doesn't handle our AI answer format)
-            const scoringResult = scorePerseusQuestion(question.widgets || {}, userInput);
-            const { selectedAnswerText, selectedAnswerIndex } = scoringResult;
-            const isCorrect = scoringResult.correct;
-            console.log('[SCORING] Custom score - is correct:', isCorrect, `(${scoringResult.correctCount}/${scoringResult.scoreableCount} widgets)`);
-            
-            const scoreResult = {
-                type: 'points' as const,
-                earned: isCorrect ? 1 : 0,
-                total: 1,
-                message: null
-            };
+            const question = perseusItem.question;
+            const scoreResult = scorePerseusItem(question, userInput, "en");
 
             // Continue to include an empty guess for the now defunct answer area.
             const maxCompatGuess = [rendererRef.current.getUserInputLegacy(), []];
@@ -651,520 +272,76 @@ const RendererComponent = ({
                 rendererRef.current.getSerializedState().question,
             );
 
-            console.log('[RendererComponent] KEScore:', {
-                correct: keScore.correct,
-                empty: keScore.empty,
-                guess: keScore.guess
-            });
-
             // Calculate response time
             const responseTimeSeconds = (Date.now() - startTime) / 1000;
 
-            // In assessment mode, call the assessment callback
-            if (assessmentMode && onAssessmentAnswer) {
-                const currentItem = perseusItems[item];
-                const metadata = (currentItem as any).dash_metadata || {};
-                const questionId = metadata.dash_question_id || `q_${item}`;
-                
-                setIsAnswered(true);
-                setScore(keScore);
-                setShowFeedback(true);
-                
-                // Call the callback with question ID and correctness
-                onAssessmentAnswer(questionId, keScore.correct);
-
-                // Fire-and-forget analytics reporting
-                reportQuestionAnalytics({
-                    question_id: questionId,
-                    correct: keScore.correct,
-                    hints_used: currentHintIndex,
-                    time_seconds: responseTimeSeconds,
-                    skipped: false,
-                    skill_id: (metadata.skill_ids || [])[0],
-                });
-                return;
-            }
-
-            // Submit answer to DASH API for tracking and adaptive difficulty (normal mode)
+            // Submit answer to DASH API for tracking and adaptive difficulty
             try {
                 const currentItem = perseusItems[item];
                 const metadata = (currentItem as any).dash_metadata || {};
-                const questionId = metadata.dash_question_id || `q_${item}`;
 
                 await apiUtils.post(`${DASH_API_URL}/api/submit-answer`, {
                     user_id: user_id,
-                    question_id: questionId,
-                    skill_ids: metadata.skill_ids || [],
+                    question_id: metadata.dash_question_id || `q_${item}`,
+                    skill_ids: metadata.skill_ids || ["counting_1_10"],
                     is_correct: keScore.correct,
-                    response_time_seconds: responseTimeSeconds,
-                    selected_answer: selectedAnswerText || null,
-                    selected_answer_index: selectedAnswerIndex,
+                    response_time_seconds: responseTimeSeconds
                 });
                 
                 // Invalidate skill-scores cache to trigger refetch with updated data
                 queryClient.invalidateQueries({ queryKey: ["skill-scores"] });
-                queryClient.invalidateQueries({ queryKey: ["grading-panel"] });
-                
-                // Track watched videos if answer was submitted
-                if (watchedVideoIds && watchedVideoIds.length > 0) {
-                    try {
-                        for (const videoId of watchedVideoIds) {
-                            await apiUtils.post(
-                                `${DASH_API_URL}/api/videos/mark-helpful?question_id=${encodeURIComponent(questionId)}&video_id=${encodeURIComponent(videoId)}&is_correct=${keScore.correct}`,
-                                {}
-                            );
-                        }
-                        // Reset watched videos after tracking
-                        onAnswerSubmitted?.();
-                    } catch (err) {
-                        console.error("Failed to track video helpfulness:", err);
-                    }
-                }
             } catch (err) {
                 console.error("Failed to submit answer to DASH:", err);
-                // Show toast so user knows their answer wasn't saved to server
-                toast.error("Answer wasn't saved — check your connection");
-            }
-
-            // On wrong answer, request a responsive hint from Gemini (fire and forget)
-            if (!keScore.correct) {
-                try {
-                    const currentItem = perseusItems[item] as any;
-                    const metadata = currentItem?.dash_metadata || {};
-                    const questionId = metadata.dash_question_id || `q_${item}`;
-                    const skillIds = metadata.skill_ids || [];
-                    const qContent = currentItem?.question?.content || '';
-
-                    // Extract selected and correct answer text from widget data
-                    let selectedText = '';
-                    let correctText = '';
-                    const question = currentItem?.question;
-                    for (const [widgetId, widgetInput] of Object.entries(userInput)) {
-                        const widgetDef = question?.widgets?.[widgetId];
-                        if (!widgetDef) continue;
-                        if (widgetDef.type === 'radio') {
-                            const choices = widgetDef.options?.choices || [];
-                            const selectedIds = (widgetInput as any).selectedChoiceIds || [];
-                            if (selectedIds.length > 0) {
-                                const choiceIndexMap = new Map<string, number>();
-                                choices.forEach((c: any, idx: number) => {
-                                    const key = typeof c?.id === 'string' ? c.id.trim() : '';
-                                    if (key) choiceIndexMap.set(key, idx);
-                                    choiceIndexMap.set(`choice-${idx}`, idx);
-                                });
-                                const rawId = stripWrappingQuotes(selectedIds[0]);
-                                const mapped = choiceIndexMap.get(rawId);
-                                if (mapped != null) {
-                                    selectedText = stripWrappingQuotes(choices[mapped]?.content || '');
-                                } else {
-                                    const match = rawId.match(/^choice-(\d+)(?:-|$)/);
-                                    if (match) selectedText = stripWrappingQuotes(choices[parseInt(match[1], 10)]?.content || '');
-                                }
-                            }
-                            const correct = choices.find((c: any) => c.correct);
-                            if (correct) correctText = stripWrappingQuotes(correct.content || '');
-                        } else if (widgetDef.type === 'numeric-input') {
-                            selectedText = (widgetInput as any)?.currentValue || '';
-                            const answers = widgetDef.options?.answers || [];
-                            const ca = answers.find((a: any) => a.status === 'correct');
-                            if (ca) correctText = String(ca.value);
-                        } else if (widgetDef.type === 'expression') {
-                            selectedText = typeof widgetInput === 'string' ? widgetInput : ((widgetInput as any)?.currentValue || '');
-                            const forms = widgetDef.options?.answerForms || [];
-                            const cf = forms.find((f: any) => f.considered === 'correct');
-                            if (cf) correctText = cf.value || '';
-                        } else if (widgetDef.type === 'dropdown') {
-                            const choices = widgetDef.options?.choices || [];
-                            const rawIdx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
-                            // Perseus dropdown is 1-based (0 = placeholder). Subtract 1 to match choices array.
-                            const adjIdx = rawIdx != null && rawIdx > 0 ? rawIdx - 1 : -1;
-                            if (adjIdx >= 0 && adjIdx < choices.length) selectedText = choices[adjIdx].content || '';
-                            const correct = choices.find((c: any) => c.correct);
-                            if (correct) correctText = correct.content || '';
-                        }
-                        if (selectedText) break; // Use first scoreable widget
-                    }
-
-                    if (selectedText && skillIds.length > 0) {
-                        const questionIdAtRequest = questionId;
-                        currentItemRef.current = item;  // Ensure ref is current before async hint fetch
-                        apiUtils.post(`${DASH_API_URL}/api/responsive-hint`, {
-                            question_id: questionId,
-                            skill_id: skillIds[0],
-                            question_text: qContent.substring(0, 500),
-                            selected_answer: selectedText.substring(0, 200),
-                            correct_answer: correctText.substring(0, 200),
-                        }).then((resp: Response) => resp.json()).then((data: any) => {
-                            if (!mountedRef.current) return;  // component unmounted, skip state update
-                            // Guard: only set hint if still on the same question
-                            if (currentItemRef.current === item && data?.hint_content) {
-                                setResponsiveHint(data.hint_content);
-                            }
-                        }).catch((err: any) => {
-                            console.error("Failed to get responsive hint:", err);
-                        });
-                    }
-                } catch (err) {
-                    console.error("Failed to request responsive hint:", err);
-                }
-            }
-
-            // Fire-and-forget analytics reporting
-            {
-                const currentItem = perseusItems[item];
-                const metadata = (currentItem as any).dash_metadata || {};
-                const questionId = metadata.dash_question_id || `q_${item}`;
-                reportQuestionAnalytics({
-                    question_id: questionId,
-                    correct: keScore.correct,
-                    hints_used: currentHintIndex,
-                    time_seconds: responseTimeSeconds,
-                    skipped: false,
-                    skill_id: (metadata.skill_ids || [])[0],
-                });
             }
 
             // Display score to user
             setIsAnswered(true);
             setScore(keScore);
             console.log("Score:", keScore);
+
+            // Record question answer with TeachingAssistant
+            try {
+                const currentItem = perseusItems[item];
+                const metadata = (currentItem as any).dash_metadata || {};
+                const questionId = metadata.dash_question_id || `q_${item}_${Date.now()}`;
+
+                const taRes = await apiUtils.post(`${TEACHING_ASSISTANT_API_URL}/question/answered`, {
+                    question_id: questionId,
+                    is_correct: keScore.correct || false
+                });
+                if (!taRes.ok) {
+                    if (taRes.status === 404) {
+                        toast.warning("Start a session to record your answer", {
+                            description: "Your answer was not saved. Click 'Start Session' to track your progress."
+                        });
+                    } else {
+                        console.error("Error recording question answer:", taRes.status);
+                    }
+                }
+            } catch (err) {
+                console.error("Error recording question answer:", err);
+            }
         }
     };
 
-    const rawPerseusItem = perseusItems[item] || {};
-    // Sanitize AI-generated question content — strip stray "widget." text + fix missing widget fields
-    const perseusItem = (() => {
-        const itemCopy = { ...rawPerseusItem } as any;
-        if (itemCopy.question?.content && typeof itemCopy.question.content === 'string') {
-            // Remove literal "widget." or "widget" that Gemini sometimes appends after placeholders
-            itemCopy.question = { ...itemCopy.question };
-            itemCopy.question.content = itemCopy.question.content
-                .replace(/\[\[☃\s+[^\]]+\]\]\s*widget\.?/gi, (match: string) => {
-                    // Keep the placeholder, strip the trailing "widget." text
-                    const placeholder = match.match(/\[\[☃\s+[^\]]+\]\]/)?.[0] || '';
-                    return placeholder;
-                })
-                .replace(/\bwidget\.\s*$/gim, '') // Strip trailing "widget." on any line
-                // Strip picture/image references that have no actual images
-                .replace(/\b(?:look at|examine|see|observe|study|check out)\s+(?:the\s+)?(?:picture|image|diagram|illustration|photo|figure)s?\b[^.!?\n]*[.!?]?\s*/gi, '')
-                .replace(/\b(?:in the (?:picture|image|diagram|illustration) (?:below|above|shown))[^.!?\n]*[.!?]?\s*/gi, '')
-                .replace(/\b(?:the (?:picture|image|diagram|illustration) (?:below|above|shows?))[^.!?\n]*[.!?]?\s*/gi, '')
-                .trim();
-        }
-        const hasRadioWidget = Object.values(itemCopy.question?.widgets || {}).some((w: any) => w?.type === 'radio');
-        if (hasRadioWidget && typeof itemCopy.question?.content === 'string') {
-            itemCopy.question.content = itemCopy.question.content
-                .replace(/^\s*choose\s+\d+\s+answers?:\s*$/gim, '')
-                .replace(/^\s*choose\s+one\s+answer:\s*$/gim, '')
-                .replace(/\n{3,}/g, '\n\n')
-                .trim();
-        }
-        // Ensure every widget has a placeholder in content (definition+radio combo fix)
-        if (itemCopy.question?.widgets && typeof itemCopy.question.content === 'string') {
-            for (const wname of Object.keys(itemCopy.question.widgets)) {
-                const wtype = (itemCopy.question.widgets[wname] as any)?.type;
-                if (wtype === 'image') continue;
-                if (!itemCopy.question.content.includes(`[[☃ ${wname}]]`)) {
-                    itemCopy.question.content = itemCopy.question.content.trimEnd() + `\n\n[[☃ ${wname}]]`;
-                }
-            }
-        }
-        // Patch missing required fields on widgets (fixes AI-generated questions missing Perseus defaults)
-        if (itemCopy.question?.widgets) {
-            itemCopy.question = { ...itemCopy.question };
-            itemCopy.question.widgets = { ...itemCopy.question.widgets };
-            for (const [key, widget] of Object.entries(itemCopy.question.widgets)) {
-                const w = widget as any;
-                // Radio: options is an array instead of {choices: [...]}
-                if (w?.type === 'radio' && Array.isArray(w.options)) {
-                    const multipleSelect = w.multipleSelect || false;
-                    const randomize = w.randomize || false;
-                    const { multipleSelect: _ms, randomize: _rz, ...rest } = w;
-                    itemCopy.question.widgets[key] = {
-                        ...rest,
-                        options: {
-                            choices: sanitizeChoicesArray(w.options),
-                            multipleSelect,
-                            randomize,
-                            noneOfTheAbove: false,
-                            selectedChoiceIds: undefined,
-                            deselectEnabled: false,
-                        },
-                    };
-                } else if (w?.type === 'radio' && w.options && Array.isArray(w.options.choices)) {
-                    itemCopy.question.widgets[key] = {
-                        ...w,
-                        options: {
-                            ...w.options,
-                            choices: sanitizeChoicesArray(w.options.choices),
-                            noneOfTheAbove: w.options.noneOfTheAbove ?? false,
-                            selectedChoiceIds: undefined,
-                            deselectEnabled: false,
-                        },
-                    };
-                }
-                if (w?.type === 'numeric-input' && w.options) {
-                    itemCopy.question.widgets[key] = {
-                        ...w,
-                        options: {
-                            coefficient: false,
-                            static: false,
-                            labelText: '',
-                            size: 'normal',
-                            ...w.options,
-                            answers: Array.isArray(w.options.answers) ? w.options.answers : [],
-                        },
-                    };
-                }
-                // Orderer: normalize string options to {content: string} objects
-                if (w?.type === 'orderer' && w.options) {
-                    const fixArr = (arr: any[]) => arr?.map((item: any) =>
-                        typeof item === 'string' ? { content: item } : item
-                    );
-                    itemCopy.question.widgets[key] = {
-                        ...w,
-                        options: {
-                            ...w.options,
-                            options: fixArr(w.options.options || []),
-                            correctOptions: fixArr(w.options.correctOptions || []),
-                        },
-                    };
-                }
-                // Expression: convert to numeric-input to avoid MathInput crash (string ref issue in React 18)
-                if (w?.type === 'expression' && w.options) {
-                    const answerForms = w.options.answerForms || [];
-                    const firstAnswer = (answerForms[0]?.value || '').toString().trim();
-                    const parsed = parseFloat(firstAnswer);
-                    if (!firstAnswer || isNaN(parsed)) {
-                        // Can't safely convert to numeric-input — skip conversion,
-                        // leave as expression (Perseus will render a text input fallback).
-                        continue;
-                    }
-                    itemCopy.question.widgets[key] = {
-                        type: 'numeric-input',
-                        graded: true,
-                        options: {
-                            coefficient: false,
-                            static: false,
-                            labelText: '',
-                            size: 'normal',
-                            answers: [{
-                                status: 'correct',
-                                value: parsed,
-                                maxError: 0.01,
-                                simplify: 'optional',
-                                strict: false,
-                                message: '',
-                            }],
-                        },
-                    };
-                    continue;
-                }
-                // Definition: inline the definition text to avoid popover dismiss bugs
-                if (w?.type === 'definition' && w.options) {
-                    const defText = (w.options.definition || '').trim();
-                    const prompt = (w.options.togglePrompt || 'Definition').trim();
-                    const placeholder = `[[☃ ${key}]]`;
-                    if (defText && typeof itemCopy.question.content === 'string' && itemCopy.question.content.includes(placeholder)) {
-                        itemCopy.question.content = itemCopy.question.content.replace(
-                            placeholder,
-                            ` (*${prompt}:* ${defText}) `
-                        );
-                        delete itemCopy.question.widgets[key];
-                        continue;
-                    }
-                    // Fallback: keep widget with required fields
-                    itemCopy.question.widgets[key] = {
-                        ...w,
-                        options: {
-                            togglePrompt: 'Definition',
-                            definition: '',
-                            static: false,
-                            ...w.options,
-                        },
-                    };
-                }
-                // Dropdown: ensure placeholder and static fields
-                if (w?.type === 'dropdown' && w.options) {
-                    itemCopy.question.widgets[key] = {
-                        ...w,
-                        options: {
-                            placeholder: 'Select an answer',
-                            static: false,
-                            ...w.options,
-                            choices: sanitizeChoicesArray(w.options.choices || []),
-                        },
-                    };
-                }
-                // Matcher: skip conversion — Perseus DnD is broken in React 18
-                // In practice mode the widget renders as-is (may be non-interactive)
-                // Sorter: ensure layout
-                if (w?.type === 'sorter' && w.options) {
-                    itemCopy.question.widgets[key] = {
-                        ...w,
-                        options: {
-                            layout: 'horizontal',
-                            padding: true,
-                            ...w.options,
-                        },
-                    };
-                }
-                // Categorizer: ensure required fields
-                if (w?.type === 'categorizer' && w.options) {
-                    itemCopy.question.widgets[key] = {
-                        ...w,
-                        options: {
-                            randomizeItems: false,
-                            static: false,
-                            highlightLint: false,
-                            ...w.options,
-                        },
-                    };
-                }
-                // Number-line: ensure required fields
-                if (w?.type === 'number-line' && w.options) {
-                    itemCopy.question.widgets[key] = {
-                        ...w,
-                        options: {
-                            labelRange: [null, null],
-                            initialX: null,
-                            tickStep: 1,
-                            labelStyle: 'decimal',
-                            labelTicks: true,
-                            isInequality: false,
-                            snapDivisions: 2,
-                            correctRel: 'eq',
-                            numDivisions: null,
-                            divisionRange: [1, 10],
-                            isTickCtrl: false,
-                            static: false,
-                            ...w.options,
-                        },
-                    };
-                }
-                // Table: ensure required fields
-                if (w?.type === 'table' && w.options) {
-                    itemCopy.question.widgets[key] = {
-                        ...w,
-                        options: {
-                            headers: [''],
-                            rows: 4,
-                            columns: 2,
-                            ...w.options,
-                        },
-                    };
-                }
-            }
-        }
-        return itemCopy;
-    })();
-    const hasOverlaySensitiveWidget = useMemo(() => {
-        const widgets = ((perseusItem as any)?.question?.widgets || {}) as Record<string, any>;
-        return Object.values(widgets).some((w: any) =>
-            w?.type === "dropdown" || w?.type === "definition"
-        );
-    }, [perseusItem]);
-
-    // Detect if question has only broken widget types (React 18 incompatible)
-    const brokenWidgetOnly = useMemo(() => {
-        const widgets = (perseusItem as any)?.question?.widgets || {};
-        const scoreable = Object.values(widgets).filter((w: any) => {
-            const t = w?.type;
-            return t && t !== 'image' && t !== 'definition';
-        });
-        if (scoreable.length === 0) return false;
-        return scoreable.every((w: any) => BROKEN_WIDGET_TYPES.has(w.type));
-    }, [perseusItem]);
-
-    // Runtime fit scaling for long-stem/image/widget combinations so controls stay in viewport.
-    useEffect(() => {
-        const viewportEl = scrollContainerRef.current;
-        const contentEl = questionStackRef.current;
-        if (!viewportEl || !contentEl || endOfTest || isLoading || perseusItems.length === 0) {
-            setAutoFitZoom(1);
-            return;
-        }
-
-        let raf = 0;
-        let timeoutId: number | null = null;
-        const minFitZoom = hasOverlaySensitiveWidget ? 0.85 : 0.65;
-
-        const recompute = () => {
-            const viewportH = viewportEl.clientHeight;
-            const contentH = contentEl.scrollHeight;
-            if (!viewportH || !contentH) return;
-            const fitRatio = viewportH / contentH;
-            const nextZoom = fitRatio >= 0.995 ? 1 : Math.max(minFitZoom, Math.min(1, fitRatio));
-            setAutoFitZoom((prev) => (Math.abs(prev - nextZoom) > 0.01 ? nextZoom : prev));
-        };
-
-        const schedule = () => {
-            cancelAnimationFrame(raf);
-            raf = requestAnimationFrame(recompute);
-            if (timeoutId !== null) window.clearTimeout(timeoutId);
-            timeoutId = window.setTimeout(recompute, 45);
-        };
-
-        schedule();
-        const observer = new ResizeObserver(() => schedule());
-        observer.observe(viewportEl);
-        observer.observe(contentEl);
-        window.addEventListener("resize", schedule);
-
-        return () => {
-            cancelAnimationFrame(raf);
-            if (timeoutId !== null) window.clearTimeout(timeoutId);
-            observer.disconnect();
-            window.removeEventListener("resize", schedule);
-        };
-    }, [
-        perseusItems.length,
-        item,
-        isAnswered,
-        showFeedback,
-        isLoading,
-        endOfTest,
-        hasOverlaySensitiveWidget,
-    ]);
-
-    const baseContentZoom = hasOverlaySensitiveWidget ? 1 : contentZoom;
-    const effectiveContentZoom = Math.min(baseContentZoom, autoFitZoom);
-    const contentZoomWrapperStyle: React.CSSProperties | undefined =
-        effectiveContentZoom < 1
-            ? ({
-                zoom: effectiveContentZoom,
-                width: "100%",
-                maxWidth: "100%",
-                boxSizing: "border-box",
-            } as React.CSSProperties)
-            : undefined;
-
-    // Progress shows completion: answered questions / total loaded (not including current unanswered one)
+    const perseusItem = perseusItems[item] || {};
     const progressPercentage = perseusItems.length > 0
-        ? Math.min(100, (item / perseusItems.length) * 100)
+        ? ((item + 1) / perseusItems.length) * 100
         : 0;
 
     // Extract hints from current question
     const hints = (perseusItem as any)?.hints || [];
 
-    // Detect if question needs audio (phonics/listening questions)
-    const audioWord = React.useMemo(() => {
-        const content = (perseusItem as any)?.question?.content || '';
-        return extractAudioWord(content);
-    }, [perseusItem]);
-
-    // Reset hint index, close hints, and clear responsive hint when question changes
+    // Reset hint index and close hints when question changes
     useEffect(() => {
-        currentItemRef.current = item;
         setCurrentHintIndex(0);
-        setShowHints(false);
-        setResponsiveHint(null);
-    }, [item, setCurrentHintIndex, setShowHints, setResponsiveHint]);
+        setShowHints(false); // Auto-close hints when question changes
+    }, [item, setCurrentHintIndex, setShowHints]);
 
     return (
-        <div className="framework-perseus relative flex w-full h-full min-h-0 items-stretch justify-start px-2 md:px-3 py-1 overflow-hidden" style={{ maxWidth: 'calc(100% - 100px)' }}>
+        <div className="framework-perseus relative flex min-h-screen w-full items-center justify-center py-4 md:py-6 px-3 md:px-4">
             {/* Neo-Brutalism Card */}
-            <Card className="relative flex h-full min-h-0 w-full flex-col border-[4px] md:border-[5px] border-black dark:border-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-200 overflow-hidden" style={{ maxWidth: '100%' }}>
+            <Card className="relative flex w-full max-w-4xl md:max-w-5xl h-auto flex-col border-[4px] md:border-[5px] border-black dark:border-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-200">
                 {/* Progress bar at top */}
                 <div className="absolute top-0 left-0 right-0 h-2 md:h-3 bg-[#FFFDF5] dark:bg-[#000000] border-b-[2px] md:border-b-[3px] border-black dark:border-white">
                     <div
@@ -1173,36 +350,20 @@ const RendererComponent = ({
                     />
                 </div>
 
-                <CardHeader className={`${compactViewport ? "space-y-1.5 pt-5 px-3.5" : "space-y-2 pt-6 md:pt-7 px-4 md:px-6"} border-b-[3px] md:border-b-[4px] border-black dark:border-white bg-[#FFD93D] flex-shrink-0`}>
+                <CardHeader className="space-y-2 pt-6 md:pt-7 px-4 md:px-6 border-b-[3px] md:border-b-[4px] border-black dark:border-white bg-[#FFD93D]">
                     <div className="flex items-start justify-between gap-3 md:gap-4 flex-wrap">
                         <div className="space-y-1.5 flex-1">
-                            {/* Breadcrumb Navigation */}
-                            {perseusItems.length > 0 && !isLoading && (
-                                <div className="flex items-center gap-2 flex-wrap text-xs md:text-sm font-bold text-black">
-                                    {(() => {
-                                        const currentItem = perseusItems[item];
-                                        const metadata = (currentItem as any).dash_metadata || {};
-                                        const unitName = metadata.unit_name || 'Unknown Unit';
-                                        const lessonName = metadata.lesson_name || 'Unknown Lesson';
-                                        const exerciseName = metadata.exercise_name || 'Unknown Exercise';
-                                        const isAI = metadata.ai_generated === true;
-
-                                        return (
-                                            <>
-                                                <span className="uppercase tracking-wide">{unitName}</span>
-                                                <ChevronRight className="w-4 h-4 flex-shrink-0" />
-                                                <span className="uppercase tracking-wide">{lessonName}</span>
-                                                {!isAI && (
-                                                    <>
-                                                        <ChevronRight className="w-4 h-4 flex-shrink-0" />
-                                                        <span className="uppercase tracking-wide">{exerciseName}</span>
-                                                    </>
-                                                )}
-                                            </>
-                                        );
-                                    })()}
+                            <div className="flex items-center gap-2 md:gap-3">
+                                <div className="p-1.5 md:p-2 border-[2px] md:border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000]">
+                                    <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-black dark:text-white font-bold" />
                                 </div>
-                            )}
+                                <CardTitle className="text-lg md:text-xl font-black text-black uppercase tracking-tight">
+                                    Practice Session
+                                </CardTitle>
+                            </div>
+                            <CardDescription className="text-xs md:text-sm font-bold text-black uppercase tracking-wide">
+                                {user ? `Welcome, ${user.name}! Grade: ${user.current_grade}` : `User: ${user_id}`}
+                            </CardDescription>
                         </div>
 
                         {/* Neo-Brutalist Progress Badge */}
@@ -1228,10 +389,10 @@ const RendererComponent = ({
                     </div>
                 </CardHeader>
 
-                <CardContent className={`${compactViewport ? "px-3 py-2.5" : "px-4 md:px-6 py-4 md:py-6"} bg-[#FFFDF5] dark:bg-[#000000] flex-1 min-h-0 overflow-hidden`}>
+                <CardContent className="flex-1 min-h-0 px-4 md:px-6 bg-[#FFFDF5] dark:bg-[#000000]">
                     <div
                         ref={scrollContainerRef}
-                        className={`relative w-full h-full min-h-0 overflow-x-hidden pr-1 ${effectiveContentZoom < 1 ? 'overflow-y-hidden' : 'overflow-y-auto'}`}
+                        className="relative w-full min-h-full"
                     >
                         {endOfTest ? (
                             <div className="flex h-full items-center justify-center px-3 md:px-4 py-4 md:py-6 text-center">
@@ -1275,7 +436,7 @@ const RendererComponent = ({
                                     </div>
                                 </div>
                             </div>
-                        ) : (isLoading && perseusItems.length === 0) ? (
+                        ) : isLoading ? (
                             <div className="flex h-full flex-col items-center justify-center gap-3 md:gap-4">
                                 <div className="relative w-12 h-12 md:w-16 md:h-16">
                                     <div className="absolute inset-0 border-[3px] md:border-[4px] border-black dark:border-white"></div>
@@ -1285,24 +446,9 @@ const RendererComponent = ({
                                     Loading questions...
                                 </p>
                             </div>
-                        ) : perseusItems.length > 0 && Object.keys(perseusItem?.question?.widgets || {}).length > 0 ? (
-                            <div
-                                ref={questionStackRef}
-                                className={`${compactViewport ? "space-y-2.5" : "space-y-4 md:space-y-6"} h-full`}
-                                style={{ ...contentZoomWrapperStyle, paddingRight: "80px", maxWidth: "calc(100% - 80px)" }}
-                            >
-                                {/* Audio play button for phonics/listening questions */}
-                                {audioWord && (
-                                    <div style={{ marginBottom: '16px' }}>
-                                        <AudioPlayButton word={audioWord} autoPlay={true} />
-                                    </div>
-                                )}
-
-                                <div
-                                    id="question-content-container"
-                                    className={`border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 text-black dark:text-white ${compactViewport ? "p-3" : "p-4 md:p-5 lg:p-6"} shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]`}
-                                    style={{ overflowX: "clip", overflowY: "visible", maxHeight: "none", flexShrink: 0, marginRight: "70px" }}
-                                >
+                        ) : perseusItems.length > 0 ? (
+                            <div className="space-y-4 md:space-y-6 py-3 md:py-4">
+                                <div id="question-content-container" className="border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 text-black dark:text-white p-4 md:p-5 lg:p-6 shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]">
                                     <PerseusI18nContextProvider locale="en" strings={mockStrings}>
                                         <RenderStateRoot>
                                             <ServerItemRenderer
@@ -1313,7 +459,7 @@ const RendererComponent = ({
                                                 apiOptions={{}}
                                                 linterContext={{
                                                     contentType: "",
-                                                    highlightLint: false,
+                                                    highlightLint: true,
                                                     paths: [],
                                                     stack: [],
                                                 }}
@@ -1323,21 +469,23 @@ const RendererComponent = ({
                                             />
                                         </RenderStateRoot>
                                     </PerseusI18nContextProvider>
-
-                                    {/* Hints Display — inside question card (Bug #39) */}
-                                    {hints.length > 0 && (
-                                        <HintDisplay hints={hints} />
-                                    )}
                                 </div>
 
-                                {/* Inline feedback panel — stays visible until "Next" */}
-                                {isAnswered && score && (
-                                    <div className="mt-4 border-[3px] md:border-[4px] border-black dark:border-white shadow-[4px_4px_0_0_rgba(0,0,0,1)] md:shadow-[6px_6px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] animate-in slide-in-from-top-4 duration-300">
-                                        <div className={`flex items-center gap-2 md:gap-3 px-5 md:px-6 py-3 md:py-4 ${score.correct
+                                {/* Hints Display */}
+                                {hints.length > 0 && (
+                                    <HintDisplay hints={hints} />
+                                )}
+
+                                {/* Neo-Brutalist feedback */}
+                                {isAnswered && (
+                                    <div
+                                        className="fixed top-[60px] lg:top-[64px] left-1/2 transform -translate-x-1/2 z-[200] animate-in slide-in-from-top-4 duration-300"
+                                    >
+                                        <div className={`flex items-center gap-2 md:gap-3 px-5 md:px-6 py-3 md:py-4 border-[3px] md:border-[4px] border-black dark:border-white shadow-[4px_4px_0_0_rgba(0,0,0,1)] md:shadow-[6px_6px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] ${score?.correct
                                             ? "bg-[#ADFF2F]"
                                             : "bg-[#FF006E]"
                                             }`}>
-                                            {score.correct ? (
+                                            {score?.correct ? (
                                                 <div className="p-1.5 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-neutral-900">
                                                     <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-black dark:text-white flex-shrink-0 font-bold" />
                                                 </div>
@@ -1346,110 +494,51 @@ const RendererComponent = ({
                                                     <XCircle className="w-5 h-5 md:w-6 md:h-6 text-black flex-shrink-0 font-bold" />
                                                 </div>
                                             )}
-                                            <span className={`text-base md:text-lg font-black uppercase tracking-tight ${score.correct
+                                            <span className={`text-base md:text-lg font-black uppercase tracking-tight ${score?.correct
                                                 ? "text-black"
                                                 : "text-white"
                                                 }`}>
-                                                {score.correct ? "Correct!" : "Not quite!"}
+                                                {score?.correct ? "🎯 Correct!" : "📚 Not quite!"}
                                             </span>
                                         </div>
-                                        {/* Explanation: show last hint (walkthrough) on wrong answer */}
-                                        {!score.correct && hints.length > 0 && (
-                                            <div className="px-5 md:px-6 py-4 bg-[#FFF8E1] dark:bg-amber-900/30 border-t-[3px] border-black dark:border-white">
-                                                <p className="text-xs font-black uppercase tracking-wider text-black dark:text-white mb-2">Explanation</p>
-                                                <p className="text-sm leading-relaxed text-black dark:text-neutral-200">
-                                                    {hints[hints.length - 1]?.content || hints[0]?.content || ''}
-                                                </p>
-                                            </div>
-                                        )}
                                     </div>
                                 )}
                             </div>
                         ) : (
                             <div className="flex h-full items-center justify-center">
-                                <div className="text-center space-y-3 md:space-y-4 border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 p-6 md:p-8 shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]">
-                                    <div className="text-3xl md:text-4xl mb-1 md:mb-2">{isError ? '⚠️' : '📝'}</div>
+                                <div className="text-center space-y-2 md:space-y-3 border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 p-6 md:p-8 shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]">
+                                    <div className="text-3xl md:text-4xl mb-1 md:mb-2">📝</div>
                                     <p className="text-xs md:text-sm font-black uppercase text-black dark:text-white tracking-wider">
-                                        {isError
-                                            ? 'Questions are being generated. Please retry.'
-                                            : 'No questions available.'}
+                                        No questions available.
                                     </p>
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setIsError(false);
-                                            setError(null);
-                                            setIsLoading(true);
-                                            // Re-trigger question fetch
-                                            const refetch = async () => {
-                                                try {
-                                                    const resp = await apiUtils.get(`${DASH_API_URL}/api/questions/${INITIAL_QUESTION_BATCH_SIZE}`);
-                                                    if (resp.ok) {
-                                                        const d = await resp.json();
-                                                        if (d && d.length > 0) {
-                                                            setPerseusItems(d);
-                                                            setItem(0);
-                                                            setEndOfTest(false);
-                                                            setIsAnswered(false);
-                                                            setStartTime(Date.now());
-                                                        }
-                                                    }
-                                                } catch { /* ignore */ } finally {
-                                                    setIsLoading(false);
-                                                }
-                                            };
-                                            refetch();
-                                        }}
-                                        className="mt-2 px-4 py-2 border-[3px] border-black dark:border-white bg-[#FFD93D] text-black font-black uppercase text-xs tracking-wider shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
-                                    >
-                                        Retry
-                                    </button>
                                 </div>
                             </div>
                         )}
                     </div>
                 </CardContent>
 
-                <CardFooter className={`${compactViewport ? "gap-2 px-3 py-2.5" : "gap-2 md:gap-3 px-4 md:px-6 pb-4 md:pb-5 pt-3 md:pt-4"} flex justify-between items-center border-t-[3px] md:border-t-[4px] border-black dark:border-white bg-white dark:bg-neutral-900 flex-shrink-0`}>
-                    {hints.length > 0 && !brokenWidgetOnly ? <HintButton inline={true} /> : <div />}
+                <CardFooter className="flex justify-between items-center gap-2 md:gap-3 px-4 md:px-6 pb-4 md:pb-5 pt-3 md:pt-4 border-t-[3px] md:border-t-[4px] border-black dark:border-white bg-white dark:bg-neutral-900">
+                    <HintButton inline={true} />
                     <div className="flex gap-2 md:gap-3">
-                        {brokenWidgetOnly && !isAnswered ? (
-                            <div className="w-full">
-                                <div className="mb-3 py-3 px-4 border-[3px] border-black dark:border-white bg-[#FFF3E0] dark:bg-orange-900/30 text-sm font-black text-center text-black dark:text-orange-200 uppercase tracking-wide shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
-                                    Drag-and-drop questions are not supported yet
-                                </div>
-                                <Button
-                                    type="button"
-                                    size="sm"
-                                    onClick={handleNext}
-                                    className="w-full transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-[#E0E0E0] text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 text-xs md:text-sm h-9 md:h-10 px-4 md:px-5"
-                                >
-                                    Skip Question
-                                </Button>
-                            </div>
-                        ) : (
-                            <Button
-                                type="button"
-                                size="sm"
-                                onClick={handleSubmit}
-                                disabled={isLoading || endOfTest || perseusItems.length === 0 || isAnswered}
-                                className="transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-[#C4B5FD] hover:bg-[#C4B5FD] text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:hover:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] disabled:opacity-50 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5"
-                            >
-                                Submit
-                            </Button>
-                        )}
-                        {!assessmentMode && (
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={handleNext}
-                                disabled={isLoading || endOfTest || perseusItems.length === 0 || !isAnswered}
-                                className="transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-neutral-800 hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] text-black dark:text-white dark:hover:text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5"
-                            >
-                                Next →
-                            </Button>
-                        )}
+                        <Button
+                            type="button"
+                            size="sm"
+                            onClick={handleSubmit}
+                            disabled={isLoading || endOfTest || perseusItems.length === 0}
+                            className="transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-[#C4B5FD] hover:bg-[#C4B5FD] text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:hover:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] disabled:opacity-50 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5"
+                        >
+                            Submit
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={handleNext}
+                            disabled={isLoading || endOfTest || perseusItems.length === 0}
+                            className="transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-neutral-800 hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] text-black dark:text-white dark:hover:text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5"
+                        >
+                            Next →
+                        </Button>
                     </div>
                 </CardFooter>
             </Card>

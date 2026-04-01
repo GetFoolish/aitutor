@@ -39,21 +39,32 @@ const declaration: FunctionDeclaration = {
   },
 };
 
+const WEB_SEARCH_KEY = "aitutor_web_search_enabled";
+
+function isWebSearchEnabled(): boolean {
+  try {
+    return localStorage.getItem(WEB_SEARCH_KEY) !== "false";
+  } catch {
+    return true;
+  }
+}
+
 function AltairComponent() {
   const [jsonString, setJSONString] = useState<string>("");
   const { client, setConfig } = useTutorContext();
 
   useEffect(() => {
+    const webSearchEnabled = isWebSearchEnabled();
+    const tools = webSearchEnabled
+      ? [{ googleSearch: {} }, { functionDeclarations: [declaration] }]
+      : [{ functionDeclarations: [declaration] }];
+
     setConfig({
       responseModalities: [Modality.AUDIO],
       speechConfig: {
         voiceConfig: { prebuiltVoiceConfig: { voiceName: "Aoede" } },
       },
-      tools: [
-        // there is a free-tier quota for search
-        { googleSearch: {} },
-        { functionDeclarations: [declaration] },
-      ],
+      tools,
     });
   }, [setConfig]);
 

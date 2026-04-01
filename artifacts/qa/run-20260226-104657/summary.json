@@ -1,0 +1,54 @@
+{
+  "created_at": "2026-02-26T15:46:59.623086+00:00",
+  "artifacts_dir": "/Users/gaganarora/Desktop/my projects/aitutor/artifacts/qa/run-20260226-104657",
+  "checks": [
+    {
+      "name": "Empty validation",
+      "passed": false,
+      "warning": false,
+      "details": "Dev login page not loaded: Error: Unsupported browser subcommand: --timeout-ms",
+      "elapsed_s": 0.43,
+      "error": null
+    },
+    {
+      "name": "Layout crush (mobile)",
+      "passed": false,
+      "warning": false,
+      "details": "Dev login page not loaded: Error: Unsupported browser subcommand: --timeout-ms",
+      "elapsed_s": 0.36,
+      "error": null
+    },
+    {
+      "name": "MongoDB health",
+      "passed": false,
+      "warning": false,
+      "details": "Both checks failed. HTTP: MongoDB health degraded: {'status': 'ready', 'ready': True, 'skills_count': 116, 'questions_count': 0, 'ai_questions_enabled': True}; Direct: MONGODB_URI not set in environment",
+      "elapsed_s": 0.27,
+      "error": null
+    },
+    {
+      "name": "State management",
+      "passed": false,
+      "warning": false,
+      "details": "Page failed to load: Error: Unsupported browser subcommand: --timeout-ms",
+      "elapsed_s": 0.48,
+      "error": null
+    },
+    {
+      "name": "Visual regression",
+      "passed": false,
+      "warning": false,
+      "details": "Page failed to load: Error: Unsupported browser subcommand: --timeout-ms",
+      "elapsed_s": 0.52,
+      "error": null
+    }
+  ],
+  "summary": {
+    "total": 5,
+    "passed": 0,
+    "failed": 5,
+    "warnings": 0,
+    "total_elapsed_s": 2.05
+  },
+  "ok": false
+}

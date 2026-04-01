@@ -3,6 +3,7 @@ import "./settings-dialog.scss";
 import { useTutorContext } from "../../features/tutor";
 import VoiceSelector from "./VoiceSelector";
 import ResponseModalitySelector from "./ResponseModalitySelector";
+import TTSProviderSelector from "./TTSProviderSelector";
 import {
   FunctionDeclaration,
   LiveConnectConfig,
@@ -20,6 +21,18 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+
+/** localStorage key for web search toggle */
+const WEB_SEARCH_KEY = "aitutor_web_search_enabled";
+
+function loadWebSearchEnabled(): boolean {
+  try {
+    return localStorage.getItem(WEB_SEARCH_KEY) !== "false";
+  } catch {
+    return true;
+  }
+}
 
 type FunctionDeclarationsTool = Tool & {
   functionDeclarations: FunctionDeclaration[];
@@ -34,6 +47,17 @@ export default function SettingsDialog({
 }) {
   const { config, setConfig, connected } = useTutorContext();
   const [userPrompt, setUserPrompt] = useState("");
+  const [webSearchEnabled, setWebSearchEnabled] = useState(loadWebSearchEnabled);
+
+  const toggleWebSearch = useCallback(
+    (enabled: boolean) => {
+      setWebSearchEnabled(enabled);
+      localStorage.setItem(WEB_SEARCH_KEY, String(enabled));
+      // Persist the preference on config so Altair and other components can read it
+      setConfig({ ...(config as any), _webSearchEnabled: enabled });
+    },
+    [config, setConfig],
+  );
 
   const functionDeclarations: FunctionDeclaration[] = useMemo(() => {
     if (!Array.isArray(config.tools)) {
@@ -66,7 +90,6 @@ export default function SettingsDialog({
       // Enable output audio transcription for model speech-to-text
       outputAudioTranscription: {},
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleUserPromptChange = useCallback(
@@ -144,6 +167,21 @@ export default function SettingsDialog({
               <ResponseModalitySelector />
               <VoiceSelector />
             </div>
+
+            {/* Web Search Toggle */}
+            <div className="flex items-center justify-between py-1">
+              <Label htmlFor="web-search-toggle" className="cursor-pointer">
+                Web Search (Google)
+              </Label>
+              <Switch
+                id="web-search-toggle"
+                checked={webSearchEnabled}
+                onCheckedChange={toggleWebSearch}
+              />
+            </div>
+
+            {/* Read-Aloud TTS */}
+            <TTSProviderSelector />
 
             <div className="space-y-2">
               <Label htmlFor="system-instructions">System Instructions</Label>

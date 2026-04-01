@@ -4,8 +4,9 @@ Phase 3: Backend & API Optimization - Payload Reduction
 
 Allows clients to specify which fields they need, reducing bandwidth and improving performance.
 """
-from typing import Any, Optional, Set
-from pydantic import BaseModel
+import inspect
+from typing import Any, Dict, List, Optional, Set
+from pydantic import BaseModel, ConfigDict
 
 
 def filter_fields(data: Any, fields: Optional[Set[str]] = None, exclude: Optional[Set[str]] = None) -> Any:
@@ -81,6 +82,8 @@ def parse_fields_query(fields_str: Optional[str]) -> Optional[Set[str]]:
 # Pydantic model for responses with field filtering support
 class FilterableResponse(BaseModel):
     """Base model that supports field filtering"""
+
+    model_config = ConfigDict(json_encoders={})
     
     def dict_filtered(self, fields: Optional[Set[str]] = None, exclude: Optional[Set[str]] = None, **kwargs):
         """
@@ -94,14 +97,8 @@ class FilterableResponse(BaseModel):
         Returns:
             Filtered dictionary
         """
-        full_dict = self.dict(**kwargs)
+        full_dict = self.model_dump(**kwargs)
         return filter_fields(full_dict, fields=fields, exclude=exclude)
-    
-    class Config:
-        # Allow filtering in JSON responses
-        json_encoders = {
-            # Add custom encoders if needed
-        }
 
 
 # Common field sets for different use cases
@@ -160,6 +157,30 @@ def get_field_set(preset: str) -> Set[str]:
     return FIELD_SETS[preset].copy()
 
 
+class _AwaitableDict(dict):
+    def __await__(self):
+        async def _value():
+            return dict(self)
+
+        return _value().__await__()
+
+
+class _AwaitableList(list):
+    def __await__(self):
+        async def _value():
+            return list(self)
+
+        return _value().__await__()
+
+
+def _make_sync_result_awaitable(result: Any) -> Any:
+    if isinstance(result, dict):
+        return _AwaitableDict(result)
+    if isinstance(result, list):
+        return _AwaitableList(result)
+    return result
+
+
 # Decorator for FastAPI endpoints to auto-filter responses
 def filterable_response(default_exclude: Optional[Set[str]] = None):
     """
@@ -173,22 +194,28 @@ def filterable_response(default_exclude: Optional[Set[str]] = None):
             return user  # Will be automatically filtered
     """
     def decorator(func):
-        async def wrapper(*args, **kwargs):
-            # Get fields from query params if available
+        def resolve_filters(kwargs):
             fields_param = kwargs.get('fields')
             exclude_param = kwargs.get('exclude')
-            
-            # Parse field sets
             fields = parse_fields_query(fields_param) if fields_param else None
             exclude = parse_fields_query(exclude_param) if exclude_param else default_exclude
-            
-            # Call original function
-            result = await func(*args, **kwargs) if asyncio.iscoroutinefunction(func) else func(*args, **kwargs)
-            
-            # Filter response
-            return filter_fields(result, fields=fields, exclude=exclude)
-        
-        return wrapper
+            return fields, exclude
+
+        if inspect.iscoroutinefunction(func):
+            async def async_wrapper(*args, **kwargs):
+                fields, exclude = resolve_filters(kwargs)
+                result = await func(*args, **kwargs)
+                return filter_fields(result, fields=fields, exclude=exclude)
+
+            return async_wrapper
+
+        def sync_wrapper(*args, **kwargs):
+            fields, exclude = resolve_filters(kwargs)
+            result = func(*args, **kwargs)
+            filtered = filter_fields(result, fields=fields, exclude=exclude)
+            return _make_sync_result_awaitable(filtered)
+
+        return sync_wrapper
     return decorator
 
 

@@ -1,208 +1,212 @@
 #!/usr/bin/env bash
 
-# Get the directory where the script is located
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+set -euo pipefail
 
-# Load environment variables from .env file if it exists
-if [[ -f ".env" ]]; then
-    echo "Loading environment variables from .env file..."
-    # Read .env file and export variables (works on Windows/Git Bash)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LOG_DIR="$SCRIPT_DIR/logs"
+
+load_env_file() {
+    local env_path="$1"
+    if [[ ! -f "$env_path" ]]; then
+        return
+    fi
+
+    echo "Loading environment variables from $(basename "$env_path")..."
     while IFS='=' read -r key value; do
-        # Skip comments and empty lines
-        [[ $key =~ ^[[:space:]]*#.*$ ]] && continue
         [[ -z "$key" ]] && continue
-        # Remove leading/trailing whitespace
-        key=$(echo "$key" | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
-        # Remove quotes from value if present
-        value=$(echo "$value" | sed 's/^"//' | sed 's/"$//' | sed "s/^'//" | sed "s/'$//")
-        # Export the variable
+        [[ $key =~ ^[[:space:]]*# ]] && continue
+        key="$(echo "$key" | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')"
+        value="$(echo "$value" | sed 's/^"//' | sed 's/"$//' | sed "s/^'//" | sed "s/'$//")"
         export "$key=$value"
-        echo "  Loaded: $key"
-    done < .env
-    echo "✅ Environment variables loaded from .env"
-else
-    echo "⚠️  No .env file found. Using default values."
-    echo "   Create a .env file with your MongoDB Atlas URI and other config."
-fi
-
-# Clean up old logs and create a fresh logs directory
-rm -rf "$SCRIPT_DIR/logs"
-mkdir -p "$SCRIPT_DIR/logs"
-
-# Detect Python environment
-if [[ -z "$VIRTUAL_ENV" ]]; then
-    # Not already in a virtual environment
-    if [[ -d "$SCRIPT_DIR/venv" ]]; then
-        echo "Activating local venv..."
-        # shellcheck source=/dev/null
-        source "$SCRIPT_DIR/venv/bin/activate"
-    elif [[ -d "$SCRIPT_DIR/env" ]]; then
-        echo "Activating local env..."
-        # shellcheck source=/dev/null
-        source "$SCRIPT_DIR/env/bin/activate"
-    elif [[ -d "$SCRIPT_DIR/.env" ]]; then
-        echo "Activating local .env..."
-        # shellcheck source=/dev/null
-        source "$SCRIPT_DIR/.env/bin/activate"
-    else
-        echo "❌ No virtual environment found."
-        echo "👉 Please create one with:"
-        echo "    python -m venv env"
-        echo "    source env/bin/activate"
-        echo "👉 Next, install the required packages with:"
-        echo "    pip install -r requirements.txt"
-        echo "👉 If you plan to use the frontend, also run:"
-        echo "    cd frontend"
-        echo "    npm install --force"
-        echo "    cd .."
-        echo "👉 Finally, run this script again."
-        exit 1
-    fi
-else
-    echo "Using already active virtual environment: $VIRTUAL_ENV"
-fi
-
-# Get the python executable (now guaranteed to be from venv)
-# On Windows, explicitly use the venv's Python to avoid finding system Python
-if [[ -n "$VIRTUAL_ENV" ]]; then
-    # Use the venv's Python explicitly
-    if [[ -f "$VIRTUAL_ENV/Scripts/python.exe" ]]; then
-        # Windows native path
-        PYTHON_BIN="$VIRTUAL_ENV/Scripts/python.exe"
-    elif [[ -f "$VIRTUAL_ENV/bin/python3" ]]; then
-        # Unix-style path (Git Bash/Linux/Mac)
-        PYTHON_BIN="$VIRTUAL_ENV/bin/python3"
-    elif [[ -f "$VIRTUAL_ENV/bin/python" ]]; then
-        PYTHON_BIN="$VIRTUAL_ENV/bin/python"
-    else
-        # Fallback to PATH search if venv Python not found
-        PYTHON_BIN="$(command -v python3 || command -v python)"
-        echo "⚠️  Warning: Could not find venv Python, using: $PYTHON_BIN"
-    fi
-else
-    # No venv active, search PATH
-    PYTHON_BIN="$(command -v python3 || command -v python)"
-fi
-echo "Using Python: $PYTHON_BIN"
-
-# Array to hold the PIDs of background processes
-pids=()
-
-# Function to clean up background processes
-cleanup() {
-    echo "Shutting down tutor..."
-    for pid in "${pids[@]}"; do
-        echo "Killing process $pid"
-        kill "$pid"
-    done
-    echo "All processes terminated."
+    done < "$env_path"
 }
 
-# Trap the INT signal (sent by Ctrl+C) to run the cleanup function
-trap cleanup INT
-
-
-# Start the FastAPI server in the background
-echo "Starting DASH API server... Logs -> logs/dash_api.log"
-(cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/DashSystem/dash_api.py) > "$SCRIPT_DIR/logs/dash_api.log" 2>&1 &
-pids+=($!)
-
-# Start the SherlockEDExam FastAPI server in the background
-echo "Starting SherlockED Exam API server... Logs -> logs/sherlocked_exam.log"
-(cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/SherlockEDApi/run_backend.py) > "$SCRIPT_DIR/logs/sherlocked_exam.log" 2>&1 &
-pids+=($!)
-
-# Start the TeachingAssistant API server in the background
-echo "Starting TeachingAssistant API server... Logs -> logs/teaching_assistant.log"
-(cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/TeachingAssistant/api.py) > "$SCRIPT_DIR/logs/teaching_assistant.log" 2>&1 &
-pids+=($!)
-
-# Note: Tutor service has been moved to frontend (frontend/src/services/tutor/)
-# The backend Tutor service (services/Tutor/) is kept for reference but not started
-
-# Start the Auth Service API server in the background
-echo "Starting Auth Service API server... Logs -> logs/auth_service.log"
-(cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/AuthService/auth_api.py) > "$SCRIPT_DIR/logs/auth_service.log" 2>&1 &
-pids+=($!)
-
-# Extract ports dynamically from configuration files
-# Support both JSON-style (`"port": 3000`) and TS-style (`port: 5173`) config.
-FRONTEND_PORT=$(grep -Eo '("port"[[:space:]]*:|port[[:space:]]*:)[[:space:]]*[0-9]+' "$SCRIPT_DIR/frontend/vite.config.ts" 2>/dev/null | head -n 1 | grep -Eo '[0-9]+' || echo "3000")
-DASH_API_PORT=$(grep -o 'PORT", [0-9]*' "$SCRIPT_DIR/services/DashSystem/dash_api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8000")
-
-# Give the backend servers a moment to start
-echo "Waiting for backend services to initialize..."
-sleep 2
-
-# Wait for DASH API to be ready (it takes time to load questions from MongoDB)
-echo "Waiting for DASH API to initialize (this may take a few seconds)..."
-MAX_WAIT=60
-WAIT_COUNT=0
-
-while [ $WAIT_COUNT -lt $MAX_WAIT ]; do
-    # Check if DASH API health endpoint returns ready status
-    if curl -s "http://localhost:$DASH_API_PORT/health" 2>/dev/null | grep -q '"ready":true'; then
-        echo "✅ DASH API is ready"
-        break
+find_python_bin() {
+    if [[ -n "${VIRTUAL_ENV:-}" ]]; then
+        if [[ -x "$VIRTUAL_ENV/bin/python3" ]]; then
+            echo "$VIRTUAL_ENV/bin/python3"
+            return
+        fi
+        if [[ -x "$VIRTUAL_ENV/bin/python" ]]; then
+            echo "$VIRTUAL_ENV/bin/python"
+            return
+        fi
     fi
-    sleep 1
-    WAIT_COUNT=$((WAIT_COUNT + 1))
-    if [ $((WAIT_COUNT % 5)) -eq 0 ]; then
-        echo "  Still waiting for DASH API... ($WAIT_COUNT seconds)"
+
+    if [[ -d "$SCRIPT_DIR/.venv" ]]; then
+        echo "$SCRIPT_DIR/.venv/bin/python3"
+        return
     fi
-done
 
-if [ $WAIT_COUNT -eq $MAX_WAIT ]; then
-    echo "⚠️  Warning: DASH API may not be fully ready, but continuing..."
+    if [[ -d "$SCRIPT_DIR/env" ]]; then
+        echo "$SCRIPT_DIR/env/bin/python3"
+        return
+    fi
+
+    echo ""
+}
+
+validate_required_env() {
+    local missing=()
+    local required_vars=(
+        MONGODB_URI
+        OPENROUTER_API_KEY
+        GEMINI_API_KEY
+        JWT_SECRET
+        GOOGLE_CLIENT_ID
+        GOOGLE_CLIENT_SECRET
+        OBSERVER_API_KEY
+    )
+
+    for var_name in "${required_vars[@]}"; do
+        if [[ -z "${!var_name:-}" ]]; then
+            missing+=("$var_name")
+        fi
+    done
+
+    if [[ ${#missing[@]} -gt 0 ]]; then
+        echo "❌ Missing required environment variables:"
+        printf '   - %s\n' "${missing[@]}"
+        echo ""
+        echo "Run ./setup-local-env.sh and fill in the placeholders before starting the app."
+        exit 1
+    fi
+
+    local placeholder_vars=()
+    local placeholder_prefixes=(
+        "replace-with-"
+        "CHANGE_ME_"
+    )
+
+    for var_name in "${required_vars[@]}"; do
+        local value="${!var_name:-}"
+        for prefix in "${placeholder_prefixes[@]}"; do
+            if [[ "$value" == "$prefix"* ]]; then
+                placeholder_vars+=("$var_name")
+                break
+            fi
+        done
+    done
+
+    if [[ ${#placeholder_vars[@]} -gt 0 ]]; then
+        echo "❌ Replace placeholder values before starting the app:"
+        printf '   - %s\n' "${placeholder_vars[@]}"
+        echo ""
+        echo "Run ./setup-local-env.sh if needed, then edit .env with real credentials."
+        exit 1
+    fi
+}
+
+wait_for_service() {
+    local name="$1"
+    local url="$2"
+    local ready_substring="${3:-}"
+    local max_wait="${4:-60}"
+
+    echo "Waiting for $name..."
+    for ((attempt = 1; attempt <= max_wait; attempt++)); do
+        local response
+        response="$(curl -sS "$url" 2>/dev/null || true)"
+
+        if [[ -n "$response" ]]; then
+            if [[ -z "$ready_substring" || "$response" == *"$ready_substring"* ]]; then
+                echo "  $name is ready"
+                return 0
+            fi
+        fi
+
+        sleep 1
+    done
+
+    echo "❌ Timed out waiting for $name at $url"
+    echo "Inspect logs in $LOG_DIR for details."
+    exit 1
+}
+
+load_env_file "$SCRIPT_DIR/.env"
+
+PYTHON_BIN="$(find_python_bin)"
+if [[ -z "$PYTHON_BIN" || ! -x "$PYTHON_BIN" ]]; then
+    echo "❌ No project virtual environment found."
+    echo "Create one with:"
+    echo "  python3 -m venv .venv"
+    echo "  source .venv/bin/activate"
+    echo "  pip install -r requirements.txt -r requirements-test.txt"
+    echo "  cd frontend && npm install && cd .."
+    exit 1
 fi
-SHERLOCKED_API_PORT=$(grep -o 'PORT", [0-9]*' "$SCRIPT_DIR/services/SherlockEDApi/run_backend.py" 2>/dev/null | grep -o '[0-9]*' || echo "8001")
-TEACHING_ASSISTANT_PORT=$(grep -o 'PORT", [0-9]*' "$SCRIPT_DIR/services/TeachingAssistant/api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8002")
-AUTH_SERVICE_PORT=$(grep -o 'PORT", [0-9]*' "$SCRIPT_DIR/services/AuthService/auth_api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8003")
 
-# Ensure all port variables are properly set (fallback to defaults if extraction failed)
-FRONTEND_PORT=${FRONTEND_PORT:-3000}
-DASH_API_PORT=${DASH_API_PORT:-8000}
-SHERLOCKED_API_PORT=${SHERLOCKED_API_PORT:-8001}
-TEACHING_ASSISTANT_PORT=${TEACHING_ASSISTANT_PORT:-8002}
-AUTH_SERVICE_PORT=${AUTH_SERVICE_PORT:-8003}
-
-# Start OpenMAIC sibling service (if USE_OPENMAIC=true and dir exists)
-if [[ "${USE_OPENMAIC:-false}" == "true" ]]; then
-  OPENMAIC_DIR="$(dirname "$SCRIPT_DIR")/OpenMAIC"
-  if [[ -d "$OPENMAIC_DIR" && -f "$OPENMAIC_DIR/package.json" ]]; then
-    echo "Starting OpenMAIC service... Logs -> logs/openmaic.log"
-    (cd "$OPENMAIC_DIR" && GOOGLE_API_KEY="$GEMINI_API_KEY" DEFAULT_MODEL="google:gemini-2.0-flash" PORT=3333 pnpm dev) \
-      > "$SCRIPT_DIR/logs/openmaic.log" 2>&1 &
-    pids+=($!)
-    echo "  OpenMAIC PID: $!"
-  else
-    echo "⚠️  USE_OPENMAIC=true but OpenMAIC dir not found at $OPENMAIC_DIR"
-  fi
+if [[ ! -d "$SCRIPT_DIR/frontend/node_modules" ]]; then
+    echo "❌ Frontend dependencies are missing."
+    echo "Install them with:"
+    echo "  cd frontend && npm install"
+    exit 1
 fi
 
-# Start the Node.js frontend in the background (after backend services are ready)
-echo "Starting Node.js frontend... Logs -> logs/frontend.log"
-(cd "$SCRIPT_DIR/frontend" && npm run dev) > "$SCRIPT_DIR/logs/frontend.log" 2>&1 &
+validate_required_env
+
+rm -rf "$LOG_DIR"
+mkdir -p "$LOG_DIR"
+
+export FRONTEND_URL="${FRONTEND_URL:-http://localhost:3000}"
+export DASH_API_URL="${DASH_API_URL:-http://localhost:8000}"
+export SHERLOCKED_API_URL="${SHERLOCKED_API_URL:-http://localhost:8001}"
+export TEACHING_ASSISTANT_API_URL="${TEACHING_ASSISTANT_API_URL:-http://localhost:8002}"
+export AUTH_SERVICE_URL="${AUTH_SERVICE_URL:-http://localhost:8003}"
+export ALLOWED_ORIGINS="${ALLOWED_ORIGINS:-http://localhost:3000}"
+export VITE_DASH_API_URL="${VITE_DASH_API_URL:-$DASH_API_URL}"
+export VITE_SHERLOCKED_API_URL="${VITE_SHERLOCKED_API_URL:-$SHERLOCKED_API_URL}"
+export VITE_TEACHING_ASSISTANT_API_URL="${VITE_TEACHING_ASSISTANT_API_URL:-$TEACHING_ASSISTANT_API_URL}"
+export VITE_AUTH_SERVICE_URL="${VITE_AUTH_SERVICE_URL:-$AUTH_SERVICE_URL}"
+export VITE_GOOGLE_CLIENT_ID="${VITE_GOOGLE_CLIENT_ID:-$GOOGLE_CLIENT_ID}"
+
+pids=()
+
+cleanup() {
+    echo "Shutting down AI Tutor..."
+    for pid in "${pids[@]}"; do
+        kill "$pid" 2>/dev/null || true
+    done
+}
+
+trap cleanup INT TERM EXIT
+
+echo "Using Python: $PYTHON_BIN"
+
+echo "Starting DASH API... logs/dash_api.log"
+(cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/DashSystem/dash_api.py) > "$LOG_DIR/dash_api.log" 2>&1 &
 pids+=($!)
 
-# Give frontend a moment to start
-sleep 2
+echo "Starting SherlockED API... logs/sherlocked_exam.log"
+(cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/SherlockEDApi/run_backend.py) > "$LOG_DIR/sherlocked_exam.log" 2>&1 &
+pids+=($!)
 
-echo "Tutor is running with the following PIDs: ${pids[*]}"
+echo "Starting TeachingAssistant API... logs/teaching_assistant.log"
+(cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/TeachingAssistant/api.py) > "$LOG_DIR/teaching_assistant.log" 2>&1 &
+pids+=($!)
+
+echo "Starting Auth Service... logs/auth_service.log"
+(cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/AuthService/auth_api.py) > "$LOG_DIR/auth_service.log" 2>&1 &
+pids+=($!)
+
+wait_for_service "DASH API" "$DASH_API_URL/health" '"ready":true' 90
+wait_for_service "SherlockED API" "$SHERLOCKED_API_URL/health"
+wait_for_service "TeachingAssistant API" "$TEACHING_ASSISTANT_API_URL/health"
+wait_for_service "Auth Service" "$AUTH_SERVICE_URL/health"
+
+echo "Starting frontend... logs/frontend.log"
+(cd "$SCRIPT_DIR/frontend" && npm run dev -- --host 0.0.0.0) > "$LOG_DIR/frontend.log" 2>&1 &
+pids+=($!)
+
 echo ""
-echo "📡 Service URLs:"
-echo "  🌐 Frontend:           http://localhost:$FRONTEND_PORT"
-echo "  🔐 Auth Service:       http://localhost:$AUTH_SERVICE_PORT"
-echo "  🔧 DASH API:           http://localhost:$DASH_API_PORT"
-echo "  🕵️  SherlockED API:     http://localhost:$SHERLOCKED_API_PORT"
-echo "  👨‍🏫 TeachingAssistant:  http://localhost:$TEACHING_ASSISTANT_PORT"
-echo "  🎓 Tutor Service:      (integrated in frontend)"
-echo "  🎓 Cost Tracking Service:  http://localhost:$COST_TRACKING_PORT"
-[[ "${USE_OPENMAIC:-false}" == "true" ]] && echo "  🏫 OpenMAIC:           http://localhost:3333"
-echo "     Cost tracking interface: http://localhost:$FRONTEND_PORT/app/admin/cost-tracking"
-echo "     Two way channel interface: file://$SCRIPT_DIR/services/TeachingAssistant/scripts/test_channel1_viewer.html"
-echo "Press Ctrl+C to stop."
-echo "You can view the logs for each service in the 'logs' directory."
+echo "AI Tutor is starting."
+echo "  Frontend:           http://localhost:3000"
+echo "  DASH API:           http://localhost:8000"
+echo "  SherlockED API:     http://localhost:8001"
+echo "  TeachingAssistant:  http://localhost:8002"
+echo "  Auth Service:       http://localhost:8003"
+echo ""
+echo "Legacy note: services/Tutor is not started by this script."
+echo "Press Ctrl+C to stop everything."
 
-# Wait indefinitely until the script is interrupted
 wait

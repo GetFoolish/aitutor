@@ -51,3 +51,4 @@ frontend/build/
 
 # Generated AI question images
 static/images/
+.gstack/

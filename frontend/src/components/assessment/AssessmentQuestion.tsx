@@ -1004,6 +1004,32 @@ const AssessmentQuestion: React.FC<Props> = ({
           60% { transform: translateX(-6px); }
           80% { transform: translateX(6px); }
         }
+
+        /* MCQ answer choice styling */
+        #question-content-container .perseus-widget-radio-fieldset .choice,
+        #question-content-container li.perseus-radio-option {
+          border: 2px solid #000 !important;
+          background: white !important;
+          padding: 12px 16px !important;
+          cursor: pointer !important;
+          margin-bottom: 8px !important;
+        }
+        #question-content-container .perseus-widget-radio-fieldset .choice.perseus-radio-selected,
+        #question-content-container li.perseus-radio-option.perseus-radio-selected {
+          background: #FF4B4B !important;
+          color: white !important;
+        }
+        #question-content-container .choice-icon__text {
+          width: 28px !important;
+          height: 28px !important;
+          border: 2px solid currentColor !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          font-weight: bold !important;
+        }
+        .perseus-radio .choice-icon__text { font-family: inherit; font-size: inherit; }
+        .perseus-radio .perseus-renderer .paragraph { font-family: inherit; }
       `}</style>
     </div>
   );

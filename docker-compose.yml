@@ -1,65 +1,120 @@
-version: '3.8'
+version: "3.9"
 
 services:
-  # Redis for caching (Phase 4)
-  redis:
-    image: redis:7-alpine
-    container_name: ai_tutor_redis
+  mongodb:
+    image: mongo:7
+    container_name: ai_tutor_mongodb
     ports:
-      - "6379:6379"
+      - "27017:27017"
     volumes:
-      - redis_data:/data
-    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+      - mongodb_data:/data/db
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
       interval: 10s
-      timeout: 3s
-      retries: 3
-    restart: unless-stopped
+      timeout: 5s
+      retries: 5
 
-  # Frontend (Production)
+  dash-api:
+    build:
+      context: .
+      dockerfile: services/DashSystem/Dockerfile
+    ports:
+      - "8000:8080"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      PORT: 8080
+      ENVIRONMENT: development
+      MONGODB_URI: ${DOCKER_MONGODB_URI:-mongodb://mongodb:27017/ai_tutor}
+      MONGODB_DB_NAME: ${MONGODB_DB_NAME:-ai_tutor}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000}
+
+  sherlocked-api:
+    build:
+      context: .
+      dockerfile: services/SherlockEDApi/Dockerfile
+    ports:
+      - "8001:8080"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      PORT: 8080
+      ENVIRONMENT: development
+      MONGODB_URI: ${DOCKER_MONGODB_URI:-mongodb://mongodb:27017/ai_tutor}
+      MONGODB_DB_NAME: ${MONGODB_DB_NAME:-ai_tutor}
+      JWT_SECRET: ${JWT_SECRET}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000}
+
+  teaching-assistant:
+    build:
+      context: .
+      dockerfile: services/TeachingAssistant/Dockerfile
+    ports:
+      - "8002:8080"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      dash-api:
+        condition: service_started
+    environment:
+      PORT: 8080
+      ENVIRONMENT: development
+      MONGODB_URI: ${DOCKER_MONGODB_URI:-mongodb://mongodb:27017/ai_tutor}
+      MONGODB_DB_NAME: ${MONGODB_DB_NAME:-ai_tutor}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+      OBSERVER_API_KEY: ${OBSERVER_API_KEY}
+      DASH_API_URL: ${DOCKER_DASH_API_URL:-http://dash-api:8080}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000}
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: services/AuthService/Dockerfile
+    ports:
+      - "8003:8080"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      PORT: 8080
+      ENVIRONMENT: development
+      MONGODB_URI: ${DOCKER_MONGODB_URI:-mongodb://mongodb:27017/ai_tutor}
+      MONGODB_DB_NAME: ${MONGODB_DB_NAME:-ai_tutor}
+      JWT_SECRET: ${JWT_SECRET}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GEMINI_MODEL: ${GEMINI_MODEL:-models/gemini-2.5-flash-native-audio-preview-09-2025}
+      AUTH_SERVICE_URL: ${AUTH_SERVICE_URL:-http://localhost:8003}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000}
+
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: ai_tutor_frontend
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        VITE_DASH_API_URL: ${DASH_API_URL:-http://localhost:8000}
+        VITE_SHERLOCKED_API_URL: ${SHERLOCKED_API_URL:-http://localhost:8001}
+        VITE_TEACHING_ASSISTANT_API_URL: ${TEACHING_ASSISTANT_API_URL:-http://localhost:8002}
+        VITE_AUTH_SERVICE_URL: ${AUTH_SERVICE_URL:-http://localhost:8003}
+        VITE_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
     ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=production
+      - "3000:8080"
     depends_on:
-      - redis
-    restart: unless-stopped
-
-  # Teaching Assistant API
-  teaching_assistant:
-    build:
-      context: ./services/TeachingAssistant
-      dockerfile: Dockerfile
-    container_name: ai_tutor_teaching_assistant
-    ports:
-      - "8002:8002"
-    environment:
-      - PORT=8002
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-    depends_on:
-      redis:
-        condition: service_healthy
-    restart: unless-stopped
-
-  # Tutor Service (WebSocket)
-  tutor:
-    build:
-      context: ./services/Tutor
-      dockerfile: Dockerfile
-    container_name: ai_tutor_tutor
-    ports:
-      - "8767:8767"
-    environment:
-      - PORT=8767
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
-    restart: unless-stopped
+      dash-api:
+        condition: service_started
+      sherlocked-api:
+        condition: service_started
+      teaching-assistant:
+        condition: service_started
+      auth-service:
+        condition: service_started
 
   # OpenMAIC - AI lesson generation engine (sibling service)
   openmaic:
@@ -82,9 +137,4 @@ services:
       start_period: 60s
 
 volumes:
-  redis_data:
-    driver: local
-
-networks:
-  default:
-    name: ai_tutor_network
+  mongodb_data:

@@ -59,7 +59,15 @@ import {
   ToggleRight,
   Loader2,
   Clock,
+  Maximize2,
+  Minimize2,
+  Crosshair,
+  Pointer,
 } from "lucide-react";
+import { useImmersive } from "../../features/immersive/use-immersive";
+import { useSpotlight } from "../spotlight/use-spotlight";
+import SpotlightOverlay from "../spotlight/SpotlightOverlay";
+import { useBrowserASR } from "../../features/asr";
 import { toast } from "sonner";
 
 const TEACHING_ASSISTANT_API_URL = import.meta.env.VITE_TEACHING_ASSISTANT_API_URL || 'http://localhost:8002';
@@ -130,6 +138,30 @@ function FloatingControlPanel({
 
   // Compute whether user has no minutes (but don't disable button - show modal instead)
   const hasNoMinutes = userBalance !== null && userBalance < 1;
+
+  // ─── OpenMAIC: Immersive Mode ───────────────────────────────────────────────
+  const { immersive, toggle: toggleImmersive } = useImmersive();
+
+  // ─── OpenMAIC: Spotlight & Laser Pointer ───────────────────────────────────
+  const {
+    spotlightActive,
+    laserActive,
+    position: spotlightPosition,
+    setPosition: setSpotlightPosition,
+    toggleSpotlight,
+    toggleLaser,
+  } = useSpotlight();
+
+  // ─── OpenMAIC: Browser ASR (fallback when Gemini is disconnected) ───────────
+  const { start: startBrowserASR, stop: stopBrowserASR, listening: browserASRListening } =
+    useBrowserASR({
+      onTranscript: (text, isFinal) => {
+        if (isFinal && text.trim()) {
+          // Queue transcript for when tutor connects; for now show a toast
+          toast(`Heard: ${text}`, { duration: 3000 });
+        }
+      },
+    });
 
   useEffect(() => {
     const checkDarkMode = () => {
@@ -898,6 +930,28 @@ function FloatingControlPanel({
     }
   }, [sharedMediaOpen, updatePopoverPosition]);
 
+  // Immersive auto-hide: panel fades out 3s after last mouse move
+  const [immersiveHidden, setImmersiveHidden] = useState(false);
+  const immersiveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (!immersive) {
+      setImmersiveHidden(false);
+      return;
+    }
+    const show = () => {
+      setImmersiveHidden(false);
+      if (immersiveTimerRef.current) clearTimeout(immersiveTimerRef.current);
+      immersiveTimerRef.current = setTimeout(() => setImmersiveHidden(true), 3000);
+    };
+    show(); // start timer immediately
+    window.addEventListener('mousemove', show);
+    return () => {
+      window.removeEventListener('mousemove', show);
+      if (immersiveTimerRef.current) clearTimeout(immersiveTimerRef.current);
+    };
+  }, [immersive]);
+
   const panelClasses = useMemo(
     () =>
       cn(
@@ -906,11 +960,13 @@ function FloatingControlPanel({
           ? "w-[50px] md:w-[55px] py-2 md:py-2.5 px-1 md:px-1.5 shadow-[1px_1px_0_0_rgba(0,0,0,1),_4px_4px_12px_rgba(0,0,0,0.12),_8px_8px_24px_rgba(0,0,0,0.08)]"
           : "w-[220px] md:w-[250px] p-2.5 md:p-3 shadow-[1px_1px_0_0_rgba(0,0,0,1),_4px_4px_12px_rgba(0,0,0,0.12),_8px_8px_24px_rgba(0,0,0,0.08)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1),_6px_6px_16px_rgba(0,0,0,0.15),_12px_12px_32px_rgba(0,0,0,0.1)]",
         "hover:shadow-[2px_2px_0_0_rgba(0,0,0,1),_6px_6px_16px_rgba(0,0,0,0.15),_12px_12px_32px_rgba(0,0,0,0.1)] md:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1),_8px_8px_20px_rgba(0,0,0,0.18),_16px_16px_40px_rgba(0,0,0,0.12)]",
+        immersive && immersiveHidden && "immersive-hidden",
       ),
-    [isCollapsed],
+    [isCollapsed, immersive, immersiveHidden],
   );
 
   return (
+    <>
     <motion.div
       ref={panelRef}
       className={panelClasses}
@@ -1446,6 +1502,50 @@ function FloatingControlPanel({
                 </div>
                 <span className="text-[7px] md:text-[8px] font-black uppercase">More</span>
               </button>
+
+              {/* Spotlight button */}
+              <button
+                onClick={toggleSpotlight}
+                title="Spotlight (focus mode)"
+                className={cn(
+                  "flex flex-col items-center gap-1 p-1.5 md:p-2 border-[2px] border-black dark:border-white text-black dark:text-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none group",
+                  spotlightActive ? "bg-[#FFE500] hover:bg-[#FFE500]" : "bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#C4B5FD]",
+                )}
+              >
+                <div className={cn("p-1 border-[2px] border-black dark:border-white transition-colors", spotlightActive ? "bg-[#FFE500]" : "bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#C4B5FD]")}>
+                  <Crosshair className="w-3 h-3 md:w-4 md:h-4 font-bold" />
+                </div>
+                <span className="text-[7px] md:text-[8px] font-black uppercase">Focus</span>
+              </button>
+
+              {/* Laser pointer button */}
+              <button
+                onClick={toggleLaser}
+                title="Laser pointer"
+                className={cn(
+                  "flex flex-col items-center gap-1 p-1.5 md:p-2 border-[2px] border-black dark:border-white text-black dark:text-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none group",
+                  laserActive ? "bg-[#FF006E] text-white hover:bg-[#FF006E]" : "bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#C4B5FD]",
+                )}
+              >
+                <div className={cn("p-1 border-[2px] border-black dark:border-white transition-colors", laserActive ? "bg-[#FF006E]" : "bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#C4B5FD]")}>
+                  <Pointer className="w-3 h-3 md:w-4 md:h-4 font-bold" />
+                </div>
+                <span className="text-[7px] md:text-[8px] font-black uppercase">Laser</span>
+              </button>
+
+              {/* Immersive mode button */}
+              <button
+                onClick={toggleImmersive}
+                title={immersive ? "Exit immersive (I)" : "Immersive mode (I)"}
+                className="flex flex-col items-center gap-1 p-1.5 md:p-2 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#C4B5FD] text-black dark:text-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none group"
+              >
+                <div className="p-1 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#C4B5FD] transition-colors">
+                  {immersive
+                    ? <Minimize2 className="w-3 h-3 md:w-4 md:h-4 font-bold" />
+                    : <Maximize2 className="w-3 h-3 md:w-4 md:h-4 font-bold" />}
+                </div>
+                <span className="text-[7px] md:text-[8px] font-black uppercase">{immersive ? "Exit" : "Immersive"}</span>
+              </button>
             </div>
           </div>
         )}
@@ -1557,6 +1657,15 @@ function FloatingControlPanel({
           </AlertDialogContent>
         </AlertDialog>
       </motion.div>
+
+    {/* OpenMAIC: Spotlight & Laser Pointer overlay — rendered outside the draggable panel */}
+    <SpotlightOverlay
+      spotlightActive={spotlightActive}
+      laserActive={laserActive}
+      position={spotlightPosition}
+      onPositionChange={setSpotlightPosition}
+    />
+    </>
   );
 }
 

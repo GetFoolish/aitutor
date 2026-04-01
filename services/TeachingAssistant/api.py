@@ -3,23 +3,19 @@ import os
 import threading
 import requests
 import asyncio
-import time
-import secrets
-from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from typing import Optional, List, Dict, Any
+from typing import Optional
 from urllib.parse import parse_qs
 from sse_starlette.sse import EventSourceResponse
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 from services.TeachingAssistant.teaching_assistant import TeachingAssistant
-from services.TeachingAssistant.core.context import Event
-from shared.auth_middleware import get_current_user, require_admin
+from shared.auth_middleware import get_current_user, get_user_from_token
 from shared.cors_config import ALLOWED_ORIGINS, ALLOW_CREDENTIALS, ALLOWED_METHODS, ALLOWED_HEADERS
 from shared.timing_middleware import UnpluggedTimingMiddleware
 from shared.cache_middleware import CacheControlMiddleware
@@ -36,136 +32,17 @@ logger = get_logger(__name__)
 from typing import Dict, List
 active_observers: Dict[str, List[WebSocket]] = {}
 
-# One-time stream auth code registry
-STREAM_AUTH_CODE_TTL_SECONDS = int(os.getenv("STREAM_AUTH_CODE_TTL_SECONDS", "90"))
-_stream_auth_codes: Dict[str, Dict[str, Any]] = {}
-_stream_auth_lock = threading.Lock()
+DEFAULT_OBSERVER_API_KEY = "dev-observer-key-12345"
+OBSERVER_API_KEY_HEADER = "X-Observer-Api-Key"
 
 
-def _is_non_dev_environment() -> bool:
-    env = (
-        os.getenv("APP_ENV")
-        or os.getenv("ENVIRONMENT")
-        or os.getenv("ENV")
-        or "development"
-    ).strip().lower()
-    return env not in {"dev", "development", "local", "test", "testing"}
-
-
-def _validate_observer_api_key() -> None:
-    """Fail startup in non-dev if OBSERVER_API_KEY is missing or weak."""
-    if not _is_non_dev_environment():
-        return
-
-    key = (os.getenv("OBSERVER_API_KEY") or "").strip()
-    weak_values = {
-        "",
-        "changeme",
-        "change-me",
-        "default",
-        "password",
-        "dev-observer-key-12345",
-    }
-    if len(key) < 24 or key.lower().startswith("dev-") or key.lower() in weak_values:
-        raise RuntimeError(
-            "OBSERVER_API_KEY is missing/weak in non-dev environment. "
-            "Set a strong value (>=24 chars, non-default)."
-        )
-
-
-def _prune_stream_auth_codes(now: Optional[float] = None) -> None:
-    ts = now if now is not None else time.time()
-    expired = [code for code, entry in _stream_auth_codes.items() if entry["expires_at"] <= ts]
-    for code in expired:
-        _stream_auth_codes.pop(code, None)
-
-
-def _issue_stream_auth_code(user_id: str, purpose: str, is_admin: bool = False) -> str:
-    code = secrets.token_urlsafe(32)
-    now = time.time()
-    with _stream_auth_lock:
-        _prune_stream_auth_codes(now)
-        _stream_auth_codes[code] = {
-            "user_id": user_id,
-            "purpose": purpose,
-            "is_admin": is_admin,
-            "expires_at": now + STREAM_AUTH_CODE_TTL_SECONDS,
-        }
-    return code
-
-
-def _consume_stream_auth_code(code: Optional[str], expected_purpose: str) -> Optional[Dict[str, Any]]:
-    if not code:
-        return None
-    now = time.time()
-    with _stream_auth_lock:
-        _prune_stream_auth_codes(now)
-        entry = _stream_auth_codes.pop(code, None)
-    if not entry:
-        return None
-    if entry.get("purpose") != expected_purpose:
-        return None
-    if entry.get("expires_at", 0) <= now:
-        return None
-    return entry
-
-
-# ============================================================================
-# Lifespan Context Manager (Start/Stop Event Processing Loop)
-# ============================================================================
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """Start and stop event processing loop AND session monitor"""
-    global ta, event_processing_task, session_monitor_task
-    _validate_observer_api_key()
-    
-    # Start event processing loop
-    ta.running = True
-    event_processing_task = asyncio.create_task(ta.ongoing())
-    logger.info("[API] ✅ Started event processing loop")
-    
-    # Start session credit monitoring
-    from services.TeachingAssistant.session_monitor import monitor_session_credits
-    session_monitor_task = asyncio.create_task(monitor_session_credits())
-    logger.info("[API] ✅ Started session credit monitoring")
-    
-    yield
-    
-    # Shutdown
-    logger.info("[API] 🛑 Shutting down services...")
-    ta.running = False
-    
-    # Stop event processing
-    if event_processing_task:
-        event_processing_task.cancel()
-        try:
-            await event_processing_task
-        except asyncio.CancelledError:
-            pass
-    
-    # Stop session monitor
-    if session_monitor_task:
-        session_monitor_task.cancel()
-        try:
-            await session_monitor_task
-        except asyncio.CancelledError:
-            pass
-    
-    logger.info("[API] ✅ All services stopped")
-
-
-app = FastAPI(title="Teaching Assistant API", lifespan=lifespan)
+app = FastAPI(title="Teaching Assistant API")
 
 # Add timing middleware for performance monitoring (Phase 1)
 app.add_middleware(UnpluggedTimingMiddleware)
 
 # Cache Control (Phase 7)
 app.add_middleware(CacheControlMiddleware)
-
-# Cost Tracking Middleware (Phase 4) - Track API calls for cost calculation
-from services.shared.cost_tracking_middleware import CostTrackingMiddleware
-app.add_middleware(CostTrackingMiddleware)
 
 # Add GZip compression middleware (Phase 7)
 app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=6)
@@ -183,10 +60,8 @@ app.add_middleware(
 # Request timeout middleware (Phase 3)
 @app.middleware("http")
 async def timeout_middleware(request: Request, call_next):
-    # Increase timeout for token-usage endpoint (MongoDB operations can be slow)
-    timeout = 60.0 if request.url.path == "/tutor/token-usage" else 30.0
     try:
-        return await asyncio.wait_for(call_next(request), timeout=timeout)
+        return await asyncio.wait_for(call_next(request), timeout=30.0)
     except asyncio.TimeoutError:
         return JSONResponse(
             status_code=504,
@@ -221,163 +96,67 @@ async def options_handler(full_path: str):
         }
     )
 
-# Create TeachingAssistant instance (now stateless - all state in MongoDB)
-ta = TeachingAssistant()
+class LazyTeachingAssistant:
+    """Defer MongoDB-backed TeachingAssistant startup until first real use."""
 
-# Global tasks for event processing loop and session monitoring
-event_processing_task = None
-session_monitor_task = None
+    def __init__(self):
+        self._assistant: Optional[TeachingAssistant] = None
+
+    def get(self) -> TeachingAssistant:
+        if self._assistant is None:
+            self._assistant = TeachingAssistant()
+        return self._assistant
+
+    def __getattr__(self, name):
+        return getattr(self.get(), name)
+
+
+def get_configured_observer_api_key() -> Optional[str]:
+    """Observer access is disabled until a non-default key is configured."""
+    api_key = os.getenv("OBSERVER_API_KEY", "").strip()
+    if not api_key or api_key == DEFAULT_OBSERVER_API_KEY:
+        return None
+    return api_key
+
+
+def require_observer_api_key(api_key: Optional[str]) -> str:
+    configured_key = get_configured_observer_api_key()
+    if not configured_key:
+        raise HTTPException(
+            status_code=503,
+            detail="Observer endpoints are disabled until OBSERVER_API_KEY is configured",
+        )
+    if api_key != configured_key:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+    return configured_key
+
+
+async def authenticate_observer_websocket(websocket: WebSocket) -> bool:
+    configured_key = get_configured_observer_api_key()
+    if not configured_key:
+        await websocket.close(code=4001, reason="Observer endpoints disabled")
+        return False
+
+    try:
+        auth_message = await asyncio.wait_for(websocket.receive_json(), timeout=5)
+    except asyncio.TimeoutError:
+        await websocket.close(code=4002, reason="Observer auth timeout")
+        return False
+    except Exception:
+        await websocket.close(code=4002, reason="Observer auth failed")
+        return False
+
+    if auth_message.get("type") != "auth" or auth_message.get("api_key") != configured_key:
+        await websocket.close(code=4001, reason="Invalid API key")
+        return False
+
+    return True
+
+
+ta = LazyTeachingAssistant()
 
 # DASH API URL for pre-loading questions
 DASH_API_URL = os.getenv("DASH_API_URL", "http://localhost:8000")
-
-
-# ============================================================================
-# Transcript Buffer for Debouncing Partial Transcripts
-# ============================================================================
-
-class TranscriptBuffer:
-    """Buffer transcripts to aggregate fragments before processing"""
-    def __init__(self, debounce_ms: int = 2000):
-        self.buffers: Dict[str, Dict[str, str]] = {}  # session_id -> {speaker -> text}
-        self.timers: Dict[str, asyncio.TimerHandle] = {}  # session_id:speaker -> timer
-        self.debounce_ms = debounce_ms
-
-    async def add(self, session_id: str, speaker: str, text: str, callback) -> bool:
-        """
-        Add text to buffer. Returns True if text was buffered (will be flushed later),
-        False if it was sent immediately (empty buffer or no debounce needed).
-        """
-        key = f"{session_id}:{speaker}"
-
-        # Initialize buffer for this session:speaker pair if needed
-        if session_id not in self.buffers:
-            self.buffers[session_id] = {}
-
-        # Add text to buffer
-        self.buffers[session_id][speaker] = self.buffers[session_id].get(speaker, "") + text
-        buffered_text = self.buffers[session_id][speaker]
-
-        # Cancel existing timer if any
-        if key in self.timers:
-            self.timers[key].cancel()
-            del self.timers[key]
-
-        # Set new timer to flush after debounce
-        loop = asyncio.get_event_loop()
-        self.timers[key] = loop.call_later(
-            self.debounce_ms / 1000.0,
-            lambda: asyncio.create_task(self._flush(session_id, speaker, callback))
-        )
-
-        return True
-
-    async def _flush(self, session_id: str, speaker: str, callback):
-        """Flush buffered text"""
-        if session_id not in self.buffers or speaker not in self.buffers[session_id]:
-            return
-
-        text = self.buffers[session_id][speaker].strip()
-        try:
-            if text:
-                await callback(text)
-        except Exception as e:
-            logger.error(f"[TRANSCRIPT] Flush callback failed for {session_id}/{speaker}: {e}")
-        finally:
-            # Always clean up to prevent memory leaks
-            self.buffers[session_id].pop(speaker, None)
-            if not self.buffers[session_id]:
-                del self.buffers[session_id]
-            key = f"{session_id}:{speaker}"
-            self.timers.pop(key, None)
-
-    async def flush_all(self, session_id: str, callback):
-        """Flush all pending text for a session"""
-        if session_id not in self.buffers:
-            return
-
-        for speaker, text in list(self.buffers[session_id].items()):
-            text = text.strip()
-            if text:
-                await callback(text, speaker)
-
-            # Clean up timers
-            key = f"{session_id}:{speaker}"
-            if key in self.timers:
-                self.timers[key].cancel()
-                del self.timers[key]
-
-        del self.buffers[session_id]
-
-    def cleanup_session(self, session_id: str):
-        """Clean up buffers and timers for a session"""
-        if session_id in self.buffers:
-            for speaker in self.buffers[session_id].keys():
-                key = f"{session_id}:{speaker}"
-                if key in self.timers:
-                    self.timers[key].cancel()
-                    del self.timers[key]
-            del self.buffers[session_id]
-
-transcript_buffer = TranscriptBuffer(debounce_ms=2000)
-
-
-# ============================================================================
-# Feed-to-Event Converter
-# ============================================================================
-
-def feed_message_to_event(message: dict, session_id: str, user_id: str) -> Optional[Event]:
-    """Convert WebSocket feed message to Event object"""
-    msg_type = message.get("type")
-    timestamp_str = message.get("timestamp")
-    payload = message.get("data", {})
-    
-    # Parse timestamp
-    if timestamp_str:
-        try:
-            from datetime import datetime
-            timestamp = datetime.fromisoformat(timestamp_str.replace('Z', '+00:00')).timestamp()
-        except (ValueError, AttributeError):
-            timestamp = time.time()
-    else:
-        timestamp = time.time()
-    
-    # Convert based on message type
-    if msg_type == "transcript":
-        return Event(
-            type="text",
-            timestamp=timestamp,
-            session_id=session_id,
-            user_id=user_id,
-            data={
-                "speaker": payload.get("speaker", "user"),
-                "text": payload.get("transcript", ""),
-                "timestamp": timestamp_str
-            }
-        )
-    elif msg_type == "audio":
-        return Event(
-            type="audio",
-            timestamp=timestamp,
-            session_id=session_id,
-            user_id=user_id,
-            data={
-                "audio": payload.get("audio", ""),
-                "timestamp": timestamp_str
-            }
-        )
-    elif msg_type == "media":
-        return Event(
-            type="media",
-            timestamp=timestamp,
-            session_id=session_id,
-            user_id=user_id,
-            data={
-                "media": payload.get("media", ""),
-                "timestamp": timestamp_str
-            }
-        )
-    return None
 
 
 # ============================================================================
@@ -385,26 +164,16 @@ def feed_message_to_event(message: dict, session_id: str, user_id: str) -> Optio
 # ============================================================================
 
 class StartSessionRequest(BaseModel):
-    assessment_mode: Optional[bool] = False  # Flag for assessment mode (no TA features)
+    pass  # user_id now comes from JWT
 
 
 class EndSessionRequest(BaseModel):
     interrupt_audio: bool = True
-    assessment_mode: Optional[bool] = False  # Flag for assessment mode (no TA features)
 
 
 class QuestionAnsweredRequest(BaseModel):
     question_id: str
     is_correct: bool
-
-
-class TokenUsageRequest(BaseModel):
-    promptTokenCount: int = 0
-    candidatesTokenCount: int = 0
-    totalTokenCount: int = 0
-    cachedContentTokenCount: int = 0  # Cached tokens (90% discount)
-    thoughtTokenCount: int = 0  # Thinking tokens (billed as output)
-    promptTokensDetails: Optional[List[Dict[str, Any]]] = []  # Modality breakdown: [{modality: "TEXT/AUDIO/VIDEO", tokenCount: number}]
 
 
 class PromptResponse(BaseModel):
@@ -432,90 +201,13 @@ def health_check():
 # ============================================================================
 
 @app.post("/session/start", response_model=PromptResponse)
-async def start_session(http_request: Request, request: Optional[StartSessionRequest] = None):
-    """Start a new tutoring session (supports both normal and assessment modes)"""
+def start_session(http_request: Request, request: Optional[StartSessionRequest] = None):
+    """Start a new tutoring session"""
     user_id = get_current_user(http_request)
-    assessment_mode = request.assessment_mode if request else False
-
     try:
-        # STEP 1: Allocate daily free minutes if needed
-        from services.PaymentService.free_minutes_handler import (
-            allocate_daily_free_minutes,
-            check_user_balance
-        )
-
-        # Allocate daily minutes (will only allocate if not already allocated today)
-        allocate_daily_free_minutes(user_id)
-
-        # STEP 2: Check if user has enough minutes (at least 1 minute to start)
-        balances = check_user_balance(user_id)
-        total_balance = balances["total"]
-        mode_str = "ASSESSMENT" if assessment_mode else "NORMAL"
-        logger.info(f"[SESSION_START] [{mode_str}] User {user_id[:8]}... has {total_balance} minutes available (free: {balances['free']}, paid: {balances['paid']})")
-
-        if total_balance < 1:
-            logger.warning(f"[SESSION_START] ❌ User {user_id[:8]}... has insufficient minutes: {total_balance}")
-            raise HTTPException(
-                status_code=403,
-                detail={
-                    "error": "insufficient_minutes",
-                    "message": "You've used your free 15 minutes today. Come back tomorrow or purchase a plan to continue tutoring.",
-                    "balance": total_balance,
-                    "required": 1
-                }
-            )
-
-        # Create session in MongoDB (existing method)
         result = ta.start_session(user_id)
-        session_id = result["session_info"]["session_id"]
-
-        # STEP 3: Store credits_at_start and assessment_mode flag for session monitoring
-        from managers.mongodb_manager import mongo_db
-        mongo_db.sessions.update_one(
-            {"session_id": session_id},
-            {
-                "$set": {
-                    "credits_at_start": total_balance,
-                    "max_duration_minutes": total_balance,
-                    "assessment_mode": assessment_mode
-                }
-            }
-        )
-        logger.info(
-            f"[SESSION_START] ✅ Session {session_id[:8]}... created with "
-            f"{total_balance} minutes available (mode: {mode_str})"
-        )
-
-        # CONDITIONAL: Initialize memory and context components only in normal mode
-        greeting = ""
-        if not assessment_mode:
-            # Initialize memory and context components (new method)
-            greeting = await ta.start(user_id, session_id)
-
-            # Create session_start event
-            start_event = Event(
-                type="session_start",
-                timestamp=time.time(),
-                session_id=session_id,
-                user_id=user_id,
-                data={"session_id": session_id, "user_id": user_id}
-            )
-            ta.queue_manager.enqueue(start_event)
-        else:
-            logger.info(f"[SESSION_START] Skipping TA initialization for assessment mode")
-
-        # UPDATED: Return greeting in response for immediate delivery
-        # Also sent via SSE for systems that listen to instruction queue
-        # This ensures backward compatibility with frontends expecting prompt in response
-        session_id = result["session_id"]
-
-        # Initialize cost tracking for this session (works for both modes)
-        from services.CostTracking.cost_tracker import CostTracker
-        cost_tracker = CostTracker(session_id, user_id)
-        cost_tracker.start_session()
-
         return PromptResponse(
-            prompt=greeting or "",  # Return greeting (empty in assessment mode)
+            prompt=result["prompt"],
             session_info=result["session_info"]
         )
     except Exception as e:
@@ -559,11 +251,9 @@ def _preload_questions_background(user_id: str, token: str):
 
 
 @app.post("/session/end", response_model=PromptResponse)
-async def end_session(http_request: Request, request: Optional[EndSessionRequest] = None):
-    """End the current tutoring session (supports both normal and assessment modes)"""
+def end_session(http_request: Request, request: Optional[EndSessionRequest] = None):
+    """End the current tutoring session"""
     user_id = get_current_user(http_request)
-    assessment_mode = request.assessment_mode if request else False
-
     try:
         # Get active session for user
         session = ta.get_active_session(user_id)
@@ -573,70 +263,32 @@ async def end_session(http_request: Request, request: Optional[EndSessionRequest
                 session_info={'session_active': False, 'user_id': user_id}
             )
 
-        session_id = session["session_id"]
+        result = ta.end_session(session["session_id"])
 
-        # Check if this session was created in assessment mode (fallback to request param)
-        session_assessment_mode = session.get("assessment_mode", assessment_mode)
-        mode_str = "ASSESSMENT" if session_assessment_mode else "NORMAL"
-
-        # CONDITIONAL: End session with memory consolidation only in normal mode
-        closing = ""
-        if not session_assessment_mode:
-            # End session with memory consolidation (new method)
-            closing = await ta.end(user_id, session_id)
-        else:
-            logger.info(f"[SESSION_END] Skipping TA cleanup for assessment mode")
-
-        # Session end event is NO LONGER needed here because we called ta.end() directly above
-        # Queuing it would cause the event loop to call ta.end() a second time!
-        # end_event = Event(
-        #     type="session_end",
-        #     timestamp=time.time(),
-        #     session_id=session_id,
-        #     user_id=user_id,
-        #     data={"session_id": session_id, "user_id": user_id}
-        # )
-        # ta.queue_manager.enqueue(end_event)
-
-        # Get session summary (existing method for stats - works for both modes)
-        result = ta.end_session(session_id)
-
-        # Finalize cost tracking for this session (works for both modes)
+        # Pre-load next session questions in background (non-blocking)
         try:
-            from services.CostTracking.cost_tracker import CostTracker
-            cost_tracker = CostTracker(session_id, user_id)
-            cost_tracker.end_session()
-        except Exception as cost_error:
-            logger.error(f"[COST_TRACKING] Failed to finalize costs: {cost_error}", exc_info=True)
+            auth_header = http_request.headers.get("Authorization", "")
+            if not auth_header:
+                auth_header = http_request.headers.get("authorization", "")
 
-        # CONDITIONAL: Pre-load next session questions only in normal mode
-        if not session_assessment_mode:
-            try:
-                auth_header = http_request.headers.get("Authorization", "")
-                if not auth_header:
-                    auth_header = http_request.headers.get("authorization", "")
+            token = ""
+            if auth_header.startswith("Bearer "):
+                token = auth_header.replace("Bearer ", "", 1)
+            elif auth_header.startswith("bearer "):
+                token = auth_header.replace("bearer ", "", 1)
 
-                token = ""
-                if auth_header.startswith("Bearer "):
-                    token = auth_header.replace("Bearer ", "", 1)
-                elif auth_header.startswith("bearer "):
-                    token = auth_header.replace("bearer ", "", 1)
+            if token and len(token) > 0:
+                preload_thread = threading.Thread(
+                    target=_preload_questions_background,
+                    args=(user_id, token),
+                    daemon=True
+                )
+                preload_thread.start()
+        except Exception as e:
+            logger.error(f"[PRELOAD] Failed to start pre-loading thread: {e}")
 
-                if token and len(token) > 0:
-                    preload_thread = threading.Thread(
-                        target=_preload_questions_background,
-                        args=(user_id, token),
-                        daemon=True
-                    )
-                    preload_thread.start()
-            except Exception as e:
-                logger.error(f"[PRELOAD] Failed to start pre-loading thread: {e}")
-
-        logger.info(f"[SESSION_END] ✅ [{mode_str}] Session {session_id[:8]}... ended successfully")
-
-        # Return closing message directly (also sent via SSE) - empty in assessment mode
         return PromptResponse(
-            prompt=closing or result["prompt"],  # Use memory-aware closing or fallback (empty in assessment)
+            prompt=result["prompt"],
             session_info=result["session_info"]
         )
     except Exception as e:
@@ -666,197 +318,6 @@ def record_question(http_request: Request, request: QuestionAnsweredRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/tutor/token-usage")
-async def record_tutor_token_usage(http_request: Request, request: TokenUsageRequest):
-    """
-    Record token usage from tutor service (Gemini Live API)
-    
-    IMPORTANT: In Live API, promptTokenCount is CUMULATIVE (total so far, not incremental).
-    We need to calculate deltas by comparing with last recorded values.
-    """
-    try:
-        user_id = get_current_user(http_request)
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error getting user from token: {e}", exc_info=True)
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    
-    try:
-        # Get active session for this user
-        session = ta.get_active_session(user_id)
-        if not session:
-            logger.debug(f"[TOKEN_USAGE] No active session for user {user_id}")
-            return {"status": "no_session"}
-        
-        session_id = session["session_id"]
-        
-        # Get current session cost data to calculate deltas
-        from managers.mongodb_manager import mongo_db
-        from datetime import datetime, timezone
-        
-        # Use async MongoDB operation to avoid blocking event loop
-        current_session = await asyncio.to_thread(
-            mongo_db.session_costs.find_one,
-            {"session_id": session_id},
-            {"api_calls.tutor_api": 1}  # Only fetch needed fields for performance
-        )
-        
-        # Get last cumulative values (if they exist)
-        last_prompt_tokens = 0
-        last_candidates_tokens = 0
-        last_total_tokens = 0
-        last_cached_tokens = 0
-        last_thought_tokens = 0
-        
-        if current_session:
-            tutor_data = current_session.get("api_calls", {}).get("tutor_api", {})
-            last_prompt_tokens = tutor_data.get("last_cumulative_prompt_tokens", 0)
-            last_candidates_tokens = tutor_data.get("last_cumulative_candidates_tokens", 0)
-            last_total_tokens = tutor_data.get("last_cumulative_total_tokens", 0)
-            last_cached_tokens = tutor_data.get("last_cumulative_cached_tokens", 0)
-            last_thought_tokens = tutor_data.get("last_cumulative_thought_tokens", 0)
-        
-        # Calculate deltas (new tokens since last update)
-        # Note: In Live API, these are cumulative, so we subtract last values
-        delta_prompt_tokens = max(0, request.promptTokenCount - last_prompt_tokens)
-        delta_candidates_tokens = max(0, request.candidatesTokenCount - last_candidates_tokens)
-        delta_total_tokens = max(0, request.totalTokenCount - last_total_tokens)
-        delta_cached_tokens = max(0, request.cachedContentTokenCount - last_cached_tokens)
-        delta_thought_tokens = max(0, request.thoughtTokenCount - last_thought_tokens)
-        
-        # Calculate fresh (non-cached) prompt tokens
-        # Fresh tokens = total prompt tokens - cached tokens
-        fresh_prompt_tokens = max(0, request.promptTokenCount - request.cachedContentTokenCount)
-        last_fresh_prompt_tokens = max(0, last_prompt_tokens - last_cached_tokens)
-        delta_fresh_prompt_tokens = max(0, fresh_prompt_tokens - last_fresh_prompt_tokens)
-        
-        # Parse modality breakdown for accurate pricing
-        # Note: promptTokensDetails may be cumulative or per-turn
-        # We'll track it and calculate deltas if needed
-        current_text_tokens = 0
-        current_audio_tokens = 0
-        current_video_tokens = 0
-        
-        if request.promptTokensDetails:
-            for detail in request.promptTokensDetails:
-                modality = detail.get("modality", "").upper()
-                token_count = detail.get("tokenCount", 0) or 0
-                if modality == "TEXT":
-                    current_text_tokens += token_count
-                elif modality == "AUDIO":
-                    current_audio_tokens += token_count
-                elif modality == "VIDEO":
-                    current_video_tokens += token_count
-        
-        # Get last modality values (if they exist) to calculate deltas
-        last_text_tokens = 0
-        last_audio_tokens = 0
-        last_video_tokens = 0
-        
-        if current_session:
-            tutor_data = current_session.get("api_calls", {}).get("tutor_api", {})
-            last_text_tokens = tutor_data.get("last_cumulative_text_tokens", 0)
-            last_audio_tokens = tutor_data.get("last_cumulative_audio_tokens", 0)
-            last_video_tokens = tutor_data.get("last_cumulative_video_tokens", 0)
-        
-        # Calculate modality deltas (assuming cumulative, but will work if per-turn too)
-        # If per-turn, deltas will equal current values; if cumulative, deltas will be the difference
-        delta_text_tokens = max(0, current_text_tokens - last_text_tokens)
-        delta_audio_tokens = max(0, current_audio_tokens - last_audio_tokens)
-        delta_video_tokens = max(0, current_video_tokens - last_video_tokens)
-        
-        # Use deltas for incrementing (works for both cumulative and per-turn)
-        text_tokens = delta_text_tokens
-        audio_tokens = delta_audio_tokens
-        video_tokens = delta_video_tokens
-        
-        # Store detailed token usage record
-        token_usage_record = {
-            "timestamp": datetime.now(timezone.utc),
-            # Cumulative values (as received from API)
-            "cumulative_prompt_tokens": request.promptTokenCount,
-            "cumulative_candidates_tokens": request.candidatesTokenCount,
-            "cumulative_total_tokens": request.totalTokenCount,
-            "cumulative_cached_tokens": request.cachedContentTokenCount,
-            "cumulative_thought_tokens": request.thoughtTokenCount,
-            # Delta values (new tokens since last update)
-            "delta_prompt_tokens": delta_prompt_tokens,
-            "delta_candidates_tokens": delta_candidates_tokens,
-            "delta_total_tokens": delta_total_tokens,
-            "delta_cached_tokens": delta_cached_tokens,
-            "delta_thought_tokens": delta_thought_tokens,
-            "delta_fresh_prompt_tokens": delta_fresh_prompt_tokens,
-            # Modality breakdown (delta values)
-            "text_tokens": text_tokens,  # Delta
-            "audio_tokens": audio_tokens,  # Delta
-            "video_tokens": video_tokens,  # Delta
-            "prompt_tokens_details": request.promptTokensDetails,  # Full details from API
-            # Cumulative modality values (for reference)
-            "cumulative_text_tokens": current_text_tokens,
-            "cumulative_audio_tokens": current_audio_tokens,
-            "cumulative_video_tokens": current_video_tokens
-        }
-        
-        # Update session_costs with deltas (incremental) and latest cumulative values
-        update_operation = {
-            "$push": {
-                "tutor_token_usage": token_usage_record
-            },
-            "$inc": {
-                "api_calls.tutor_api.count": 1,
-                # Increment by deltas (new tokens)
-                "api_calls.tutor_api.prompt_tokens": delta_fresh_prompt_tokens,  # Only fresh tokens
-                "api_calls.tutor_api.cached_content_tokens": delta_cached_tokens,  # Cached tokens separately
-                "api_calls.tutor_api.output_tokens": delta_candidates_tokens,  # Output tokens
-                "api_calls.tutor_api.thinking_tokens": delta_thought_tokens,  # Thinking tokens
-                "api_calls.tutor_api.total_tokens": delta_total_tokens,
-                # Modality-based tracking
-                "api_calls.tutor_api.text_input_tokens": text_tokens,
-                "api_calls.tutor_api.audio_input_tokens": audio_tokens,
-                "api_calls.tutor_api.video_input_tokens": video_tokens
-            },
-            "$set": {
-                # Store latest cumulative values for next delta calculation
-                "api_calls.tutor_api.last_cumulative_prompt_tokens": request.promptTokenCount,
-                "api_calls.tutor_api.last_cumulative_candidates_tokens": request.candidatesTokenCount,
-                "api_calls.tutor_api.last_cumulative_total_tokens": request.totalTokenCount,
-                "api_calls.tutor_api.last_cumulative_cached_tokens": request.cachedContentTokenCount,
-                "api_calls.tutor_api.last_cumulative_thought_tokens": request.thoughtTokenCount,
-                # Store latest modality values for delta calculation
-                "api_calls.tutor_api.last_cumulative_text_tokens": current_text_tokens,
-                "api_calls.tutor_api.last_cumulative_audio_tokens": current_audio_tokens,
-                "api_calls.tutor_api.last_cumulative_video_tokens": current_video_tokens
-            }
-        }
-        
-        # Use async MongoDB operation to avoid blocking event loop
-        await asyncio.to_thread(
-            mongo_db.session_costs.update_one,
-            {"session_id": session_id},
-            update_operation,
-            upsert=True
-        )
-        
-        # Log token usage details
-        logger.info(
-            f"[TOKEN_USAGE] Session {session_id[:8]}... | "
-            f"Cumulative: prompt={request.promptTokenCount}, candidates={request.candidatesTokenCount}, "
-            f"total={request.totalTokenCount}, cached={request.cachedContentTokenCount}, "
-            f"thought={request.thoughtTokenCount} | "
-            f"Deltas: prompt={delta_fresh_prompt_tokens}, cached={delta_cached_tokens}, "
-            f"output={delta_candidates_tokens}, thought={delta_thought_tokens} | "
-            f"Modality: text={text_tokens}, audio={audio_tokens}, video={video_tokens}"
-        )
-        
-        return {"status": "recorded"}
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error recording token usage: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Failed to record token usage: {str(e)}")
-
-
 @app.get("/session/info")
 def get_session_info(http_request: Request):
     """Get current session info"""
@@ -874,8 +335,7 @@ def record_conversation_turn(http_request: Request):
     try:
         session = ta.get_active_session(user_id)
         if not session:
-            # If session is already closed (race condition with session end), just ignore
-            return {"status": "ignored", "reason": "no_active_session"}
+            raise HTTPException(status_code=404, detail="No active session")
 
         ta.record_conversation_turn(session["session_id"])
         return {"status": "recorded"}
@@ -910,22 +370,25 @@ def check_inactivity(http_request: Request):
 @app.websocket("/ws/feed")
 async def websocket_feed(websocket: WebSocket):
     """WebSocket endpoint for streaming audio/video/transcript from frontend"""
-    # 1. Extract one-time code from query string (JWT is exchanged server-side)
+    # 1. Extract and validate JWT from query parameter
     query_params = parse_qs(websocket.scope["query_string"].decode())
-    code = query_params.get("code", [None])[0]
+    token = query_params.get("token", [None])[0]
 
-    auth_context = _consume_stream_auth_code(code, expected_purpose="feed")
-    if not auth_context:
-        await websocket.close(code=4001, reason="Missing/invalid auth code")
+    if not token:
+        await websocket.close(code=4001, reason="Missing token")
         return
 
-    user_id = auth_context["user_id"]
+    user_info = get_user_from_token(token)
+    if not user_info:
+        await websocket.close(code=4001, reason="Invalid token")
+        return
 
-    # 2. Get active session and check if it's still active
+    user_id = user_info["user_id"]
+
+    # 2. Get active session
     session = ta.get_active_session(user_id)
-    if not session or not session.get("is_active"):
-        await websocket.close(code=1008, reason="Session not active or ended")
-        logger.info(f"[WS] Rejected connection - no active session for user {user_id}")
+    if not session:
+        await websocket.close(code=4002, reason="No active session")
         return
 
     session_id = session["session_id"]
@@ -934,25 +397,10 @@ async def websocket_feed(websocket: WebSocket):
     await websocket.accept()
     ta.session_manager.set_connection_status(session_id, websocket=True)
     logger.info(f"[WS] WebSocket connected for session {session_id}")
-    
-    # 4. Register WebSocket for session monitoring
-    from services.TeachingAssistant.session_monitor import register_websocket, unregister_websocket
-    register_websocket(session_id, websocket)
 
     try:
-        # 5. Message handling loop
+        # 4. Message handling loop
         while True:
-            # Check if session was force-ended
-            session = ta.session_manager.get_session_by_id(session_id)
-            if not session or not session.get("is_active"):
-                # Session ended - close connection
-                close_reason = "Session ended"
-                if session and session.get("force_ended"):
-                    close_reason = f"Session ended: {session.get('force_end_reason', 'credits exceeded')}"
-                await websocket.close(code=1000, reason=close_reason)
-                logger.info(f"[WS] Closing - {close_reason}")
-                break
-            
             data = await websocket.receive_json()
 
             # Update activity timestamp
@@ -977,15 +425,10 @@ async def websocket_feed(websocket: WebSocket):
 
     except WebSocketDisconnect:
         logger.info(f"[WS] WebSocket disconnected for session {session_id}")
-        transcript_buffer.cleanup_session(session_id)
         ta.session_manager.set_connection_status(session_id, websocket=False)
     except Exception as e:
         logger.error(f"[WS] WebSocket error for session {session_id}: {e}")
-        transcript_buffer.cleanup_session(session_id)
         ta.session_manager.set_connection_status(session_id, websocket=False)
-    finally:
-        # 6. Unregister WebSocket
-        unregister_websocket(session_id)
 
 
 async def broadcast_to_observers(session_id: str, message: dict):
@@ -1014,31 +457,10 @@ async def broadcast_to_observers(session_id: str, message: dict):
 
 async def process_audio(session_id: str, audio_base64: str, timestamp: str):
     """Process incoming audio data and broadcast to observers"""
-    # Get user_id from session
-    session = ta.session_manager.get_session_by_id(session_id)
-    if not session:
-        return
-    
-    user_id = session["user_id"]
-    
-    # Create event from feed message
-    event = feed_message_to_event(
-        {
-            "type": "audio",
-            "timestamp": timestamp,
-            "data": {"audio": audio_base64}
-        },
-        session_id,
-        user_id
-    )
-    
-    if event:
-        # Enqueue event for processing
-        ta.queue_manager.enqueue(event)
-    
-    # Broadcast to observers (keep existing functionality)
+    # TODO: Implement audio analysis
     logger.debug(f"[AUDIO] Session {session_id}: received audio at {timestamp}")
 
+    # Broadcast to observers
     await broadcast_to_observers(session_id, {
         "type": "audio",
         "timestamp": timestamp,
@@ -1048,31 +470,10 @@ async def process_audio(session_id: str, audio_base64: str, timestamp: str):
 
 async def process_media(session_id: str, media_base64: str, timestamp: str):
     """Process incoming media (video frames) and broadcast to observers"""
-    # Get user_id from session
-    session = ta.session_manager.get_session_by_id(session_id)
-    if not session:
-        return
-    
-    user_id = session["user_id"]
-    
-    # Create event from feed message
-    event = feed_message_to_event(
-        {
-            "type": "media",
-            "timestamp": timestamp,
-            "data": {"media": media_base64}
-        },
-        session_id,
-        user_id
-    )
-    
-    if event:
-        # Enqueue event for processing
-        ta.queue_manager.enqueue(event)
-    
-    # Broadcast to observers (keep existing functionality)
+    # TODO: Implement media analysis
     logger.debug(f"[MEDIA] Session {session_id}: received frame at {timestamp}")
 
+    # Broadcast to observers
     await broadcast_to_observers(session_id, {
         "type": "media",
         "timestamp": timestamp,
@@ -1082,46 +483,16 @@ async def process_media(session_id: str, media_base64: str, timestamp: str):
 
 async def process_transcript(session_id: str, transcript: str, timestamp: str, speaker: str = "tutor"):
     """Process incoming transcript and broadcast to observers"""
-    # Get user_id from session
-    session = ta.session_manager.get_session_by_id(session_id)
-    if not session:
-        return
+    # TODO: Analyze transcript for instruction generation
+    speaker_label = "USER" if speaker == "user" else "TUTOR"
+    logger.debug(f"[TRANSCRIPT] Session {session_id} [{speaker_label}]: {transcript[:100] if transcript else 'empty'}...")
 
-    user_id = session["user_id"]
-
-    # Define callback for when buffered transcript is ready
-    async def on_transcript_ready(buffered_text: str):
-        # Create event from feed message with buffered text
-        event = feed_message_to_event(
-            {
-                "type": "transcript",
-                "timestamp": timestamp,
-                "data": {
-                    "transcript": buffered_text,
-                    "speaker": speaker
-                }
-            },
-            session_id,
-            user_id
-        )
-
-        if event:
-            # Enqueue event for processing
-            ta.queue_manager.enqueue(event)
-
-        # Log aggregated transcript
-        speaker_label = "USER" if speaker == "user" else "TUTOR"
-        logger.debug(f"[TRANSCRIPT] Session {session_id} [{speaker_label}]: {buffered_text[:100] if buffered_text else 'empty'}...")
-
-        # Broadcast to observers
-        await broadcast_to_observers(session_id, {
-            "type": "transcript",
-            "timestamp": timestamp,
-            "data": {"transcript": buffered_text, "speaker": speaker}
-        })
-
-    # Add to buffer (will be flushed after debounce)
-    await transcript_buffer.add(session_id, speaker, transcript, on_transcript_ready)
+    # Broadcast to observers
+    await broadcast_to_observers(session_id, {
+        "type": "transcript",
+        "timestamp": timestamp,
+        "data": {"transcript": transcript, "speaker": speaker}
+    })
 
 
 # ============================================================================
@@ -1129,14 +500,17 @@ async def process_transcript(session_id: str, transcript: str, timestamp: str, s
 # ============================================================================
 
 @app.get("/sse/instructions")
-async def sse_instructions(request: Request, code: str = None):
+async def sse_instructions(request: Request, token: str = None):
     """SSE endpoint for pushing instructions to frontend"""
-    # Validate one-time stream auth code
-    auth_context = _consume_stream_auth_code(code, expected_purpose="instruction_sse")
-    if not auth_context:
-        raise HTTPException(status_code=401, detail="Missing/invalid auth code")
+    # Validate token (passed as query param for SSE)
+    if not token:
+        raise HTTPException(status_code=401, detail="Missing token")
 
-    user_id = auth_context["user_id"]
+    user_info = get_user_from_token(token)
+    if not user_info:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    user_id = user_info["user_id"]
 
     # Get active session
     session = ta.get_active_session(user_id)
@@ -1187,25 +561,7 @@ async def sse_instructions(request: Request, code: str = None):
             ta.session_manager.set_connection_status(session_id, sse=False)
             logger.info(f"[SSE] SSE disconnected for session {session_id}")
 
-    # Fix CORS headers for SSE - ensure proper origin handling
-    origin = request.headers.get("origin")
-    # Validate origin against allowed origins
-    if origin and origin in ALLOWED_ORIGINS:
-        allowed_origin = origin
-    else:
-        # Fallback: use first allowed origin or "*" for development
-        allowed_origin = ALLOWED_ORIGINS[0] if ALLOWED_ORIGINS else "*"
-    
-    headers = {
-        "Cache-Control": "no-cache",
-        "X-Accel-Buffering": "no",
-        "Access-Control-Allow-Origin": allowed_origin,
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Headers": "Cache-Control",
-        "Access-Control-Expose-Headers": "*"
-    }
-    
-    return EventSourceResponse(event_generator(), headers=headers)
+    return EventSourceResponse(event_generator())
 
 
 # ============================================================================
@@ -1217,37 +573,13 @@ class InstructionRequest(BaseModel):
     session_id: Optional[str] = None  # Optional - if not provided, uses user's active session
 
 
-@app.post("/auth/stream-code")
-def issue_stream_code(http_request: Request, purpose: str = "feed"):
-    """Issue short-lived one-time code for WS/SSE auth (no JWT in URL)."""
-    allowed_purposes = {"feed", "instruction_sse", "observe"}
-    if purpose not in allowed_purposes:
-        raise HTTPException(status_code=400, detail=f"Invalid purpose. Must be one of {sorted(allowed_purposes)}")
-
-    if purpose == "observe":
-        user_id = require_admin(http_request)
-        is_admin = True
-    else:
-        user_id = get_current_user(http_request)
-        is_admin = False
-
-    code = _issue_stream_auth_code(user_id=user_id, purpose=purpose, is_admin=is_admin)
-    return {
-        "code": code,
-        "purpose": purpose,
-        "expires_in_seconds": STREAM_AUTH_CODE_TTL_SECONDS,
-    }
-
-
 @app.post("/session/instruction")
 def push_instruction(request: InstructionRequest, http_request: Request):
     """
     Push an instruction to the tutor via SSE.
 
     The instruction will be delivered to the frontend via SSE and sent to Gemini.
-    Can be called by:
-    - Authenticated user (uses their active session)
-    - Backend system with session_id specified
+    Authenticated users may target only their own active session.
     """
     user_id = get_current_user(http_request)
 
@@ -1255,13 +587,17 @@ def push_instruction(request: InstructionRequest, http_request: Request):
         # Get session - either from request or user's active session
         if request.session_id:
             session = ta.session_manager.get_session_by_id(request.session_id)
-            if session and session.get("user_id") != user_id:
-                require_admin(http_request)
         else:
             session = ta.get_active_session(user_id)
 
         if not session:
             raise HTTPException(status_code=404, detail="No active session found")
+
+        if session.get("user_id") != user_id:
+            raise HTTPException(
+                status_code=403,
+                detail="You can only push instructions to your own session",
+            )
 
         session_id = session["session_id"]
 
@@ -1272,9 +608,7 @@ def push_instruction(request: InstructionRequest, http_request: Request):
         # Push to session's instruction queue
         instruction_id = ta.session_manager.push_instruction(session_id, full_instruction)
 
-        # Log the instruction content
-        truncated_instruction = request.instruction[:150] + "..." if len(request.instruction) > 150 else request.instruction
-        logger.info(f"[INSTRUCTION CREATED] {instruction_id}: {truncated_instruction}")
+        logger.info(f"[INSTRUCTION] Pushed instruction {instruction_id} to session {session_id}")
 
         return {
             "success": True,
@@ -1294,10 +628,10 @@ def push_instruction(request: InstructionRequest, http_request: Request):
 def push_instruction_admin(request: InstructionRequest, http_request: Request):
     """
     Admin endpoint to push instruction to any session.
-    Requires JWT auth and admin role.
+    Requires observer API key authentication.
     session_id is required for this endpoint.
     """
-    require_admin(http_request)
+    require_observer_api_key(http_request.headers.get(OBSERVER_API_KEY_HEADER))
 
     if not request.session_id:
         raise HTTPException(status_code=400, detail="session_id is required for admin endpoint")
@@ -1314,9 +648,7 @@ def push_instruction_admin(request: InstructionRequest, http_request: Request):
         # Push instruction
         instruction_id = ta.session_manager.push_instruction(request.session_id, full_instruction)
 
-        # Log the instruction content
-        truncated_instruction = request.instruction[:150] + "..." if len(request.instruction) > 150 else request.instruction
-        logger.info(f"[INSTRUCTION CREATED/ADMIN] {instruction_id}: {truncated_instruction}")
+        logger.info(f"[INSTRUCTION/ADMIN] Pushed instruction {instruction_id} to session {request.session_id}")
 
         return {
             "success": True,
@@ -1340,9 +672,9 @@ def push_instruction_admin(request: InstructionRequest, http_request: Request):
 def list_active_sessions(http_request: Request):
     """
     List all active sessions (for backend devs to choose which to observe)
-    Requires JWT auth and admin role
+    Requires API key authentication
     """
-    require_admin(http_request)
+    require_observer_api_key(http_request.headers.get(OBSERVER_API_KEY_HEADER))
 
     sessions = ta.session_manager.list_active_sessions()
     return {
@@ -1366,36 +698,31 @@ async def websocket_observe(websocket: WebSocket):
     Observer WebSocket endpoint for backend devs to monitor live sessions.
 
     Query params:
-        - code: One-time observer stream auth code
         - session_id: The session to observe (required)
 
     Receives: audio, media, transcript messages as they flow through the producer
     """
     # 1. Extract query parameters
     query_params = parse_qs(websocket.scope["query_string"].decode())
-    code = query_params.get("code", [None])[0]
     session_id = query_params.get("session_id", [None])[0]
 
-    # 2. Validate one-time code and admin role
-    auth_context = _consume_stream_auth_code(code, expected_purpose="observe")
-    if not auth_context or not auth_context.get("is_admin"):
-        await websocket.close(code=4001, reason="Invalid auth code")
-        return
-
-    # 3. Validate session_id
+    # 2. Validate session_id
     if not session_id:
         await websocket.close(code=4002, reason="Missing session_id")
         return
 
-    # 4. Verify session exists
+    await websocket.accept()
+
+    if not await authenticate_observer_websocket(websocket):
+        return
+
+    # 3. Verify session exists
     session = ta.session_manager.get_session_by_id(session_id)
     if not session:
         await websocket.close(code=4003, reason="Session not found")
         return
 
-    # 5. Accept connection and register as observer
-    await websocket.accept()
-
+    # 4. Register as observer
     if session_id not in active_observers:
         active_observers[session_id] = []
     active_observers[session_id].append(websocket)
@@ -1416,7 +743,7 @@ async def websocket_observe(websocket: WebSocket):
     })
 
     try:
-        # 6. Keep connection alive and handle any observer commands
+        # 5. Keep connection alive and handle any observer commands
         while True:
             try:
                 # Wait for messages (ping/pong or commands)
@@ -1429,7 +756,7 @@ async def websocket_observe(websocket: WebSocket):
                 # Send keepalive ping
                 try:
                     await websocket.send_json({"type": "keepalive"})
-                except Exception:
+                except:
                     break
 
     except WebSocketDisconnect:
@@ -1483,11 +810,6 @@ def send_instruction_to_tutor(http_request: Request):
         if instructions:
             instruction = instructions[0]
             ta.session_manager.mark_instruction_delivered(session_id, instruction["instruction_id"])
-
-            # Log the instruction being sent to tutor
-            truncated_instruction = instruction["text"][:150] + "..." if len(instruction["text"]) > 150 else instruction["text"]
-            logger.info(f"[INSTRUCTION → TUTOR] {truncated_instruction}")
-
             return PromptResponse(
                 prompt=instruction["text"],
                 session_info=ta.get_session_info(session_id)
@@ -1497,259 +819,6 @@ def send_instruction_to_tutor(http_request: Request):
     except Exception as e:
         logger.error(f"Error in send_instruction_to_tutor: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
-
-
-# Include Cost Tracking API routes (Phase 4)
-from services.CostTracking.api import router as cost_router
-app.include_router(cost_router)
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# TTS Proxy — OpenMAIC multi-provider TTS integration
-# ─────────────────────────────────────────────────────────────────────────────
-
-class TTSRequest(BaseModel):
-    provider: str
-    text: str
-    voice: Optional[str] = None
-    speed: Optional[float] = 1.0
-    api_key: Optional[str] = None
-    base_url: Optional[str] = None
-
-
-@app.post("/api/tts")
-async def tts_proxy(req: TTSRequest):
-    """
-    Proxy TTS requests to external providers (OpenAI, ElevenLabs).
-    Returns raw audio bytes (mp3).
-    Browser Native TTS is handled client-side and never reaches this endpoint.
-    """
-    from fastapi.responses import Response
-    import httpx
-
-    text = req.text.strip()
-    if not text:
-        raise HTTPException(status_code=400, detail="text is required")
-
-    if req.provider == "openai-tts":
-        api_key = req.api_key or os.getenv("OPENAI_API_KEY", "")
-        if not api_key:
-            raise HTTPException(status_code=400, detail="OpenAI API key required")
-        base_url = req.base_url or "https://api.openai.com/v1"
-        voice = req.voice or "alloy"
-        speed = max(0.25, min(4.0, req.speed or 1.0))
-
-        async with httpx.AsyncClient(timeout=30) as client:
-            resp = await client.post(
-                f"{base_url}/audio/speech",
-                headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-                json={"model": "tts-1", "input": text, "voice": voice, "speed": speed},
-            )
-        if not resp.is_success:
-            raise HTTPException(status_code=resp.status_code, detail=resp.text)
-        return Response(content=resp.content, media_type="audio/mpeg")
-
-    elif req.provider == "elevenlabs-tts":
-        api_key = req.api_key or os.getenv("ELEVENLABS_API_KEY", "")
-        if not api_key:
-            raise HTTPException(status_code=400, detail="ElevenLabs API key required")
-        base_url = req.base_url or "https://api.elevenlabs.io/v1"
-        voice_id = req.voice or "JBFqnCBsd6RMkjVDRZzb"  # George
-
-        async with httpx.AsyncClient(timeout=30) as client:
-            resp = await client.post(
-                f"{base_url}/text-to-speech/{voice_id}",
-                headers={"xi-api-key": api_key, "Content-Type": "application/json"},
-                json={"text": text, "model_id": "eleven_multilingual_v2"},
-            )
-        if not resp.is_success:
-            raise HTTPException(status_code=resp.status_code, detail=resp.text)
-        return Response(content=resp.content, media_type="audio/mpeg")
-
-    else:
-        raise HTTPException(status_code=400, detail=f"Unsupported TTS provider: {req.provider}")
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Web Search — Tavily integration (OpenMAIC approach)
-# ─────────────────────────────────────────────────────────────────────────────
-
-TAVILY_MAX_QUERY_LENGTH = 400
-
-
-class WebSearchRequest(BaseModel):
-    query: str
-    provider: Optional[str] = "tavily"
-    max_results: Optional[int] = 5
-    api_key: Optional[str] = None
-
-
-@app.post("/api/tools/web-search")
-async def web_search(req: WebSearchRequest):
-    """
-    Proxy web search requests to Tavily.
-    Ported from OpenMAIC's lib/web-search/tavily.ts architecture.
-    """
-    import httpx
-
-    query = req.query.strip()[:TAVILY_MAX_QUERY_LENGTH]
-    if not query:
-        raise HTTPException(status_code=400, detail="query is required")
-
-    if req.provider == "tavily":
-        api_key = req.api_key or os.getenv("TAVILY_API_KEY", "")
-        if not api_key:
-            raise HTTPException(status_code=400, detail="Tavily API key required (set TAVILY_API_KEY)")
-
-        async with httpx.AsyncClient(timeout=15) as client:
-            resp = await client.post(
-                "https://api.tavily.com/search",
-                headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-                json={
-                    "query": query,
-                    "search_depth": "basic",
-                    "max_results": req.max_results,
-                    "include_answer": "basic",
-                },
-            )
-        if not resp.is_success:
-            raise HTTPException(status_code=resp.status_code, detail=resp.text)
-
-        data = resp.json()
-        return {
-            "answer": data.get("answer", ""),
-            "sources": [
-                {"title": r["title"], "url": r["url"], "content": r["content"], "score": r.get("score", 0)}
-                for r in data.get("results", [])
-            ],
-            "query": data.get("query", query),
-            "response_time": data.get("response_time", 0),
-        }
-
-    raise HTTPException(status_code=400, detail=f"Unsupported search provider: {req.provider}")
-
-
-# ============================================================================
-# OpenMAIC Classroom Proxy Endpoints (FOO-37)
-# ============================================================================
-# These proxy requests to the OpenMAIC sibling service (port 3333) so the
-# aitutor frontend can use multi-agent classroom features without CORS issues.
-
-OPENMAIC_BASE_URL = os.getenv("OPENMAIC_BASE_URL", "http://localhost:3333")
-
-
-@app.get("/api/classroom/{classroom_id}")
-async def get_classroom(classroom_id: str, current_user=Depends(get_current_user)):
-    """Proxy: GET /api/classroom?id={classroom_id} from OpenMAIC service."""
-    import httpx
-    async with httpx.AsyncClient(timeout=15) as client:
-        resp = await client.get(
-            f"{OPENMAIC_BASE_URL}/api/classroom",
-            params={"id": classroom_id},
-        )
-    if not resp.is_success:
-        raise HTTPException(status_code=resp.status_code, detail=resp.text)
-    return resp.json()
-
-
-@app.post("/api/classroom/chat")
-async def classroom_chat(request: Request, current_user=Depends(get_current_user)):
-    """
-    SSE proxy: POST /api/chat on OpenMAIC service.
-    Streams multi-agent generation events back to the client.
-    """
-    import httpx
-
-    body = await request.body()
-
-    async def event_stream():
-        try:
-            async with httpx.AsyncClient(timeout=120) as client:
-                async with client.stream(
-                    "POST",
-                    f"{OPENMAIC_BASE_URL}/api/chat",
-                    content=body,
-                    headers={"Content-Type": "application/json"},
-                ) as resp:
-                    if not resp.is_success:
-                        error_text = await resp.aread()
-                        yield f"data: {json.dumps({'type': 'error', 'data': {'message': error_text.decode()}})}\n\n"
-                        return
-                    async for chunk in resp.aiter_text():
-                        if chunk:
-                            yield chunk
-        except Exception as e:
-            logger.error(f"[CLASSROOM CHAT] Proxy error: {e}")
-            yield f"data: {json.dumps({'type': 'error', 'data': {'message': str(e)}})}\n\n"
-
-    return EventSourceResponse(event_stream())
-
-
-@app.get("/api/classroom/agents/tutoring")
-async def get_tutoring_agents(current_user=Depends(get_current_user)):
-    """
-    Returns tutoring-optimised agent configurations for the classroom.
-    These personas are tuned for math tutoring context on teachr.live.
-    """
-    WHITEBOARD_ACTIONS = [
-        "wb_open", "wb_close", "wb_draw_text", "wb_draw_shape",
-        "wb_draw_chart", "wb_draw_latex", "wb_draw_table", "wb_draw_line",
-        "wb_clear", "wb_delete",
-    ]
-    SLIDE_ACTIONS = ["spotlight", "laser", "play_video"]
-
-    return {
-        "agents": [
-            {
-                "id": "tutor-teacher",
-                "name": "Ms. Aria",
-                "role": "teacher",
-                "persona": (
-                    "You are Ms. Aria, a warm and patient math teacher. "
-                    "You explain concepts step by step, building on what students already know. "
-                    "Use vivid analogies and real-world examples. "
-                    "Pause to check understanding — ask questions, don't just lecture. "
-                    "Use the whiteboard to illustrate equations and diagrams. "
-                    "Never announce your whiteboard actions; just teach naturally."
-                ),
-                "avatar": "/avatars/teacher.png",
-                "color": "#3b82f6",
-                "allowedActions": SLIDE_ACTIONS + WHITEBOARD_ACTIONS,
-                "priority": 10,
-            },
-            {
-                "id": "tutor-student-1",
-                "name": "Jamie",
-                "role": "student",
-                "persona": (
-                    "You are Jamie, a curious 12-year-old student. "
-                    "You ask clarifying questions when confused, make occasional mistakes, "
-                    "and celebrate when you understand something. "
-                    "You think out loud and sometimes get distracted by interesting side questions. "
-                    "Keep responses short — 1-3 sentences."
-                ),
-                "avatar": "/avatars/student1.png",
-                "color": "#10b981",
-                "allowedActions": [],
-                "priority": 5,
-            },
-            {
-                "id": "tutor-student-2",
-                "name": "Sam",
-                "role": "student",
-                "persona": (
-                    "You are Sam, a diligent student who likes to find patterns. "
-                    "You often try to summarise what the teacher just said in your own words. "
-                    "Sometimes you suggest an alternative method you've seen before. "
-                    "Keep responses short — 1-3 sentences."
-                ),
-                "avatar": "/avatars/student2.png",
-                "color": "#f59e0b",
-                "allowedActions": [],
-                "priority": 4,
-            },
-        ]
-    }
 
 
 if __name__ == "__main__":

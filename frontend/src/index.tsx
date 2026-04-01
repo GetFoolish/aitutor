@@ -158,13 +158,44 @@ const LandingPageOrApp: React.FC = () => {
   if (isLoading) {
     return (
       <div style={{
+        minHeight: '100vh',
         display: 'flex',
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        height: '100vh',
-        background: 'var(--neo-bg, #FFFDF5)'
+        gap: '16px',
+        background: 'var(--neo-bg, #FFFDF5)',
+        fontFamily: 'system-ui, -apple-system, sans-serif',
       }}>
-        <div>Loading...</div>
+        <div style={{
+          width: '200px',
+          height: '8px',
+          border: '3px solid #000',
+          backgroundColor: '#fff',
+          overflow: 'hidden',
+        }}>
+          <div style={{
+            height: '100%',
+            width: '40%',
+            backgroundColor: '#FFD93D',
+            animation: 'auth-loading-bar 1.5s ease-in-out infinite',
+          }} />
+        </div>
+        <div style={{
+          fontWeight: 900,
+          fontSize: '16px',
+          textTransform: 'uppercase',
+          letterSpacing: '0.1em',
+          color: '#000',
+        }}>
+          Loading...
+        </div>
+        <style>{`
+          @keyframes auth-loading-bar {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(350%); }
+          }
+        `}</style>
       </div>
     );
   }

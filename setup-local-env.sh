@@ -1,41 +1,44 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Setup script for local development environment
+set -euo pipefail
 
-echo "🚀 Setting up local development environment..."
-echo ""
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ENV_TEMPLATE="$SCRIPT_DIR/.env.example"
+ENV_FILE="$SCRIPT_DIR/.env"
 
-# Check if .env already exists
-if [ -f ".env" ]; then
-    echo "⚠️  .env file already exists. Backing up to .env.backup"
-    cp .env .env.backup
+if [[ ! -f "$ENV_TEMPLATE" ]]; then
+    echo "❌ Missing .env.example template"
+    exit 1
 fi
 
-# Create .env file from template
-cat > .env << 'EOF'
-# MongoDB Configuration
-# Get your connection string from MongoDB Atlas: https://cloud.mongodb.com
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/database?retryWrites=true&w=majority
-MONGODB_DB_NAME=ai_tutor
+echo "🚀 Setting up local environment contract..."
 
-# OpenRouter API Key
-# Get your key from: https://openrouter.ai/keys
-OPENROUTER_API_KEY=your_openrouter_api_key_here
+if [[ -f "$ENV_FILE" ]]; then
+    backup_path="$ENV_FILE.backup.$(date +%Y%m%d%H%M%S)"
+    cp "$ENV_FILE" "$backup_path"
+    echo "⚠️  Existing .env backed up to $backup_path"
+fi
 
-# Google Gemini API Key
-# Get your key from: https://aistudio.google.com/app/apikey
-GEMINI_API_KEY=your_gemini_api_key_here
+cp "$ENV_TEMPLATE" "$ENV_FILE"
 
-# Optional: Gemini Model (has default)
-GEMINI_MODEL=models/gemini-2.5-flash-native-audio-preview-09-2025
-EOF
+python3 - <<'PY' "$ENV_FILE"
+import secrets
+import sys
+from pathlib import Path
 
-echo "✅ Created .env file"
+env_path = Path(sys.argv[1])
+content = env_path.read_text()
+content = content.replace("CHANGE_ME_GENERATED_ON_SETUP", secrets.token_urlsafe(32), 1)
+content = content.replace("CHANGE_ME_GENERATED_ON_SETUP", secrets.token_urlsafe(24), 1)
+env_path.write_text(content)
+PY
+
+echo "✅ Wrote .env from .env.example"
 echo ""
-echo "📝 Next steps:"
-echo "   1. Edit .env file and add your actual API keys and MongoDB URI"
-echo "   2. Run: ./run_tutor.sh"
-echo ""
-echo "💡 The frontend will automatically use localhost URLs for local development"
-echo "   No need to configure frontend environment variables!"
-
+echo "Next steps:"
+echo "  1. Review .env and replace placeholder API credentials."
+echo "  2. Create a virtual environment: python3 -m venv .venv"
+echo "  3. Activate it: source .venv/bin/activate"
+echo "  4. Install backend deps: pip install -r requirements.txt -r requirements-test.txt"
+echo "  5. Install frontend deps: cd frontend && npm install && cd .."
+echo "  6. Start the app: ./run_tutor.sh"

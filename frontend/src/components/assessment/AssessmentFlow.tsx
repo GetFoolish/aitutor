@@ -830,30 +830,26 @@ const AssessmentFlow: React.FC = () => {
                     }}
                     style={{
                       flexShrink: 0,
-                      background: '#FFFFFF',
-                      border: '3px solid #000000',
-                      color: '#000000',
-                      fontSize: isMobile ? '13px' : '16px',
+                      background: 'white',
+                      border: '2px solid #000',
+                      color: '#000',
+                      fontSize: isMobile ? '12px' : '14px',
                       fontWeight: 900,
-                      padding: isMobile ? '8px 12px' : '12px 20px',
+                      padding: isMobile ? '6px 12px' : '8px 16px',
                       cursor: 'pointer',
                       textTransform: 'uppercase',
                       letterSpacing: '0.05em',
-                      boxShadow: '3px 3px 0 #000',
                       minHeight: isMobile ? '40px' : '48px',
                       transition: 'transform 100ms ease, box-shadow 100ms ease',
                     }}
                     onMouseDown={(e) => {
                       e.currentTarget.style.transform = 'translate(2px, 2px)';
-                      e.currentTarget.style.boxShadow = '2px 2px 0 #000';
                     }}
                     onMouseUp={(e) => {
                       e.currentTarget.style.transform = 'translate(0, 0)';
-                      e.currentTarget.style.boxShadow = '4px 4px 0 #000';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = 'translate(0, 0)';
-                      e.currentTarget.style.boxShadow = '4px 4px 0 #000';
                     }}
                   >
                     ✕ Exit
@@ -891,22 +887,6 @@ const AssessmentFlow: React.FC = () => {
                 </div>
               </div>
 
-              {/* Progress bar — Question X of Y */}
-              <div style={{ width: '100%', padding: isMobile ? '0' : '0 10px', marginBottom: '8px' }}>
-                <div
-                  role="progressbar"
-                  aria-valuenow={questionNumber}
-                  aria-valuemin={0}
-                  aria-valuemax={totalQuestions}
-                  aria-label={`Question ${questionNumber} of ${totalQuestions}`}
-                  style={{ border: '4px solid #000', boxShadow: '4px 4px 0 #000', background: '#fff', overflow: 'hidden', height: '32px', display: 'flex', alignItems: 'center', position: 'relative' }}
-                >
-                  <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${Math.min(100, (questionNumber / totalQuestions) * 100)}%`, background: '#FFD93D', transition: 'width 300ms ease' }} />
-                  <span style={{ position: 'relative', zIndex: 1, paddingLeft: '12px', fontWeight: 900, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                    Question {questionNumber} of {totalQuestions}
-                  </span>
-                </div>
-              </div>
 
               <div className="assessment-content-wrapper" style={{
                 paddingRight: isMobile ? '0' : 'max(100px, min(280px, 30vw))',
@@ -1061,6 +1041,7 @@ const AssessmentFlow: React.FC = () => {
           onClick={() => setShowExitDialog(false)}
         >
           <div
+            role="dialog"
             className="bg-white dark:bg-neutral-800 border-[4px] border-black dark:border-white shadow-[8px_8px_0_0_#000] dark:shadow-[8px_8px_0_0_rgba(255,255,255,0.3)] p-8 max-w-md mx-4"
             onClick={(e) => e.stopPropagation()}
           >

@@ -35,7 +35,9 @@ def get_allowed_origins() -> List[str]:
         "http://127.0.0.1:4173",
         "http://127.0.0.1:5173",
         "http://127.0.0.1:8080",  # For serving test HTML files
-        # "null" origin REMOVED — file:// protocol attack vector (Bug #65)
+        # NOTE: "null" origin intentionally excluded — it allows credentialed
+        # requests from sandboxed iframes on attacker-controlled pages (CORS bypass).
+        # If you need file:// dev testing, set ALLOWED_ORIGINS explicitly.
     ]
     
     # Add production domain if set

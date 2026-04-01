@@ -65,7 +65,9 @@ export interface AccountInfo {
 
 class AuthAPI {
   async getGoogleAuthUrl(): Promise<{ authorization_url: string; state: string }> {
-    const response = await fetch(`${AUTH_SERVICE_URL}/auth/google`);
+    const response = await fetch(`${AUTH_SERVICE_URL}/auth/google`, {
+      credentials: 'include',
+    });
     if (!response.ok) {
       throw new Error('Failed to get Google auth URL');
     }

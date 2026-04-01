@@ -1,12 +1,13 @@
-"""
-API Response Caching Utility
-Provides Redis-based caching for API responses with TTL support.
-"""
-import redis
-import json
 import hashlib
-from functools import wraps
+import json
 import os
+from functools import wraps
+from typing import Any, Optional
+
+try:
+    import redis
+except ModuleNotFoundError:  # pragma: no cover - exercised via runtime fallback
+    redis = None
 
 # Initialize Redis client (Phase 4)
 REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
@@ -14,6 +15,9 @@ REDIS_PORT = int(os.getenv('REDIS_PORT', '6379'))
 REDIS_DB = int(os.getenv('REDIS_DB', '0'))
 
 try:
+    if redis is None:
+        raise ModuleNotFoundError("redis")
+
     redis_client = redis.Redis(
         host=REDIS_HOST,
         port=REDIS_PORT,
@@ -35,7 +39,8 @@ except Exception as e:
 def generate_cache_key(prefix: str, *args, **kwargs) -> str:
     """Generate a unique cache key from function arguments."""
     key_data = f"{prefix}:{str(args)}:{str(sorted(kwargs.items()))}"
-    return hashlib.md5(key_data.encode()).hexdigest()
+    digest = hashlib.md5(key_data.encode()).hexdigest()
+    return f"{prefix}:{digest}"
 
 
 def cache_response(ttl: int = 300, prefix: str = "api"):

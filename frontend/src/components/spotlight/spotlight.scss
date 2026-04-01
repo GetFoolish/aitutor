@@ -1,0 +1,50 @@
+/* Spotlight & Laser Pointer Overlay — inspired by OpenMAIC's slide animations */
+
+.spotlight-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 900;
+
+  &.spotlight-active {
+    pointer-events: auto;
+    cursor: crosshair;
+  }
+
+  &.laser-active {
+    pointer-events: auto;
+    cursor: none;
+  }
+}
+
+/* Spotlight: darkens the entire page except a circular area */
+.spotlight-mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  transition: background 0.2s ease;
+
+  /* punch a transparent circle at the focus point via a radial gradient */
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    /* the gradient is set inline via CSS custom properties */
+    background: var(--spotlight-gradient, transparent);
+    mix-blend-mode: destination-out;
+  }
+}
+
+/* Laser pointer dot */
+.laser-dot {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ff2020 0%, #ff6060 60%, transparent 100%);
+  box-shadow: 0 0 8px 4px rgba(255, 32, 32, 0.6), 0 0 24px 8px rgba(255, 80, 80, 0.3);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  transition: left 0.04s linear, top 0.04s linear;
+  z-index: 901;
+}

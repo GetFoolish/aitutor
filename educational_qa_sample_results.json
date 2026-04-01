@@ -1,0 +1,136 @@
+{
+  "timestamp": "2026-02-26T12:14:31.361211",
+  "samples_tested": 10,
+  "results": [
+    {
+      "subject": "Math",
+      "age": 5,
+      "screenshots": [
+        "/Users/gaganarora/Desktop/my projects/aitutor/qa_screenshots/Math_5_01_devlogin.png",
+        "/Users/gaganarora/Desktop/my projects/aitutor/qa_screenshots/Math_5_ERROR.png"
+      ],
+      "issues": [
+        "Test failed: Page.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"button:has-text('Math')\")\n"
+      ],
+      "load_time": 0,
+      "questions_found": 0
+    },
+    {
+      "subject": "Math",
+      "age": 18,
+      "screenshots": [
+        "/Users/gaganarora/Desktop/my projects/aitutor/qa_screenshots/Math_18_01_devlogin.png",
+        "/Users/gaganarora/Desktop/my projects/aitutor/qa_screenshots/Math_18_ERROR.png"
+      ],
+      "issues": [
+        "Test failed: Page.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"button:has-text('Math')\")\n"
+      ],
+      "load_time": 0,
+      "questions_found": 0
+    },
+    {
+      "subject": "Science",
+      "age": 8,
+      "screenshots": [
+        "/Users/gaganarora/Desktop/my projects/aitutor/qa_screenshots/Science_8_01_devlogin.png",
+        "/Users/gaganarora/Desktop/my projects/aitutor/qa_screenshots/Science_8_ERROR.png"
+      ],
+      "issues": [
+        "Test failed: Page.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"button:has-text('Science')\")\n"
+      ],
+      "load_time": 0,
+      "questions_found": 0
+    },
+    {
+      "subject": "English",
+      "age": 13,
+      "screenshots": [
+        "/Users/gaganarora/Desktop/my projects/aitutor/qa_screenshots/English_13_01_devlogin.png",
+        "/Users/gaganarora/Desktop/my projects/aitutor/qa_screenshots/English_13_ERROR.png"
+      ],
+      "issues": [
+        "Test failed: Page.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"button:has-text('English')\")\n"
+      ],
+      "load_time": 0,
+      "questions_found": 0
+    },
+    {
+      "subject": "Geography",
+      "age": 10,
+      "screenshots": [
+        "/Users/gaganarora/Desktop/my projects/aitutor/qa_screenshots/Geography_10_01_devlogin.png",
+        "/Users/gaganarora/Desktop/my projects/aitutor/qa_screenshots/Geography_10_ERROR.png"
+      ],
+      "issues": [
+        "Test failed: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"#custom-subject-input\")\n"
+      ],
+      "load_time": 0,
+      "questions_found": 0
+    },
+    {
+      "subject": "Physics",
+      "age": 15,
+      "screenshots": [
+        "/Users/gaganarora/Desktop/my projects/aitutor/qa_screenshots/Physics_15_01_devlogin.png",
+        "/Users/gaganarora/Desktop/my projects/aitutor/qa_screenshots/Physics_15_ERROR.png"
+      ],
+      "issues": [
+        "Test failed: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"#custom-subject-input\")\n"
+      ],
+      "load_time": 0,
+      "questions_found": 0
+    },
+    {
+      "subject": "Chemistry",
+      "age": 8,
+      "screenshots": [
+        "/Users/gaganarora/Desktop/my projects/aitutor/qa_screenshots/Chemistry_8_01_devlogin.png",
+        "/Users/gaganarora/Desktop/my projects/aitutor/qa_screenshots/Chemistry_8_ERROR.png"
+      ],
+      "issues": [
+        "Test failed: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"#custom-subject-input\")\n"
+      ],
+      "load_time": 0,
+      "questions_found": 0
+    },
+    {
+      "subject": "Spanish",
+      "age": 13,
+      "screenshots": [
+        "/Users/gaganarora/Desktop/my projects/aitutor/qa_screenshots/Spanish_13_01_devlogin.png",
+        "/Users/gaganarora/Desktop/my projects/aitutor/qa_screenshots/Spanish_13_ERROR.png"
+      ],
+      "issues": [
+        "Test failed: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"#custom-subject-input\")\n"
+      ],
+      "load_time": 0,
+      "questions_found": 0
+    },
+    {
+      "subject": "Biology",
+      "age": 18,
+      "screenshots": [
+        "/Users/gaganarora/Desktop/my projects/aitutor/qa_screenshots/Biology_18_01_devlogin.png",
+        "/Users/gaganarora/Desktop/my projects/aitutor/qa_screenshots/Biology_18_ERROR.png"
+      ],
+      "issues": [
+        "Test failed: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"#custom-subject-input\")\n"
+      ],
+      "load_time": 0,
+      "questions_found": 0
+    },
+    {
+      "subject": "Music Theory",
+      "age": 10,
+      "screenshots": [
+        "/Users/gaganarora/Desktop/my projects/aitutor/qa_screenshots/Music Theory_10_01_devlogin.png",
+        "/Users/gaganarora/Desktop/my projects/aitutor/qa_screenshots/Music Theory_10_ERROR.png"
+      ],
+      "issues": [
+        "Test failed: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"#custom-subject-input\")\n"
+      ],
+      "load_time": 0,
+      "questions_found": 0
+    }
+  ]
+}

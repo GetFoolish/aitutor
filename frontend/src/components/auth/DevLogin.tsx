@@ -4,7 +4,6 @@
  */
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import BackgroundShapes from '../background-shapes/BackgroundShapes';
 import Header from '../header/Header';
 import { useTheme } from '../theme/theme-provier';
 import { jwtUtils } from '../../lib/jwt-utils';
@@ -171,8 +170,6 @@ const DevLogin: React.FC = () => {
       color: textColor,
       transition: 'background 200ms ease-out, color 200ms ease-out'
     }}>
-      <BackgroundShapes />
-
       <Header
         sidebarOpen={false}
         onToggleSidebar={() => {}}
@@ -213,37 +210,36 @@ const DevLogin: React.FC = () => {
         width: '90%',
         padding: '20px 0'
       }}>
-        <div style={{
+        <span style={{
           display: 'inline-block',
-          padding: '8px 20px',
-          border: `4px solid ${borderColor}`,
-          background: '#FF6B6B',
-          color: '#fff',
-          fontWeight: 900,
-          fontSize: '16px',
-          textTransform: 'uppercase',
+          background: '#FF4B4B',
+          color: 'white',
+          padding: '4px 12px',
+          fontSize: '11px',
+          fontWeight: 'bold' as const,
           letterSpacing: '0.1em',
-          marginBottom: '20px',
+          border: '2px solid #000',
           cursor: 'default',
-          userSelect: 'none'
+          userSelect: 'none' as const,
+          marginBottom: '16px',
         }}>
-          Dev Mode
-        </div>
+          DEMO
+        </span>
 
         <h1 style={{
-          fontSize: '36px',
+          fontSize: '32px',
           fontWeight: 900,
           textTransform: 'uppercase',
           letterSpacing: '0.1em',
-          marginBottom: '12px',
+          marginBottom: '8px',
           color: textColor
         }}>
           Quick Test Login
         </h1>
         <p style={{
           fontSize: '16px',
-          fontWeight: 700,
-          color: isDark ? '#aaa' : '#666',
+          fontWeight: 400,
+          color: '#666',
           marginBottom: '24px'
         }}>
           Select a subject, then choose your age to begin.
@@ -285,12 +281,12 @@ const DevLogin: React.FC = () => {
 
         {/* Subject picker */}
         <p style={{
-          fontSize: '14px',
+          fontSize: '12px',
           fontWeight: 900,
           textTransform: 'uppercase',
           letterSpacing: '0.15em',
-          color: textColor,
-          marginBottom: '12px'
+          color: '#666',
+          marginBottom: '8px'
         }}>
           1. Subject
         </p>
@@ -314,16 +310,16 @@ const DevLogin: React.FC = () => {
                 }}
                 disabled={loading}
                 style={{
-                  padding: '14px 24px',
-                  border: `4px solid ${borderColor}`,
-                  background: isActive ? subj.color : inputBg,
-                  boxShadow: isActive ? `6px 6px 0 ${shadowColor}` : `4px 4px 0 ${shadowColor}`,
+                  width: '120px',
+                  padding: '12px 16px',
+                  border: '2px solid #000',
+                  background: isActive ? '#FF4B4B' : '#fff',
+                  color: isActive ? '#fff' : '#000',
+                  boxShadow: '4px 4px 0 #000',
                   cursor: loading ? 'wait' : 'pointer',
-                  transition: 'transform 100ms ease, box-shadow 100ms ease',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
-                  transform: isActive ? 'translate(-1px, -1px)' : 'none',
                 }}
               >
                 <span style={{ fontSize: '24px' }}>{subj.icon}</span>
@@ -332,7 +328,6 @@ const DevLogin: React.FC = () => {
                   fontWeight: 900,
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em',
-                  color: isActive ? '#000' : textColor
                 }}>
                   {subj.label}
                 </span>
@@ -423,41 +418,37 @@ const DevLogin: React.FC = () => {
 
         {/* Active subject indicator */}
         <div style={{
-          marginBottom: '20px',
-          padding: '10px 20px',
-          background: activeColor,
-          border: `4px solid ${borderColor}`,
           display: 'inline-block',
-          fontSize: '16px',
-          fontWeight: 900,
-          textTransform: 'uppercase',
-          letterSpacing: '0.1em',
-          color: '#000', // Always dark text on colored background
-          boxShadow: `4px 4px 0 ${borderColor}`,
-          maxWidth: '90%',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap'
+          background: 'white',
+          border: '2px solid #FF4B4B',
+          color: '#FF4B4B',
+          padding: '4px 12px',
+          fontSize: '12px',
+          fontWeight: 700,
+          marginBottom: '16px',
+          letterSpacing: '0.05em',
+          textTransform: 'uppercase' as const,
         }}>
-          Testing: {selectedSubject}
+          {selectedSubject}
         </div>
 
         {/* Age grid */}
         <p style={{
-          fontSize: '14px',
+          fontSize: '12px',
           fontWeight: 900,
           textTransform: 'uppercase',
           letterSpacing: '0.15em',
-          color: textColor,
-          marginBottom: '12px'
+          color: '#666',
+          marginBottom: '8px'
         }}>
           2. Select your age
         </p>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(7, 1fr)',
-          gap: '10px',
-          marginBottom: '20px'
+          gridTemplateColumns: 'repeat(7, 72px)',
+          gap: '8px',
+          marginBottom: '20px',
+          justifyContent: 'center'
         }}>
           {AGES.map((age) => {
             const isSelected = selectedAge === age;
@@ -467,49 +458,37 @@ const DevLogin: React.FC = () => {
                 onClick={() => !loading && setSelectedAge(age)}
                 disabled={loading}
                 style={{
-                  padding: '20px 10px',
-                  minHeight: '56px',
-                  minWidth: '56px',
-                  border: `4px solid ${borderColor}`,
-                  background: isSelected ? (isDark ? '#333' : '#ddd') : activeColor,
-                  boxShadow: isSelected ? `2px 2px 0 ${shadowColor}` : `4px 4px 0 ${shadowColor}`,
-                  cursor: loading ? 'wait' : 'pointer',
-                  transition: 'transform 100ms ease, box-shadow 100ms ease',
+                  width: '72px',
+                  height: '72px',
+                  minWidth: 'unset',
+                  minHeight: 'unset',
+                  padding: '0',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
-                  gap: '6px'
-                }}
-                onMouseDown={(e) => {
-                  if (!loading) {
-                    (e.currentTarget).style.transform = 'translate(2px, 2px)';
-                    (e.currentTarget).style.boxShadow = `2px 2px 0 ${shadowColor}`;
-                  }
-                }}
-                onMouseUp={(e) => {
-                  (e.currentTarget).style.transform = 'none';
-                  (e.currentTarget).style.boxShadow = `4px 4px 0 ${shadowColor}`;
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget).style.transform = 'none';
-                  (e.currentTarget).style.boxShadow = `4px 4px 0 ${shadowColor}`;
+                  justifyContent: 'center',
+                  gap: '2px',
+                  border: '2px solid #000',
+                  background: isSelected ? '#FF4B4B' : activeColor,
+                  boxShadow: '4px 4px 0 #000',
+                  cursor: loading ? 'wait' : 'pointer',
                 }}
               >
                 <span style={{
-                  fontSize: '26px',
+                  fontSize: age >= 10 ? '22px' : '28px',
                   fontWeight: 900,
                   color: '#fff',
-                  textShadow: '2px 2px 0 rgba(0,0,0,0.4)'
+                  textShadow: 'none'
                 }}>
                   {age}
                 </span>
                 <span style={{
-                  fontSize: '12px',
-                  fontWeight: 900,
+                  fontSize: '10px',
+                  fontWeight: 700,
                   color: 'rgba(255,255,255,0.9)',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.08em',
-                  textShadow: '1px 1px 0 rgba(0,0,0,0.3)'
+                  whiteSpace: 'nowrap',
+                  letterSpacing: '0.05em'
                 }}>
                   {gradeForAge(age)}
                 </span>
@@ -526,18 +505,17 @@ const DevLogin: React.FC = () => {
             position: 'sticky',
             bottom: 0,
             width: '100%',
-            padding: '16px 24px',
-            background: selectedSubject && selectedAge !== null && !loading ? '#FFD93D' : (isDark ? '#333' : '#ddd'),
-            border: `4px solid #000`,
+            padding: '16px',
+            background: selectedSubject && selectedAge !== null && !loading ? '#FF4B4B' : '#E5E5E5',
+            border: selectedSubject && selectedAge !== null && !loading ? '2px solid #000' : '2px solid #999',
             boxShadow: selectedSubject && selectedAge !== null && !loading ? '4px 4px 0 #000' : 'none',
-            fontWeight: 900,
-            fontSize: '18px',
+            fontWeight: 700,
+            fontSize: '14px',
             textTransform: 'uppercase' as const,
-            letterSpacing: '0.1em',
+            letterSpacing: '0.05em',
             cursor: selectedSubject && selectedAge !== null && !loading ? 'pointer' : 'not-allowed',
-            color: '#000',
+            color: selectedSubject && selectedAge !== null && !loading ? 'white' : '#999',
             marginBottom: '20px',
-            transition: 'background 150ms ease, box-shadow 150ms ease',
             fontFamily: "'Space Grotesk', -apple-system, sans-serif"
           }}
         >

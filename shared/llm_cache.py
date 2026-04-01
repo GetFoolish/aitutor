@@ -228,10 +228,11 @@ def cached_llm_call(
         @wraps(func)
         def wrapper(prompt: str, *args, **kwargs):
             # Extract model from kwargs or use default
-            model = kwargs.get('model', 'default')
+            cache_kwargs = dict(kwargs)
+            model = cache_kwargs.pop('model', 'default')
             
             # Try to get from cache
-            cached_response = cache.get(prompt, model=model, **kwargs)
+            cached_response = cache.get(prompt, model=model, **cache_kwargs)
             if cached_response is not None:
                 return cached_response
             
@@ -239,7 +240,7 @@ def cached_llm_call(
             response = func(prompt, *args, **kwargs)
             
             # Cache the response
-            cache.set(prompt, response, model=model, ttl=ttl, **kwargs)
+            cache.set(prompt, response, model=model, ttl=ttl, **cache_kwargs)
             
             return response
         

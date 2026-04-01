@@ -1,0 +1,54 @@
+{
+  "created_at": "2026-02-26T15:50:04.652535+00:00",
+  "artifacts_dir": "/Users/gaganarora/Desktop/my projects/aitutor/artifacts/qa/run-20260226-104941",
+  "checks": [
+    {
+      "name": "Empty validation",
+      "passed": false,
+      "warning": false,
+      "details": "Question did not load: Error: timeout: Condition not met before timeout",
+      "elapsed_s": 13.65,
+      "error": null
+    },
+    {
+      "name": "Layout crush (mobile)",
+      "passed": true,
+      "warning": false,
+      "details": "Layout check passed. Found 0 critical elements with proper spacing.",
+      "elapsed_s": 6.96,
+      "error": null
+    },
+    {
+      "name": "MongoDB health",
+      "passed": true,
+      "warning": false,
+      "details": "HTTP check: MongoDB health check passed via http://localhost:8000/health (status=ready, ready=True)",
+      "elapsed_s": 0.05,
+      "error": null
+    },
+    {
+      "name": "State management",
+      "passed": true,
+      "warning": false,
+      "details": "State management check passed: localStorage persists across reloads and navigation (checked 2 keys)",
+      "elapsed_s": 2.19,
+      "error": null
+    },
+    {
+      "name": "Visual regression",
+      "passed": true,
+      "warning": false,
+      "details": "Visual regression check passed: Snapshot matches baseline (hash: bff0d8b3e6263c4f...)",
+      "elapsed_s": 0.61,
+      "error": null
+    }
+  ],
+  "summary": {
+    "total": 5,
+    "passed": 4,
+    "failed": 1,
+    "warnings": 0,
+    "total_elapsed_s": 23.45
+  },
+  "ok": false
+}

@@ -18,11 +18,8 @@ const GoogleSignInContent: React.FC<GoogleSignInContentProps> = ({ onAuthSuccess
   const [showSignupForm, setShowSignupForm] = useState(false);
   const [setupToken, setSetupToken] = useState<string>('');
   const [googleUser, setGoogleUser] = useState<any>(null);
-  const [isSigningIn, setIsSigningIn] = useState(false);
 
   const handleGoogleLogin = async () => {
-    if (isSigningIn) return;
-    setIsSigningIn(true);
     try {
       // Get authorization URL from backend and redirect
       const authUrl = await authAPI.getGoogleAuthUrl();
@@ -30,49 +27,40 @@ const GoogleSignInContent: React.FC<GoogleSignInContentProps> = ({ onAuthSuccess
     } catch (error) {
       console.error('Google login error:', error);
       alert('Failed to sign in with Google. Please try again.');
-      setIsSigningIn(false);
     }
   };
 
   // Check if we're returning from OAuth callback
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const authCode = urlParams.get('auth_code');
+    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    const token = hashParams.get('token');
+    const isNewUser = hashParams.get('is_new_user') === 'true';
+    const setupTokenParam = hashParams.get('setup_token');
 
-    if (!authCode) return;
-
-    authAPI.exchangeAuthCode(authCode)
-      .then(async exchange => {
-        // Clean up URL
-        window.history.replaceState({}, document.title, window.location.pathname);
-
-        if (exchange.token) {
-          const response = await fetch(`${import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:8003'}/auth/me`, {
-            headers: {
-              'Authorization': `Bearer ${exchange.token}`,
-            },
-          });
-          if (!response.ok) {
-            throw new Error(`Failed to load user profile (${response.status})`);
-          }
-          const userData = await response.json();
-          onAuthSuccess(exchange.token, userData);
-          return;
-        }
-
-        if (exchange.setup_token) {
-          setSetupToken(exchange.setup_token);
-          setShowSignupForm(true);
-          return;
-        }
-
-        throw new Error('Invalid auth exchange payload');
+    if (token) {
+      // Existing user - login directly
+      // We need to get user info from token
+      fetch(`${import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:8003'}/auth/me`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
       })
-      .catch(error => {
-        console.error('OAuth callback handling failed:', error);
-        alert('Sign-in failed. Please try again.');
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        .then(res => res.json())
+        .then(userData => {
+          onAuthSuccess(token, userData);
+          // Clean up URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+        })
+        .catch(error => {
+          console.error('Failed to get user info:', error);
+        });
+    } else if (setupTokenParam) {
+      // New user - show signup form
+      setSetupToken(setupTokenParam);
+      setShowSignupForm(true);
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
   }, []);
 
   if (showSignupForm && setupToken) {
@@ -135,7 +123,7 @@ const GoogleSignInContent: React.FC<GoogleSignInContentProps> = ({ onAuthSuccess
         <h1>Welcome to AI Tutor</h1>
         <p>Sign in with your Google account to get started</p>
 
-        <button className="google-sign-in-button" onClick={handleGoogleLogin} disabled={isSigningIn} style={isSigningIn ? { opacity: 0.6, cursor: 'wait' } : undefined}>
+        <button className="google-sign-in-button" onClick={handleGoogleLogin}>
           <svg width="20" height="20" viewBox="0 0 18 18" style={{ flexShrink: 0 }}>
             <path
               fill="#4285F4"
