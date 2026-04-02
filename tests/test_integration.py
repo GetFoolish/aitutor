@@ -4,6 +4,8 @@ Integration tests for the DASH API.
 Runs against the live server on localhost:8000.
 Tests the full request lifecycle: HTTP → FastAPI → DASH → MongoDB → response.
 
+These tests require live services — skip in CI with: pytest -m "not integration"
+
 Usage:
     # Run directly (recommended):
     cd /path/to/aitutor

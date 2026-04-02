@@ -37,7 +37,7 @@ jobs:
           echo "MONGODB_DB_NAME=ai_tutor" >> $GITHUB_ENV
 
       - name: Run backend tests
-        run: python3 -m pytest
+        run: python3 -m pytest --ignore=tests/test_integration.py
 
       - name: Run security contract checks
         run: python3 scripts/check_security_contract.py
