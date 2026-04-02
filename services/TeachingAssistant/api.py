@@ -97,14 +97,24 @@ async def options_handler(full_path: str):
     )
 
 class LazyTeachingAssistant:
-    """Defer MongoDB-backed TeachingAssistant startup until first real use."""
+    """Defer MongoDB-backed TeachingAssistant startup until first real use.
+
+    Thread-safe: a threading.Lock guards first initialisation so concurrent
+    Cloud Run requests don't each instantiate TeachingAssistant() and create
+    duplicate MongoDB-backed state.
+    """
 
     def __init__(self):
         self._assistant: Optional[TeachingAssistant] = None
+        self._lock = threading.Lock()
 
     def get(self) -> TeachingAssistant:
         if self._assistant is None:
-            self._assistant = TeachingAssistant()
+            with self._lock:
+                # Double-checked locking: re-test after acquiring the lock
+                # so only the first thread actually constructs the instance.
+                if self._assistant is None:
+                    self._assistant = TeachingAssistant()
         return self._assistant
 
     def __getattr__(self, name):
@@ -132,10 +142,21 @@ def require_observer_api_key(api_key: Optional[str]) -> str:
 
 
 async def authenticate_observer_websocket(websocket: WebSocket) -> bool:
+    """Authenticate an observer WebSocket connection.
+
+    The connection is only accepted (``websocket.accept()``) *after* the
+    pre-flight check passes.  This prevents unauthenticated clients from
+    holding an open WebSocket for the 5-second auth timeout (DoS vector).
+    """
     configured_key = get_configured_observer_api_key()
     if not configured_key:
+        # Reject before accept — the ASGI spec allows close without accept
+        # and Starlette/uvicorn handle this correctly.
         await websocket.close(code=4001, reason="Observer endpoints disabled")
         return False
+
+    # Accept the connection so we can receive the auth message.
+    await websocket.accept()
 
     try:
         auth_message = await asyncio.wait_for(websocket.receive_json(), timeout=5)
@@ -711,8 +732,9 @@ async def websocket_observe(websocket: WebSocket):
         await websocket.close(code=4002, reason="Missing session_id")
         return
 
-    await websocket.accept()
-
+    # NOTE: websocket.accept() is called *after* authentication inside
+    # authenticate_observer_websocket to avoid holding unauthenticated
+    # connections open (DoS vector).
     if not await authenticate_observer_websocket(websocket):
         return
 
