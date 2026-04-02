@@ -2815,6 +2815,8 @@ def start_adaptive_assessment(subject: str, request: Request, force_mc: bool = F
             "used_question_ids": [],
             "used_skill_ids": [],
             "used_content_hashes": [],
+            "student_context": _frozen_student_context,
+            "force_mc": force_mc,
             "created_at": datetime.now(),
             "updated_at": datetime.now(),
             "status": "in_progress",
@@ -2856,7 +2858,7 @@ def start_adaptive_assessment(subject: str, request: Request, force_mc: bool = F
                 question_id=cached["question_id"],
                 skill_ids=[cached.get("skill_id", "")] if cached.get("skill_id") else [],
                 content="",
-                difficulty=0.5,
+                difficulty=initial_difficulty,
                 expected_time_seconds=60.0,
             )
             logger.info(f"[ADAPTIVE_ASSESSMENT] Warm-start HIT: {first_q.question_id}")
@@ -2864,7 +2866,7 @@ def start_adaptive_assessment(subject: str, request: Request, force_mc: bool = F
         # --- AI-first: try JIT before DASH pool ---
         if not first_q:
             logger.info(f"[ADAPTIVE_ASSESSMENT] No warm-start — JIT generating for {subject}/{grade_name}")
-            first_q, q_data = _jit_first_question(exclude_question_ids=[], target_difficulty=0.5)
+            first_q, q_data = _jit_first_question(exclude_question_ids=[], target_difficulty=initial_difficulty)
             if first_q:
                 logger.info(f"[ADAPTIVE_ASSESSMENT] JIT generated first question {first_q.question_id}")
 
@@ -2936,7 +2938,7 @@ def start_adaptive_assessment(subject: str, request: Request, force_mc: bool = F
             if not q_data:
                 fallback_q, fallback_data = _jit_first_question(
                     exclude_question_ids=[first_q.question_id],
-                    target_difficulty=0.5,
+                    target_difficulty=initial_difficulty,
                 )
                 if (
                     fallback_q
@@ -2966,7 +2968,10 @@ def start_adaptive_assessment(subject: str, request: Request, force_mc: bool = F
 
         # Auto-prefetch question 2 immediately while user reads question 1
         def _start_prefetch():
-            _assessment_prefetch_worker(assessment_id, user_id, 0.5, jwt_age)
+            _assessment_prefetch_worker(
+                assessment_id, user_id, initial_difficulty, jwt_age,
+                force_mc=force_mc, student_context=_frozen_student_context,
+            )
         threading.Thread(target=_start_prefetch, daemon=True).start()
 
         # Patch widget fields before returning (prefetch/pool data may lack defaults)
@@ -3569,9 +3574,12 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
 
             # Optional sync JIT fallback (off by default). Keeping this off preserves fast UX.
             if ADAPTIVE_NEXT_SYNC_JIT and dash_system.use_ai_questions and dash_system.ai_provider:
-                grade_name = user_profile.current_grade.replace("GRADE_", "Grade ").replace("K", "Kindergarten")
+                real_skill_name = _pick_real_skill_name(subject, user_profile.current_grade)
                 # Unique synthetic ID per retry to force fresh generation
                 synthetic_id = f"assessment_{subject.lower().replace(' ', '_')}_{user_profile.current_grade.lower()}_{questions_asked}_r{attempt}_{int(time.time()*1000) % 100000}"
+                # Load frozen student context from session for personalization
+                _session_student_ctx = session.get("student_context", "")
+                _session_force_mc = session.get("force_mc", False)
                 try:
                     remaining_budget = ADAPTIVE_NEXT_TOTAL_BUDGET_S - (time.time() - retry_start)
                     if remaining_budget <= 0.5:
@@ -3585,14 +3593,15 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
                         future = executor.submit(
                             dash_system.ai_provider.get_question_for_skill,
                             skill_id=synthetic_id,
-                            skill_name=f"{subject} for {grade_name}",
+                            skill_name=real_skill_name,
                             target_difficulty=new_diff,
                             grade_level=user_profile.current_grade,
                             age=user_profile.age if user_profile.age else 10,
                             exclude_question_ids=used_q_ids,
                             user_id=user_id,
                             subject=subject,
-                            force_format="radio_single" if payload.force_mc else None,
+                            student_context=_session_student_ctx,
+                            force_format="radio_single" if _session_force_mc else None,
                         )
                         ai_result = future.result(timeout=jit_timeout)
                     finally:
@@ -3792,6 +3801,10 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
     # so it's ready by the time the user answers this one.
     # Use < max_questions (not < max_questions - 1) so the final question also gets prefetched.
     if questions_asked < session.get("max_questions", 10):
+        # Read frozen student context and force_mc from session for prefetch
+        _pf_student_ctx = session.get("student_context", "")
+        _pf_force_mc = session.get("force_mc", False)
+
         def _auto_prefetch():
             try:
                 _assessment_prefetch_worker(
@@ -3799,6 +3812,8 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
                     user_id=user_id,
                     current_difficulty=new_diff,
                     jwt_payload_age=jwt_age,
+                    force_mc=_pf_force_mc,
+                    student_context=_pf_student_ctx,
                 )
             except Exception as e:
                 logger.warning(f"[AUTO_PREFETCH] Failed (non-blocking): {e}")
@@ -3814,7 +3829,7 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
     }
 
 
-def _assessment_prefetch_worker(assessment_id: str, user_id: str, current_difficulty: float, jwt_payload_age: int = 10):
+def _assessment_prefetch_worker(assessment_id: str, user_id: str, current_difficulty: float, jwt_payload_age: int = 10, force_mc: bool = False, student_context: str = ""):
     """Shared prefetch worker — generates one question and caches it."""
     try:
         ensure_dash_system()
@@ -3830,6 +3845,14 @@ def _assessment_prefetch_worker(assessment_id: str, user_id: str, current_diffic
         })
         if not session:
             return
+
+        # Fall back to session-stored values when caller doesn't pass them
+        # (e.g. the /assessment/prefetch endpoint). This makes the worker
+        # self-sufficient regardless of how it's invoked.
+        if not student_context:
+            student_context = session.get("student_context", "")
+        if not force_mc:
+            force_mc = session.get("force_mc", False)
 
         questions_asked = session.get("questions_asked", 0)
         if questions_asked >= session.get("max_questions", 10) - 1:
@@ -3864,19 +3887,20 @@ def _assessment_prefetch_worker(assessment_id: str, user_id: str, current_diffic
 
             # Force JIT if pool returned None or duplicate
             if not q and dash_system.use_ai_questions and dash_system.ai_provider:
-                grade_name = user_profile.current_grade.replace("GRADE_", "Grade ").replace("K", "Kindergarten")
+                real_skill_name = _pick_real_skill_name(subject, user_profile.current_grade)
                 synthetic_id = f"assessment_{subject.lower().replace(' ', '_')}_{user_profile.current_grade.lower()}_{questions_asked + 1}_pf{attempt}_{int(time.time()*1000) % 100000}"
                 try:
                     ai_result = dash_system.ai_provider.get_question_for_skill(
                         skill_id=synthetic_id,
-                        skill_name=f"{subject} for {grade_name}",
+                        skill_name=real_skill_name,
                         target_difficulty=current_difficulty,
                         grade_level=user_profile.current_grade,
                         age=user_profile.age if user_profile.age else 10,
                         exclude_question_ids=used_q_ids,
                         user_id=user_id,
                         subject=subject,
-                        force_format="radio_single" if payload.force_mc else None,
+                        student_context=student_context,
+                        force_format="radio_single" if force_mc else None,
                     )
                     if ai_result:
                         jit_qid = ai_result["dash_metadata"]["dash_question_id"]
