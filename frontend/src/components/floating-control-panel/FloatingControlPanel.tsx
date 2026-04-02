@@ -615,11 +615,11 @@ function FloatingControlPanel({
         if (!assessmentMode) {
           try {
             feedWebSocketService.disconnect();
-          } catch (e) {}
+          } catch (_e) { /* ignore disconnect errors */ }
 
           try {
             instructionSSEService.disconnect();
-          } catch (e) {}
+          } catch (_e) { /* ignore disconnect errors */ }
         }
 
         await new Promise((resolve) => setTimeout(resolve, 300));

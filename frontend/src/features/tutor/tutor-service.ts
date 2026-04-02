@@ -72,7 +72,7 @@ export function clearTokenCache(): void {
 }
 
 // System prompt cache - keyed by language and mode to support different languages and assessment mode
-let systemPromptCache: Map<string, string> = new Map();
+const systemPromptCache: Map<string, string> = new Map();
 let systemPromptLoading: Promise<string> | null = null;
 let currentLoadingKey: string | null = null;
 

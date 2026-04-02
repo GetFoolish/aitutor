@@ -19,7 +19,7 @@ export function playCorrectSound() {
       osc.start(ctx.currentTime + time)
       osc.stop(ctx.currentTime + time + 0.4)
     })
-  } catch (e) {}
+  } catch (_e) { /* audio not supported */ }
 }
 
 export function playWrongSound() {
@@ -37,5 +37,5 @@ export function playWrongSound() {
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5)
     osc.start(ctx.currentTime)
     osc.stop(ctx.currentTime + 0.5)
-  } catch (e) {}
+  } catch (_e) { /* audio not supported */ }
 }
