@@ -84,8 +84,11 @@ def test_observer_websocket_is_disabled_without_configured_secret(monkeypatch):
     monkeypatch.delenv("OBSERVER_API_KEY", raising=False)
 
     with create_client(monkeypatch) as client:
-        with client.websocket_connect("/ws/feed/observe?session_id=sess-123") as websocket:
-            with pytest.raises(WebSocketDisconnect) as excinfo:
+        # The server now closes the WebSocket *before* accepting when the
+        # observer key is not configured, so the disconnect may surface
+        # during the connect handshake rather than during receive_json.
+        with pytest.raises(WebSocketDisconnect) as excinfo:
+            with client.websocket_connect("/ws/feed/observe?session_id=sess-123") as websocket:
                 websocket.receive_json()
 
     assert excinfo.value.code == 4001

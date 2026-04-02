@@ -39,7 +39,10 @@ const GoogleSignInContent: React.FC<GoogleSignInContentProps> = ({ onAuthSuccess
 
     if (token) {
       // Existing user - login directly
-      // We need to get user info from token
+      // Clear the token from the URL hash *synchronously* before the async
+      // fetch so browser extensions / analytics tools cannot read it.
+      window.history.replaceState({}, document.title, window.location.pathname);
+
       fetch(`${import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:8003'}/auth/me`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -48,8 +51,6 @@ const GoogleSignInContent: React.FC<GoogleSignInContentProps> = ({ onAuthSuccess
         .then(res => res.json())
         .then(userData => {
           onAuthSuccess(token, userData);
-          // Clean up URL
-          window.history.replaceState({}, document.title, window.location.pathname);
         })
         .catch(error => {
           console.error('Failed to get user info:', error);
@@ -146,7 +147,7 @@ const GoogleSignInContent: React.FC<GoogleSignInContentProps> = ({ onAuthSuccess
         </button>
 
         {/* Dev Mode Verification Button */}
-        {process.env.NODE_ENV === 'development' && (
+        {import.meta.env.DEV && (
           <div style={{ marginTop: '20px', borderTop: '2px dashed #ccc', paddingTop: '20px' }}>
             <p style={{ fontSize: '12px', marginBottom: '10px', color: '#666' }}>Development Mode:</p>
             <button

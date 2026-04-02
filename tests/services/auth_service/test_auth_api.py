@@ -61,7 +61,10 @@ def test_google_login_sets_oauth_state_cookie(monkeypatch):
         response = client.get("/auth/google")
 
     assert response.status_code == 200
-    assert response.json()["state"] == "state-123"
+    # State must NOT be leaked in the JSON body — it is only stored in
+    # the httpOnly cookie for CSRF validation during callback.
+    assert "state" not in response.json()
+    assert "authorization_url" in response.json()
     assert response.cookies.get(auth_api.OAUTH_STATE_COOKIE) == "state-123"
 
 
