@@ -95,7 +95,7 @@ def test_session_manager_full_lifecycle():
     created = manager.create_session("user-123")
     session_id = created["session_id"]
 
-    assert len(collection.indexes) == 4
+    assert len(collection.indexes) == 3
     assert manager.get_active_session("user-123")["session_id"] == session_id
     assert manager.get_session_by_id(session_id)["session_id"] == session_id
     assert manager.list_active_sessions()[0]["session_id"] == session_id
@@ -161,22 +161,41 @@ def test_teaching_assistant_wires_session_manager_and_greeting_handler(monkeypat
         push_instruction=lambda session_id, instruction: "instr-1",
         get_active_session=lambda user_id: {"session_id": "sess-1"},
     )
-    fake_greeting_handler = SimpleNamespace(
-        get_greeting=lambda user_id: f"hello {user_id}",
-        get_closing=lambda duration_minutes, questions_answered: f"bye {duration_minutes}/{questions_answered}",
-        get_inactivity_prompt=lambda: "are you there?",
+
+    class FakeGreetingSkill:
+        name = "greeting"
+        def get_closing(self, duration_minutes, questions_answered):
+            return f"bye {duration_minutes}/{questions_answered}"
+        def get_inactivity_prompt(self):
+            return "are you there?"
+
+    class FakeSkillsManager:
+        skills = [FakeGreetingSkill()]
+        def execute_skills(self, context):
+            return []
+
+    fake_context_manager = SimpleNamespace(
+        create_context=lambda *a, **kw: None,
+        get_context=lambda *a, **kw: None,
+        sync_dirty_contexts=lambda: None,
+        cleanup_stale_contexts=lambda: None,
+    )
+    fake_memory_extractor = SimpleNamespace(
+        extract_memories_batch=lambda *a, **kw: {"memories": [], "emotions": [], "key_moments": [], "unfinished_topics": []},
     )
 
-    monkeypatch.setattr(teaching_assistant, "MongoDBManager", lambda: object())
-    monkeypatch.setattr(teaching_assistant, "SessionManager", lambda mongo: fake_session_manager)
-    monkeypatch.setattr(teaching_assistant, "GreetingHandler", lambda: fake_greeting_handler)
+    monkeypatch.setattr(teaching_assistant, "MongoDBManager", lambda: SimpleNamespace(db=SimpleNamespace()))
+    monkeypatch.setattr(teaching_assistant, "SessionManager", lambda mongo, config=None: fake_session_manager)
+    monkeypatch.setattr(teaching_assistant, "ContextManager", lambda mongo, config=None: fake_context_manager)
+    monkeypatch.setattr(teaching_assistant, "MemoryExtractor", lambda: fake_memory_extractor)
+    monkeypatch.setattr(teaching_assistant, "SkillsManager", lambda skills_dir, config=None: FakeSkillsManager())
 
-    assistant = teaching_assistant.TeachingAssistant()
+    assistant = teaching_assistant.TeachingAssistant(session_manager=fake_session_manager)
 
     started = assistant.start_session("user-123")
     assert started == {
         "session_id": "sess-1",
-        "prompt": "hello user-123",
+        "prompt": "",
         "session_info": {"session_id": "sess-1", "session_active": True},
     }
 

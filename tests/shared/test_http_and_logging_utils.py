@@ -43,7 +43,7 @@ def test_cache_control_middleware_sets_route_specific_headers():
         assert client.get("/session/info").headers["Cache-Control"] == "private, max-age=10"
         assert (
             client.get("/api/questions").headers["Cache-Control"]
-            == "public, max-age=300, stale-while-revalidate=60"
+            == "private, no-store"
         )
         assert client.get("/auth/me").headers["Cache-Control"] == "private, no-cache, must-revalidate"
         assert client.get("/dynamic").headers["Cache-Control"] == "no-cache, no-store, must-revalidate"

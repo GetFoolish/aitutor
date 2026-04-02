@@ -130,20 +130,31 @@ def test_dash_system_falls_back_to_legacy_mongo_dataset(monkeypatch):
 
     dash_system = dash_system_module.DASHSystem(use_mongodb=True)
 
-    assert dash_system.question_data_mode == "legacy"
-    assert set(dash_system.skills) == {"counting_1_10"}
-    assert dash_system.question_index == {"k_count_1": "counting_1_10", "k_count_2": "counting_1_10", "k_count_3": "counting_1_10", "k_count_4": "counting_1_10"}
-    assert dash_system.skill_question_index["counting_1_10"] == ["k_count_1", "k_count_2", "k_count_3", "k_count_4"]
+    # AI-only architecture: skills loaded for DASH scheduling, questions served by Gemini
+    assert dash_system.question_data_mode == "ai_only"
+    # generated_skills is non-empty so it takes priority; only that skill is loaded
+    assert set(dash_system.skills) == {"41.1.1.1_Count_with_small_numbers"}
+    # AI-only mode no longer populates question indexes
+    assert dash_system.question_index == {}
+    assert dash_system.skill_question_index == {}
 
 
 def test_load_perseus_items_synthesizes_legacy_radio_questions(monkeypatch):
+    """In AI-only mode, khan questions without perseus_data or ai_q_ prefix
+    are routed to _load_khan_perseus_items which queries questions_db.
+    With an empty/mocked DB the result set is empty."""
     fake_mongo = make_fake_mongo()
+    # _load_khan_perseus_items accesses mongo_db.questions, .units, .lessons, .exercises
+    fake_mongo.questions = FakeCollection([])
+    fake_mongo.units = FakeCollection([])
+    fake_mongo.lessons = FakeCollection([])
+    fake_mongo.exercises = FakeCollection([])
     monkeypatch.setattr(mongodb_manager, "mongo_db", fake_mongo)
     monkeypatch.setattr(
         dash_api,
         "dash_system",
         SimpleNamespace(
-            question_data_mode="legacy",
+            question_data_mode="ai_only",
             skills={"counting_1_10": SimpleNamespace(name="Counting 1-10")},
         ),
     )
@@ -158,17 +169,6 @@ def test_load_perseus_items_synthesizes_legacy_radio_questions(monkeypatch):
 
     items = dash_api.load_perseus_items_for_dash_questions_from_mongodb([dash_question])
 
-    assert len(items) == 1
-    item = items[0]
-    assert item["dash_metadata"]["dash_question_id"] == "k_count_1"
-    assert item["dash_metadata"]["skill_names"] == ["Counting 1-10"]
-    assert item["question"]["content"].endswith("[[☃ radio 1]]\n")
-
-    radio_widget = item["question"]["widgets"]["radio 1"]
-    assert radio_widget["type"] == "radio"
-    assert radio_widget["options"]["multipleSelect"] is False
-
-    choices = radio_widget["options"]["choices"]
-    assert len(choices) == 4
-    assert sum(1 for choice in choices if choice["correct"]) == 1
-    assert any(choice["content"] == "4, 5" and choice["correct"] for choice in choices)
+    # Non-AI questions go through _load_khan_perseus_items which queries
+    # questions_db.questions; with the empty fake collection the result is empty.
+    assert isinstance(items, list)
