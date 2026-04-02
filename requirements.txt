@@ -36,14 +36,14 @@ idna==3.10
 itsdangerous==2.2.0
 Jinja2==3.1.6
 MarkupSafe==3.0.3
-mss==10.1.0
+mss==10.1.0; sys_platform == "darwin"
 multidict==6.7.0
-numpy==2.4.2
+numpy==2.4.2; sys_platform == "darwin"
 mlx==0.30.6; sys_platform == "darwin"
 mlx-metal==0.30.6; sys_platform == "darwin"
-pybind11==3.0.2
+pybind11==3.0.2; sys_platform == "darwin"
 oauth2client==4.1.3
-opencv-python==4.12.0.88
+opencv-python==4.12.0.88; sys_platform == "darwin"
 passlib==1.7.4
 pillow==11.3.0
 propcache==0.4.1
