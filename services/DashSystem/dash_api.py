@@ -242,10 +242,10 @@ _SUBJECT_GRADE_SKILLS: dict = {
     "science": {
         "GRADE_4": "identifying the stages of the water cycle",
         "GRADE_5": "classifying producers, consumers, and decomposers in a food chain",
-        "GRADE_6": "identifying organelles and their functions in a cell",
-        "GRADE_7": "balancing simple chemical equations",
+        "GRADE_6": "comparing plant and animal cells using basic cell structures (nucleus, membrane, cell wall)",
+        "GRADE_7": "identifying the functions of basic cell organelles (nucleus, mitochondria, cell membrane)",
         "GRADE_8": "calculating speed, distance, and time using Newton's laws",
-        "GRADE_9": "drawing Bohr models of atoms and identifying atomic number",
+        "GRADE_9": "explaining ribosome function and the steps of protein synthesis (transcription and translation)",
         "GRADE_10": "applying Mendelian genetics to predict phenotype ratios",
         "GRADE_11": "applying conservation of energy to thermodynamic systems",
         "default": "identifying variables in a controlled scientific experiment",
@@ -3083,11 +3083,31 @@ def resume_assessment(
         raise HTTPException(status_code=500, detail=f"Resume failed: {str(e)}")
 
 
+def _difficulty_step_for_grade(grade: str) -> float:
+    """Smaller step for younger students — prevents aggressive level jumps."""
+    step_map = {
+        "K":       0.06,
+        "GRADE_1": 0.07,
+        "GRADE_2": 0.08,
+        "GRADE_3": 0.09,
+        "GRADE_4": 0.10,
+        "GRADE_5": 0.11,
+        "GRADE_6": 0.12,
+        "GRADE_7": 0.13,
+        "GRADE_8": 0.13,
+        "GRADE_9": 0.14,
+        "GRADE_10": 0.14,
+        "GRADE_11": 0.15,
+        "GRADE_12": 0.15,
+    }
+    return step_map.get(grade, 0.13)
+
+
 @app.post("/assessment/next")
 def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer):
     """
     Submit answer for current adaptive assessment question, get next question.
-    Difficulty adjusts: +0.15 on correct, -0.15 on wrong, clamped to [0.1, 0.9].
+    Difficulty adjusts by a grade-proportional step on correct/wrong, clamped to [0.1, cap].
     """
     ensure_dash_system()
     from managers.mongodb_manager import mongo_db
@@ -3190,7 +3210,10 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
     # Record answer
     current_diff = session.get("current_difficulty", 0.5)
     max_diff_cap = session.get("max_difficulty_cap", 1.0)
-    new_diff = current_diff + (0.15 if payload.is_correct else -0.15)
+    from managers.user_manager import calculate_grade_from_age
+    student_grade_next = calculate_grade_from_age(jwt_age) if jwt_age else "GRADE_7"
+    diff_step = _difficulty_step_for_grade(student_grade_next)
+    new_diff = current_diff + (diff_step if payload.is_correct else -diff_step)
     new_diff = max(0.1, min(max_diff_cap, new_diff))  # Grade-appropriate upper bound
 
     answer_record = {
@@ -3765,6 +3788,7 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
         "total_questions": session.get("max_questions", 10),
         "question": q_data,
         "current_difficulty": round(new_diff, 3),
+        "student_grade": student_grade_next,
     }
 
 

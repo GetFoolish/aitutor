@@ -143,6 +143,23 @@ const normalizeInlineWidgetLayout = (container: HTMLElement) => {
     input.style.setProperty('width', 'auto', 'important');
     input.style.setProperty('font-size', '14px', 'important');
   });
+
+  // Fix text input styling: override any Perseus inline styles with JS (CSS !important
+  // doesn't beat inline styles set by Perseus JS, but setProperty('important') does).
+  const allTextInputs = container.querySelectorAll<HTMLInputElement>(
+    'input[type="text"]'
+  );
+  allTextInputs.forEach((input) => {
+    if (!input.placeholder) {
+      input.placeholder = 'your answer';
+    }
+    input.style.setProperty('border', '1px solid #d1d5db', 'important');
+    input.style.setProperty('border-radius', '6px', 'important');
+    input.style.setProperty('padding', '6px 12px', 'important');
+    input.style.setProperty('min-width', '100px', 'important');
+    input.style.setProperty('box-shadow', '0 1px 3px rgba(0,0,0,0.08)', 'important');
+    input.style.setProperty('outline', 'none', 'important');
+  });
 };
 
 interface Props {
@@ -878,7 +895,7 @@ const AssessmentQuestion: React.FC<Props> = ({
         </div>
       )}
 
-      <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 }}>
+      <div style={{ flex: '0 1 auto', display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 }}>
         <div ref={contentBlockRef} style={contentBlockStyle}>
           <div
             id="question-content-container"

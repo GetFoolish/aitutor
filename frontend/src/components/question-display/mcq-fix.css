@@ -422,13 +422,13 @@ html.dark [data-testid="assessment-explanation"] * {
 /* Fix: Tiny numeric-input box — make inputs large enough to be usable.
    Use clamp() so inline cloze inputs don't break sentence flow. */
 #question-content-container .framework-perseus input[type="text"] {
-    min-width: clamp(80px, 15vw, 140px) !important;
+    min-width: 100px !important;
     min-height: 38px !important;
-    padding: 6px 10px !important;
+    padding: 6px 12px !important;
     font-size: 16px !important;
     box-sizing: border-box;
-    border: 1px solid #d0d0d0 !important;
-    border-radius: 4px !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 6px !important;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
     outline: none !important;
 }

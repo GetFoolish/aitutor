@@ -68,12 +68,15 @@ DIFFICULTY_DESCRIPTORS = {
 FORMAT_INSTRUCTIONS = {
     "radio_single": (
         "Format: SINGLE-SELECT multiple choice (radio_single).\n"
+        "CRITICAL: You MUST use a 'radio' widget — NOT a dropdown, NOT numeric-input, NOT expression.\n"
         "The 'question.widgets' must contain exactly one widget keyed 'radio 1' with type 'radio'.\n"
         "Set options.multipleSelect to false.\n"
-        "Provide exactly 4 choices. Exactly ONE choice must have 'correct': true; the rest 'correct': false.\n"
+        "Provide exactly 4 choices (rendered as clickable A/B/C/D buttons).\n"
+        "Exactly ONE choice must have 'correct': true; the rest 'correct': false.\n"
         "Include plausible distractors that reflect common student mistakes.\n"
         "For EACH choice, include a 'misconception' field (string, 5-15 words) describing the common "
-        "student error that choice targets. Set 'misconception': null for the correct choice."
+        "student error that choice targets. Set 'misconception': null for the correct choice.\n"
+        "NEVER use 'dropdown' or 'numeric-input' when this format is requested."
     ),
     "radio_multi": (
         "Format: MULTI-SELECT multiple choice (radio_multi).\n"
@@ -239,11 +242,30 @@ _WIDGET_PLACEHOLDERS = {
 }
 
 
-def _difficulty_label(difficulty: float) -> str:
+def _difficulty_label(difficulty: float, age: int = 10) -> str:
     for (lo, hi), label in DIFFICULTY_DESCRIPTORS.items():
         if lo <= difficulty < hi:
+            # For young students, override examples to be age-appropriate
+            if age <= 7:
+                young_examples = {
+                    (0.0, 0.2): "very easy — single-step recognition. Example: 'Which animal says moo?' or 'How many apples are in this group: 🍎🍎🍎?'",
+                    (0.2, 0.4): "easy — simple 1-step task. Example: 'You have 4 crayons and get 2 more. How many now?' or 'Which shape has 3 sides?'",
+                    (0.4, 0.6): "medium for this age — 2-step task with small numbers. Example: 'Sam has 8 stickers. She gives 3 to a friend. How many does she have left?'",
+                }
+                for (ylo, yhi), ylabel in young_examples.items():
+                    if ylo <= difficulty < yhi:
+                        return ylabel
+            elif age <= 9:
+                young_examples = {
+                    (0.0, 0.2): "very easy — recall. Example: 'What is 6 + 7?' or 'Which animal is a mammal: fish, dog, or butterfly?'",
+                    (0.2, 0.4): "easy — 1-2 step. Example: 'A bag has 15 marbles. 6 are red. How many are not red?'",
+                    (0.4, 0.6): "medium — multi-step with whole numbers. Example: 'A recipe uses 2 cups of flour for 8 cookies. How much for 24 cookies?'",
+                }
+                for (ylo, yhi), ylabel in young_examples.items():
+                    if ylo <= difficulty < yhi:
+                        return ylabel
             return label
-    return DIFFICULTY_DESCRIPTORS[(0.8, 1.0)]
+    return list(DIFFICULTY_DESCRIPTORS.values())[-1]
 
 
 def _age_guidance(age: int) -> str:
@@ -336,7 +358,7 @@ def build_skill_question_prompt(
     The prompt is curriculum-aware: it uses the exact skill and lesson names
     so Gemini generates questions on the correct topic at the correct level.
     """
-    difficulty_label = _difficulty_label(difficulty)
+    difficulty_label = _difficulty_label(difficulty, age)
     age_guidance = _age_guidance(age)
     format_instruction = FORMAT_INSTRUCTIONS.get(fmt, FORMAT_INSTRUCTIONS["radio_single"])
     widget_placeholder = _WIDGET_PLACEHOLDERS.get(fmt, "[[☃ radio 1]]")
@@ -468,6 +490,28 @@ def build_skill_question_prompt(
         "- Use LaTeX ($...$) for math expressions when appropriate.\n"
         "- Each choice 'content' must be a string (not a number).\n"
         "- Distractor choices must be plausible wrong answers reflecting real student misconceptions.\n"
+    )
+    # Add age-appropriate distractor enforcement
+    if age <= 7:
+        prompt += (
+            "- CRITICAL DISTRACTOR RULE for age 5-7: Wrong answer choices must use ONLY words a kindergartener knows. "
+            "Choices must be concrete objects, simple numbers (1-20), or single familiar words. "
+            "NEVER use: fractions, percentages, algebra terms, scientific vocabulary, or multi-word technical phrases. "
+            "Example of GOOD wrong answers for a shapes question: 'circle', 'square', 'triangle'. "
+            "Example of BAD wrong answers: 'obtuse angle', 'perpendicular lines', 'hypotenuse'.\n"
+        )
+    elif age <= 9:
+        prompt += (
+            "- DISTRACTOR RULE for age 8-9: Wrong answer choices must use vocabulary a 3rd-4th grader knows. "
+            "No algebra, no variables, no scientific notation, no multi-syllable technical terms. "
+            "Distractors should be plausible mistakes with familiar numbers and everyday words.\n"
+        )
+    elif age <= 11:
+        prompt += (
+            "- DISTRACTOR RULE for age 10-11: Distractors should reflect computation errors or concept confusion "
+            "a 5th-6th grader would make. Avoid high-school-level vocabulary in answer choices.\n"
+        )
+    prompt += (
         "- For math: all numbers in answer choices must be reachable via computation, not random.\n"
         "- For language subjects (Spanish, French, etc.): ALWAYS write questions, choices, "
         "and hints in the app's instruction language. Only include target-language words/phrases "
