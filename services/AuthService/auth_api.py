@@ -122,9 +122,10 @@ async def google_login():
     """Initiate Google OAuth flow"""
     try:
         authorization_url, state = oauth_handler.get_authorization_url()
+        # Only return the authorization URL — the state value is stored in
+        # an httpOnly cookie and does not need to be exposed to JS.
         response = JSONResponse({
             "authorization_url": authorization_url,
-            "state": state
         })
         set_oauth_state_cookie(response, state)
         return response
