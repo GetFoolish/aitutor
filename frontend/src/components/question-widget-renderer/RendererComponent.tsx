@@ -32,6 +32,13 @@ const TEACHING_ASSISTANT_API_URL = import.meta.env.VITE_TEACHING_ASSISTANT_API_U
 
 interface RendererComponentProps {
     onSkillChange?: (skill: string) => void;
+    onQuestionChange?: (questionId: string | null) => void;
+    watchedVideoIds?: string[];
+    onAnswerSubmitted?: () => void;
+    assessmentMode?: boolean;
+    assessmentQuestions?: unknown[];
+    onAssessmentAnswer?: (questionId: string, isCorrect: boolean) => void;
+    currentQuestionIndex?: number;
 }
 
 const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {

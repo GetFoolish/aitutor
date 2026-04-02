@@ -352,7 +352,7 @@ const AssessmentQuestion: React.FC<Props> = ({
         .replace(/^(?:look at|examine|see|observe|study|check out)\s+(?:the\s+)?(?:picture|image|diagram|illustration|photo|figure)s?\b[^.!?\n]*[.!?]\s*/gim, '')
         // Fix digit-led LaTeX that's really plain text: $50$, $50plus$, $30per$ etc.
         // Strip dollar signs when content starts with a digit and has no real LaTeX operators
-        .replace(/\$(\d[^$\\{}^_]*)\$/g, (_, inner) => inner)
+        .replace(/\$(\d[^$\\{}^_]*)\$/g, (_: string, inner: string) => inner)
         // Separate run-together digit+word: "50plus" → "50 plus", "10and" → "10 and"
         .replace(/(\d)([a-z])/gi, '$1 $2')
         .trim();

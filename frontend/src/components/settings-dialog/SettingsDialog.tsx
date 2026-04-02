@@ -22,6 +22,15 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useTheme } from "@/components/theme/theme-provier";
+import { Sun, Moon, Monitor, Home } from "lucide-react";
 
 /** localStorage key for web search toggle */
 const WEB_SEARCH_KEY = "aitutor_web_search_enabled";
@@ -256,7 +265,7 @@ export default function SettingsDialog({
                 type="button"
                 variant="outline"
                 className="w-full flex items-center justify-center gap-2"
-                onClick={() => history.push("/")}
+                onClick={() => { window.location.href = "/"; }}
               >
                 <Home className="h-4 w-4" />
                 Back to Home
