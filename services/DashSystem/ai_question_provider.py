@@ -42,14 +42,14 @@ DEFAULT_FORMAT_WEIGHTS = {
 
 # Formats suitable for fast_mode (assessment JIT): fast to generate, easy to validate
 FAST_MODE_FORMATS = ["radio_single", "numeric_input", "dropdown"]
-# MC-first: radio_single ≥60% across all subjects so QA can always verify the MC flow.
-# Numeric and dropdown retained as secondary options.
+# MC-first: radio_single ≥80% across all subjects so QA can always verify the MC flow.
+# Numeric and dropdown retained as minority options only.
 FAST_MODE_WEIGHTS = {
-    "default": [65, 20, 15],    # radio, numeric, dropdown
-    "math":    [65, 20, 15],    # was [20,50,30] — MC-first for verifiability
-    "science": [65, 20, 15],    # was [40,35,25]
-    "english": [65, 10, 25],    # was [55,10,35]
-    "history": [65, 10, 25],    # was [50,15,35]
+    "default": [85, 10, 5],     # radio, numeric, dropdown
+    "math":    [85, 10, 5],     # was [65,20,15] — push even harder toward MC
+    "science": [85, 10, 5],
+    "english": [85,  5, 10],
+    "history": [85,  5, 10],
 }
 
 # Subject-specific format weights — each subject emphasises its natural question types.
@@ -237,8 +237,21 @@ class AIQuestionProvider:
         """
         effective_lesson = lesson_name or skill_name
 
-        # Tier 1: queue pop
-        result = self._pop_from_queue(skill_id, target_difficulty, exclude_question_ids, subject=subject)
+        # Determine preferred format for this request (used to filter tiers 1 & 2)
+        preferred_format: Optional[str] = None
+        if force_format and force_format in SUPPORTED_FORMATS:
+            preferred_format = force_format
+        elif fast_mode:
+            detected = _detect_subject(skill_id, subject or skill_name)
+            fast_weights = list(FAST_MODE_WEIGHTS.get(detected, FAST_MODE_WEIGHTS["default"]))
+            fmts, fw = _filter_formats_by_age(FAST_MODE_FORMATS, fast_weights, age)
+            preferred_format = random.choices(fmts, weights=fw, k=1)[0]
+
+        # Tier 1: queue pop — prefer the target format, fall back to any format
+        result = self._pop_from_queue(
+            skill_id, target_difficulty, exclude_question_ids, subject=subject,
+            preferred_format=preferred_format,
+        )
         if result:
             logger.info(f"[AI_PROVIDER] QUEUE HIT for skill={skill_name} diff={target_difficulty:.2f}")
             self._trigger_background_refill(
@@ -250,8 +263,11 @@ class AIQuestionProvider:
                 return formatted
             # Validation failed — fall through to next tier
 
-        # Tier 2: reuse from collection
-        result = self._reuse_existing(skill_id, target_difficulty, exclude_question_ids, subject=subject)
+        # Tier 2: reuse from collection — prefer the target format, fall back to any format
+        result = self._reuse_existing(
+            skill_id, target_difficulty, exclude_question_ids, subject=subject,
+            preferred_format=preferred_format,
+        )
         if result:
             logger.info(f"[AI_PROVIDER] REUSE HIT for skill={skill_name} diff={target_difficulty:.2f}")
             self._trigger_background_refill(
@@ -264,12 +280,13 @@ class AIQuestionProvider:
             # Validation failed — fall through to next tier
 
         # Tier 3: generate just-in-time (with frozen student context for personalization)
+        # Pass preferred_format so JIT uses the same format decided at the top of this method
         result = self._generate_jit(
             skill_id, skill_name, effective_lesson, target_difficulty, grade_level, age, user_id,
             fast_mode=fast_mode,
             subject=subject,
             student_context=student_context,
-            force_format=force_format,
+            force_format=preferred_format if preferred_format else force_format,
         )
         if result:
             logger.info(f"[AI_PROVIDER] JIT GENERATED for skill={skill_name} diff={target_difficulty:.2f}")
@@ -326,26 +343,43 @@ class AIQuestionProvider:
         target_difficulty: float,
         exclude_ids: Set[str],
         subject: str = "",
+        preferred_format: Optional[str] = None,
     ) -> Optional[Dict[str, Any]]:
-        """Atomically pop a ready question from the queue."""
+        """Atomically pop a ready question from the queue.
+
+        When preferred_format is set, tries to find a question with that format first.
+        Falls back to any format if none available.
+        """
         min_diff = max(0.0, target_difficulty - self.DIFFICULTY_TOLERANCE)
         max_diff = min(1.0, target_difficulty + self.DIFFICULTY_TOLERANCE)
 
-        query: Dict[str, Any] = {
+        base_query: Dict[str, Any] = {
             "skill_id": skill_id,
             "status": "ready",
             "difficulty": {"$gte": min_diff, "$lte": max_diff},
         }
         if subject:
-            query["subject"] = subject
+            base_query["subject"] = subject
         if exclude_ids:
-            query["question_id"] = {"$nin": list(exclude_ids)}
+            base_query["question_id"] = {"$nin": list(exclude_ids)}
 
-        queue_item = self.queue.find_one_and_update(
-            query,
-            {"$set": {"status": "served", "served_at": datetime.utcnow()}},
-            sort=[("created_at", 1)],
-        )
+        # Try preferred format first
+        queries = []
+        if preferred_format:
+            pq = dict(base_query)
+            pq["format"] = preferred_format
+            queries.append(pq)
+        queries.append(base_query)
+
+        queue_item = None
+        for query in queries:
+            queue_item = self.queue.find_one_and_update(
+                query,
+                {"$set": {"status": "served", "served_at": datetime.utcnow()}},
+                sort=[("created_at", 1)],
+            )
+            if queue_item:
+                break
         # NOTE: Untagged fallback removed — serving old math questions for
         # non-math subjects caused wrong-subject content (Bug #21).
         if not queue_item:
@@ -371,21 +405,39 @@ class AIQuestionProvider:
         target_difficulty: float,
         exclude_ids: Set[str],
         subject: str = "",
+        preferred_format: Optional[str] = None,
     ) -> Optional[Dict[str, Any]]:
-        """Find a previously generated question sorted by lowest used_count."""
+        """Find a previously generated question sorted by lowest used_count.
+
+        When preferred_format is set, tries to find a question with that format first.
+        Falls back to any format if none available.
+        """
         min_diff = max(0.0, target_difficulty - self.DIFFICULTY_TOLERANCE)
         max_diff = min(1.0, target_difficulty + self.DIFFICULTY_TOLERANCE)
 
-        query: Dict[str, Any] = {
+        base_query: Dict[str, Any] = {
             "skill_id": skill_id,
             "difficulty": {"$gte": min_diff, "$lte": max_diff},
         }
         if subject:
-            query["subject"] = subject
+            base_query["subject"] = subject
         if exclude_ids:
-            query["question_id"] = {"$nin": list(exclude_ids)}
+            base_query["question_id"] = {"$nin": list(exclude_ids)}
 
-        doc = self.collection.find_one(query, sort=[("used_count", 1), ("created_at", -1)])
+        # Try preferred format first, fall back to any format
+        queries = []
+        if preferred_format:
+            pq = dict(base_query)
+            pq["format"] = preferred_format
+            queries.append(pq)
+        queries.append(base_query)
+
+        doc = None
+        for query in queries:
+            doc = self.collection.find_one(query, sort=[("used_count", 1), ("created_at", -1)])
+            if doc:
+                break
+
         # NOTE: Untagged fallback removed — same reason as _pop_from_queue (Bug #21).
         if doc:
             self.collection.update_one(

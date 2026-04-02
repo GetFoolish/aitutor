@@ -143,6 +143,16 @@ const normalizeInlineWidgetLayout = (container: HTMLElement) => {
     input.style.setProperty('width', 'auto', 'important');
     input.style.setProperty('font-size', '14px', 'important');
   });
+
+  // Inject placeholder text on all numeric-input text boxes (Perseus doesn't set one)
+  const allTextInputs = container.querySelectorAll<HTMLInputElement>(
+    '.framework-perseus input[type="text"]'
+  );
+  allTextInputs.forEach((input) => {
+    if (!input.placeholder) {
+      input.placeholder = 'your answer';
+    }
+  });
 };
 
 interface Props {
@@ -878,7 +888,7 @@ const AssessmentQuestion: React.FC<Props> = ({
         </div>
       )}
 
-      <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 }}>
+      <div style={{ flex: '0 1 auto', display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 }}>
         <div ref={contentBlockRef} style={contentBlockStyle}>
           <div
             id="question-content-container"

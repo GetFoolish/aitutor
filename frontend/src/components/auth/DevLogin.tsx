@@ -240,6 +240,21 @@ const DevLogin: React.FC = () => {
           />
         </div>
 
+        {/* Force MC toggle */}
+        <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+          <input
+            id="force-mc-checkbox"
+            type="checkbox"
+            checked={forceMC}
+            onChange={(e) => setForceMC(e.target.checked)}
+            disabled={loading}
+            style={{ width: '18px', height: '18px', cursor: loading ? 'not-allowed' : 'pointer', accentColor: '#FF4B4B' }}
+          />
+          <label htmlFor="force-mc-checkbox" style={{ fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: textColor, cursor: loading ? 'not-allowed' : 'pointer' }}>
+            Force Multiple Choice Questions
+          </label>
+        </div>
+
         {/* Subject picker */}
         <p style={{
           fontSize: '12px',
