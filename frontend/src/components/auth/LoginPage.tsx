@@ -63,7 +63,7 @@ const LoginPage: React.FC = () => {
         console.error('OAuth callback handling failed:', error);
         alert('Sign-in failed. Please try again.');
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []);
 
   const handleAuthSuccess = (token: string, user: any) => {

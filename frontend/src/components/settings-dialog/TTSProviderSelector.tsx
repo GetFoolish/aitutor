@@ -40,7 +40,7 @@ export default function TTSProviderSelector() {
   // Reset voice when provider changes
   useEffect(() => {
     saveSettings({ voice: voices[0]?.id ?? '' });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [settings.providerId]);
 
   return (

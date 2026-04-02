@@ -205,7 +205,7 @@ export function useClassroomChat({
         streamingContentRef.current = {};
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
     [isStreaming, messages, agents, mode, classroomContext, apiKey, model],
   );
 
@@ -355,7 +355,7 @@ export function useClassroomChat({
               if (!raw || raw === '[DONE]') continue;
               try {
                 processEvent(JSON.parse(raw) as StatelessEvent);
-              } catch {}
+              } catch (_e) { /* ignore malformed SSE chunks */ }
             }
           }
         }
@@ -370,7 +370,7 @@ export function useClassroomChat({
         streamingContentRef.current = {};
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
     [isStreaming, agents, mode, classroomContext, apiKey, model],
   );
 

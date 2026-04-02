@@ -35,7 +35,7 @@ import "./package/perseus/testing/perseus-init.tsx";
     'deprecated and will be removed', // General deprecation pattern
     // NOTE: "is not accessible" REMOVED (Bug #69) — was hiding real a11y bugs
   ];
-  const _filter = (orig: Function) => (...args: any[]) => {
+  const _filter = (orig: (...a: unknown[]) => void) => (...args: unknown[]) => {
     const msg = String(args[0] || '');
     if (SUPPRESSED.some(s => msg.includes(s))) return;
     orig.apply(console, args);

@@ -12,7 +12,7 @@ import type { TTSModelConfig, TTSGenerationResult } from './types';
 
 // @ts-ignore — Vite replaces import.meta.env at build time
 const TEACHING_ASSISTANT_API_URL: string =
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   (typeof (import.meta as any).env !== 'undefined'
     ? (import.meta as any).env.VITE_TEACHING_ASSISTANT_API_URL
     : undefined) || 'http://localhost:8002';
