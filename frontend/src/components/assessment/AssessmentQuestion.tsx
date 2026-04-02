@@ -18,6 +18,8 @@ import { playCorrectSound, playWrongSound } from '../../utils/sounds';
 import 'katex/dist/katex.min.css';
 import '../question-display/mcq-fix.css';
 
+const isDev = import.meta.env.DEV;
+
 /** Render text with inline LaTeX ($...$) as rendered math via KaTeX.
  *  Skips currency-style dollar signs like $10, $25.50 etc.
  *  Only matches paired $...$ where content looks like LaTeX (contains
@@ -164,6 +166,9 @@ const AssessmentQuestion: React.FC<Props> = ({
   const contentBlockRef = useRef<HTMLDivElement>(null);
   const actionDockRef = useRef<HTMLDivElement>(null);
   const feedbackRef = useRef<HTMLDivElement>(null);
+  const [isDark, setIsDark] = useState(() =>
+    typeof document !== 'undefined' ? document.documentElement.classList.contains('dark') : false
+  );
   const [isAnswered, setIsAnswered] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [keScore, setKeScore] = useState<KEScore | null>(null);
@@ -191,8 +196,8 @@ const AssessmentQuestion: React.FC<Props> = ({
     zIndex: 60,
     marginTop: compactViewport ? '4px' : '8px',
     padding: ultraCompactViewport ? '1px' : compactViewport ? '3px' : '6px',
-    border: '1px solid #e0e0e0',
-    background: 'rgba(255,255,255,0.98)',
+    border: isDark ? '1px solid #374151' : '1px solid #e0e0e0',
+    background: isDark ? 'rgba(23,23,23,0.98)' : 'rgba(255,255,255,0.98)',
     boxShadow: '0 -2px 8px rgba(0,0,0,0.06)',
     pointerEvents: 'auto',
   };
@@ -203,13 +208,13 @@ const AssessmentQuestion: React.FC<Props> = ({
     zIndex: 70,
     marginTop: compactViewport ? '4px' : '8px',
     padding: ultraCompactViewport ? '1px' : compactViewport ? '3px' : '6px',
-    border: '1px solid #e0e0e0',
-    background: 'rgba(255,255,255,0.98)',
+    border: isDark ? '1px solid #374151' : '1px solid #e0e0e0',
+    background: isDark ? 'rgba(23,23,23,0.98)' : 'rgba(255,255,255,0.98)',
     boxShadow: '2px 2px 0 #000',
     pointerEvents: 'auto',
   };
 
-  // Reset answer state when question changes
+  // Reset answer state when question changes; also stop any lingering confetti
   useEffect(() => {
     setIsAnswered(false);
     setShowFeedback(false);
@@ -218,12 +223,22 @@ const AssessmentQuestion: React.FC<Props> = ({
     setPendingCorrect(null);
     setAutoFitZoom(1);
     startTimeRef.current = Date.now();
+    try { confetti.reset(); } catch (_) { /* confetti may not be loaded yet */ }
   }, [question]);
 
   useEffect(() => {
     const onResize = () => setViewportHeight(window.innerHeight);
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  // Track dark mode toggling so inline styles can react
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
   }, []);
 
   // Fix: Block Perseus pre-selection blue ring via CSS class + first-click removal.
@@ -625,7 +640,8 @@ const AssessmentQuestion: React.FC<Props> = ({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = (e?: React.MouseEvent<HTMLButtonElement>) => {
+    e?.preventDefault();
     if (isAnswered || submittingRef.current) return; // Prevent double-submit (ref is synchronous, state is not)
     submittingRef.current = true;
     if (!rendererRef.current) {
@@ -645,10 +661,10 @@ const AssessmentQuestion: React.FC<Props> = ({
 
     // Empty submission guard
     const hasInput = hasUserInput(questionData.widgets || {}, userInput);
-    console.log('[AssessmentQuestion] Checking input:', { hasInput, userInput, widgets: questionData.widgets });
+    if (isDev) console.log('[AssessmentQuestion] Checking input:', { hasInput, userInput, widgets: questionData.widgets });
 
     if (!hasInput) {
-      console.log('[AssessmentQuestion] Empty submission blocked - showing warning');
+      if (isDev) console.log('[AssessmentQuestion] Empty submission blocked - showing warning');
       setEmptyWarning(true);
       setTimeout(() => setEmptyWarning(false), 3500);
       setIsSubmitting(false); // Ensure button is re-enabled
@@ -666,7 +682,7 @@ const AssessmentQuestion: React.FC<Props> = ({
     const scoringResult = scorePerseusQuestion(questionData.widgets || {}, userInput);
 
     const isCorrect = scoringResult.correct;
-    console.log('[AssessmentQuestion] Custom score:', isCorrect, `(${scoringResult.correctCount}/${scoringResult.scoreableCount})`);
+    if (isDev) console.log('[AssessmentQuestion] Custom score:', isCorrect, `(${scoringResult.correctCount}/${scoringResult.scoreableCount})`);
 
     const scoreResult = {
       type: 'points' as const,
@@ -682,7 +698,7 @@ const AssessmentQuestion: React.FC<Props> = ({
       rendererRef.current.getSerializedState().question,
     );
 
-    console.log('[AssessmentQuestion] Answer submitted:', { isCorrect: score.correct, questionId: question?.dash_metadata?.dash_question_id || `q_${questionNumber}` });
+    if (isDev) console.log('[AssessmentQuestion] Answer submitted:', { isCorrect: score.correct, questionId: question?.dash_metadata?.dash_question_id || `q_${questionNumber}` });
     setIsAnswered(true);
     setShowFeedback(true);
     setKeScore(score);
@@ -788,8 +804,8 @@ const AssessmentQuestion: React.FC<Props> = ({
     }
   };
 
-  // Progress shows current question during answering, next question after submitting
-  const effectiveQuestionNumber = isAnswered ? questionNumber + 1 : questionNumber;
+  // Progress shows the current question number (stable during feedback panel)
+  const effectiveQuestionNumber = questionNumber;
   const progressPercentage = (effectiveQuestionNumber / totalQuestions) * 100;
   const isFinalQuestion = totalQuestions > 0 && questionNumber >= totalQuestions;
 
@@ -818,22 +834,40 @@ const AssessmentQuestion: React.FC<Props> = ({
         </div>
 
         {/* Progress Bar */}
-        <div
-          style={{ height: '6px', background: '#e5e5e5', overflow: 'hidden' }}
-          role="progressbar"
-          aria-valuenow={effectiveQuestionNumber}
-          aria-valuemin={1}
-          aria-valuemax={totalQuestions}
-          aria-label={`Question ${effectiveQuestionNumber} of ${totalQuestions}`}
-        >
-          <div
+        <div style={{ position: 'relative' }}>
+          <span
             style={{
-              height: '100%',
-              width: `${progressPercentage}%`,
-              background: '#4f46e5',
-              transition: 'width 0.3s ease',
+              position: 'absolute',
+              right: '6px',
+              top: '-18px',
+              fontSize: '10px',
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+              color: isDark ? '#9ca3af' : '#6b7280',
+              userSelect: 'none',
             }}
-          />
+            aria-hidden="true"
+          >
+            Progress
+          </span>
+          <div
+            style={{ height: '6px', background: isDark ? '#374151' : '#e5e5e5', overflow: 'hidden' }}
+            role="progressbar"
+            aria-valuenow={effectiveQuestionNumber}
+            aria-valuemin={1}
+            aria-valuemax={totalQuestions}
+            aria-label={`Assessment progress: question ${effectiveQuestionNumber} of ${totalQuestions}`}
+          >
+            <div
+              style={{
+                height: '100%',
+                width: `${progressPercentage}%`,
+                background: '#4f46e5',
+                transition: 'width 0.3s ease',
+              }}
+            />
+          </div>
         </div>
       </div>
 
@@ -844,7 +878,7 @@ const AssessmentQuestion: React.FC<Props> = ({
         </div>
       )}
 
-      <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', overflow: 'auto', minHeight: 0 }}>
+      <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 }}>
         <div ref={contentBlockRef} style={contentBlockStyle}>
           <div
             id="question-content-container"
@@ -940,6 +974,7 @@ const AssessmentQuestion: React.FC<Props> = ({
             data-testid="assessment-submit-button"
             tabIndex={0}
             onClick={handleSubmit}
+            onMouseDown={(e) => e.preventDefault()}
             disabled={isAnswered || isSubmitting}
             className={`${ultraCompactViewport ? 'py-2.5 px-4 text-sm' : compactViewport ? 'py-3 px-5 text-base' : 'py-5 px-8 text-lg'} w-full font-black uppercase tracking-wide bg-[#FF4B4B] text-white border-0 cursor-pointer shadow-md transition-all duration-100 font-sans hover:bg-[#FF3333] hover:shadow-lg active:shadow-sm disabled:opacity-50 disabled:cursor-not-allowed`}
           >
@@ -1007,7 +1042,7 @@ const AssessmentQuestion: React.FC<Props> = ({
       )}
 
       {/* Next Question button — shown below feedback panel after submit */}
-      {isAnswered && pendingCorrect !== null && (
+      {isAnswered && showFeedback && pendingCorrect !== null && (
         <div
           ref={actionDockRef}
           data-testid="assessment-action-dock"
@@ -1033,10 +1068,10 @@ const AssessmentQuestion: React.FC<Props> = ({
           80% { transform: translateX(6px); }
         }
 
-        /* MCQ answer choice styling */
+        /* MCQ answer choice styling — softened from 2px black to 1px neutral */
         #question-content-container .perseus-widget-radio-fieldset .choice,
         #question-content-container li.perseus-radio-option {
-          border: 2px solid #000 !important;
+          border: 1px solid #e0e0e0 !important;
           background: white !important;
           padding: 12px 16px !important;
           cursor: pointer !important;

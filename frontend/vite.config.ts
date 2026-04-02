@@ -14,6 +14,16 @@ export default defineConfig({
       'Pragma': 'no-cache',
       'Expires': '0',
     },
+    // Reduce HMR noise: debounce rapid cascading updates (Bug #34)
+    hmr: {
+      overlay: true,
+    },
+    watch: {
+      // Avoid polling (default); only re-trigger on actual file writes
+      usePolling: false,
+      // Ignore large generated/static directories that never need HMR
+      ignored: ['**/node_modules/**', '**/build/**', '**/.git/**'],
+    },
   },
   build: {
     outDir: 'build', // match CRA's output directory

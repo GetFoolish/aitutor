@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { CheckCircle2, BookOpen, Home } from 'lucide-react';
+import { apiUtils } from '../../lib/api-utils';
+
+const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
+
+interface SessionStats {
+  questionsAnswered: number;
+  correct: number;
+}
 
 /**
- * AssessmentExit - Clean exit page after assessment
- * Shows summary and provides navigation options
+ * AssessmentExit - Clean exit page shown when a user leaves mid-assessment.
+ * Displays partial progress stats and provides navigation options.
  */
 const AssessmentExit: React.FC = () => {
   const history = useHistory();
@@ -14,8 +22,46 @@ const AssessmentExit: React.FC = () => {
   const subject = searchParams.get('subject') || 'Assessment';
   const assessmentId = searchParams.get('assessment_id');
 
+  // Stats from URL params (set by AssessmentFlow on exit)
+  const urlQuestionsAnswered = parseInt(searchParams.get('questions_answered') || '0', 10);
+  const urlCorrect = parseInt(searchParams.get('correct') || '0', 10);
+
+  const [stats, setStats] = useState<SessionStats>({
+    questionsAnswered: urlQuestionsAnswered,
+    correct: urlCorrect,
+  });
+  const [statsLoaded, setStatsLoaded] = useState(urlQuestionsAnswered > 0);
+
+  // Try to enrich stats from backend if URL params are zero (e.g. direct navigation)
+  useEffect(() => {
+    if (!assessmentId || urlQuestionsAnswered > 0) return;
+
+    apiUtils.get(`${DASH_API_URL}/assessment/resume/${assessmentId}`)
+      .then(async (res) => {
+        if (!res.ok) return;
+        const data = await res.json();
+        // resume endpoint returns session context — extract questions_asked if available
+        const asked = data.questions_asked ?? data.session?.questions_asked;
+        const correct = data.correct_count ?? data.session?.correct_count;
+        if (typeof asked === 'number') {
+          setStats({
+            questionsAnswered: asked,
+            correct: typeof correct === 'number' ? correct : 0,
+          });
+          setStatsLoaded(true);
+        }
+      })
+      .catch(() => {
+        // Backend unavailable — URL params are the source of truth, keep them
+      });
+  }, [assessmentId, urlQuestionsAnswered]);
+
+  const accuracy =
+    stats.questionsAnswered > 0
+      ? Math.round((stats.correct / stats.questionsAnswered) * 100)
+      : null;
+
   const handleTryAnother = () => {
-    // Clear session storage and go to subject selector
     sessionStorage.removeItem('selected_subject');
     sessionStorage.removeItem('assessmentSubject');
     sessionStorage.removeItem('active_assessment');
@@ -23,7 +69,6 @@ const AssessmentExit: React.FC = () => {
   };
 
   const handleBackHome = () => {
-    // Clear all session state and go to subject selector (not /app which auto-starts assessment)
     sessionStorage.removeItem('selected_subject');
     sessionStorage.removeItem('assessmentSubject');
     sessionStorage.removeItem('active_assessment');
@@ -44,7 +89,7 @@ const AssessmentExit: React.FC = () => {
             </div>
             <div>
               <h1 className="text-3xl font-black uppercase tracking-tight text-black dark:text-white">
-                Assessment Exited
+                Good effort!
               </h1>
               <p className="text-lg text-gray-700 dark:text-gray-300 mt-1">
                 {subject}
@@ -53,15 +98,43 @@ const AssessmentExit: React.FC = () => {
           </div>
 
           {/* Message */}
-          <div className="mb-8 p-6 bg-yellow-50 dark:bg-yellow-900/20 border-[4px] border-black dark:border-yellow-500">
+          <div className="mb-6 p-6 bg-yellow-50 dark:bg-yellow-900/20 border-[4px] border-black dark:border-yellow-500">
             <p className="text-base text-gray-800 dark:text-gray-200">
-              You've exited the assessment. Your progress has been saved.
+              You've made a start — every question counts. Come back whenever you're ready to continue.
             </p>
-            {assessmentId && (
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                Assessment ID: <code className="font-mono text-xs">{assessmentId}</code>
-              </p>
-            )}
+          </div>
+
+          {/* Progress summary */}
+          <div className="mb-8">
+            <h2 className="text-sm font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-3">
+              Your progress so far
+            </h2>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="p-4 bg-gray-50 dark:bg-neutral-700 border-[3px] border-black dark:border-white text-center">
+                <p className="text-3xl font-black text-black dark:text-white">
+                  {stats.questionsAnswered}
+                </p>
+                <p className="text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 mt-1">
+                  Answered
+                </p>
+              </div>
+              <div className="p-4 bg-gray-50 dark:bg-neutral-700 border-[3px] border-black dark:border-white text-center">
+                <p className="text-3xl font-black text-black dark:text-white">
+                  {stats.correct}
+                </p>
+                <p className="text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 mt-1">
+                  Correct
+                </p>
+              </div>
+              <div className="p-4 bg-gray-50 dark:bg-neutral-700 border-[3px] border-black dark:border-white text-center">
+                <p className="text-3xl font-black text-black dark:text-white">
+                  {accuracy !== null ? `${accuracy}%` : '—'}
+                </p>
+                <p className="text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 mt-1">
+                  Accuracy
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Action buttons */}
@@ -86,7 +159,7 @@ const AssessmentExit: React.FC = () => {
 
         {/* Footer note */}
         <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
-          You can start a new assessment anytime from the subject selector
+          You can start a fresh assessment anytime from the subject selector
         </p>
       </div>
     </div>

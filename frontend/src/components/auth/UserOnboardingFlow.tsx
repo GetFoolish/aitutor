@@ -28,7 +28,6 @@ const AUTH_API_URL = import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 
 const LANGUAGES = ["English", "Hindi", "Spanish", "French"];
-const GENDERS = ["Male", "Female", "Other", "Prefer not to say"];
 const COUNTRIES = getCountryList();
 
 interface CompletenessCheck {
@@ -39,7 +38,6 @@ interface CompletenessCheck {
   readiness_status: 'ready' | 'needs_info' | 'needs_assessment' | 'complete';
   user_data: {
     date_of_birth?: string;
-    gender?: string;
     preferred_language?: string;
     location?: string;
     age?: number;
@@ -58,6 +56,7 @@ const UserOnboardingFlow: React.FC = () => {
   const [submitError, setSubmitError] = useState('');
   const [countrySearch, setCountrySearch] = useState('');
   const [loadingDots, setLoadingDots] = useState('');
+  const [locationError, setLocationError] = useState(false);
 
   // Checklist status - updates in real-time
   const [checklistStatus, setChecklistStatus] = useState({
@@ -92,13 +91,14 @@ const UserOnboardingFlow: React.FC = () => {
       timers.push(setTimeout(() => {
         setChecklistStatus(prev => ({
           ...prev,
-          // Region check passes if location exists OR if in dev mode (localhost can't detect region)
-          region: !!completeness.user_data.location || window.location.hostname === 'localhost'
+          // Region check passes if location exists OR if on localhost AND geolocation did not error
+          region: !!completeness.user_data.location ||
+            (window.location.hostname === 'localhost' && !locationError)
         }));
       }, 1500));
     }
     return () => { timers.forEach(clearTimeout); };
-  }, [completeness]);
+  }, [completeness, locationError]);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -164,7 +164,7 @@ const UserOnboardingFlow: React.FC = () => {
       // Build a fallback completeness so the form shows all fields
       setCompleteness({
         is_complete: false,
-        missing_fields: ['date_of_birth', 'gender', 'preferred_language', 'location'],
+        missing_fields: ['date_of_birth', 'preferred_language', 'location'],
         assessment_completed: false,
         assessment_subject: 'math',
         readiness_status: 'needs_info',
@@ -178,9 +178,6 @@ const UserOnboardingFlow: React.FC = () => {
   if (completeness?.missing_fields.includes('date_of_birth')) {
     schemaFields.dateOfBirth = z.string().min(1, "Date of birth is required");
   }
-  if (completeness?.missing_fields.includes('gender')) {
-    schemaFields.gender = z.string().min(1, "Please select your gender");
-  }
   if (completeness?.missing_fields.includes('preferred_language')) {
     schemaFields.preferredLanguage = z.string().min(1, "Please select your preferred language");
   }
@@ -191,15 +188,26 @@ const UserOnboardingFlow: React.FC = () => {
   const schema = z.object(schemaFields);
   type FormData = z.infer<typeof schema>;
 
-  const { control, handleSubmit, setValue, formState: { errors } } = useForm<FormData>({
+  const { control, handleSubmit, setValue, reset, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema) as any,
     defaultValues: {
       dateOfBirth: completeness?.user_data.date_of_birth || '',
-      gender: completeness?.user_data.gender || '',
       preferredLanguage: completeness?.user_data.preferred_language || '',
       location: completeness?.user_data.location || '',
     },
   });
+
+  // Re-initialize form when completeness loads so schema fields and defaultValues are
+  // based on the actual missing_fields list (not the empty-schema from the initial render).
+  useEffect(() => {
+    if (completeness) {
+      reset({
+        dateOfBirth: completeness.user_data.date_of_birth || '',
+        preferredLanguage: completeness.user_data.preferred_language || '',
+        location: completeness.user_data.location || '',
+      });
+    }
+  }, [completeness, reset]);
 
   // Auto-detect location if missing
   useEffect(() => {
@@ -211,6 +219,9 @@ const UserOnboardingFlow: React.FC = () => {
             setValue("location", matchedCountry);
           }
         }
+      }).catch((err) => {
+        console.error('Error detecting location:', err);
+        setLocationError(true);
       });
     }
   }, [completeness?.missing_fields, completeness?.user_data.location, setValue]);
@@ -232,9 +243,6 @@ const UserOnboardingFlow: React.FC = () => {
       if (formData.dateOfBirth) {
         submitData.date_of_birth = formData.dateOfBirth;
       }
-      if (formData.gender) {
-        submitData.gender = formData.gender;
-      }
       if (formData.preferredLanguage) {
         submitData.preferred_language = formData.preferredLanguage;
       }
@@ -248,7 +256,16 @@ const UserOnboardingFlow: React.FC = () => {
       );
 
       if (!response.ok) {
-        throw new Error('Failed to update information');
+        let detail = '';
+        try {
+          const errData = await response.json();
+          detail = errData.detail || errData.message || errData.error || '';
+        } catch { /* non-JSON error body */ }
+        throw new Error(
+          detail
+            ? `Could not save your info: ${detail}`
+            : `Could not save your info (HTTP ${response.status}). Please check your connection and try again.`
+        );
       }
 
       // Re-check completeness to update checklist
@@ -369,7 +386,7 @@ const UserOnboardingFlow: React.FC = () => {
                   letterSpacing: '0.05em',
                   margin: 0
                 }}>
-                  Hold on, I need to get to know you better
+                  Let's set up your profile
                 </p>
               </div>
 
@@ -408,7 +425,7 @@ const UserOnboardingFlow: React.FC = () => {
                         color: '#000000',
                         textAlign: 'left'
                       }}>
-                        Please enter your DOB
+                        Date of Birth
                       </Label>
                       <Controller
                         name="dateOfBirth"
@@ -440,59 +457,6 @@ const UserOnboardingFlow: React.FC = () => {
                           textAlign: 'left'
                         }}>
                           {errors.dateOfBirth.message}
-                        </p>
-                      )}
-                    </div>
-                  )}
-
-                  {completeness.missing_fields.includes('gender') && (
-                    <div>
-                      <Label htmlFor="gender" style={{ 
-                        display: 'block', 
-                        marginBottom: '12px', 
-                        fontWeight: 700, 
-                        fontSize: '14px',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.05em',
-                        color: '#000000',
-                        textAlign: 'left'
-                      }}>
-                        Please select your gender
-                      </Label>
-                      <Controller
-                        name="gender"
-                        control={control}
-                        render={({ field }) => (
-                          <Select onValueChange={field.onChange} value={field.value as string}>
-                            <SelectTrigger className="h-12 text-lg" style={{
-                              border: '4px solid #000000',
-                              backgroundColor: '#FFFFFF',
-                              fontWeight: 700,
-                              boxShadow: '4px 4px 0px 0px #000000'
-                            }}>
-                              <SelectValue placeholder="Select gender" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {GENDERS.map((gender) => (
-                                <SelectItem key={gender} value={gender}>
-                                  {gender}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        )}
-                      />
-                      {errors.gender && (
-                        <p style={{ 
-                          color: '#FF6B6B', 
-                          fontSize: '14px', 
-                          marginTop: '8px', 
-                          fontWeight: 700,
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.05em',
-                          textAlign: 'left'
-                        }}>
-                          {errors.gender.message}
                         </p>
                       )}
                     </div>

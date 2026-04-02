@@ -332,7 +332,7 @@ root.render(
               </div>
             }>
               <Switch>
-                <Route path="/app/dev-login" component={DevLogin} />
+                <Route path="/app/internal/dev-login" component={DevLogin} />
                 <Route path="/app/auth/setup" component={LoginPage} />
                 <Route path="/app/login" component={LoginPage} />
                 <Route path="/app/account" component={AccountPage} />

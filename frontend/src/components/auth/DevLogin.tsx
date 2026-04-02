@@ -28,7 +28,7 @@ const gradeForAge = (age: number) => {
 
 const DevLogin: React.FC = () => {
   const history = useHistory();
-  const { theme, setTheme } = useTheme();
+  const { theme } = useTheme();
   const [selectedSubject, setSelectedSubject] = useState<string>('Math');
   const [presetSubject, setPresetSubject] = useState<string>('Math'); // last clicked preset
   const [customSubject, setCustomSubject] = useState('');
@@ -179,33 +179,6 @@ const DevLogin: React.FC = () => {
         assessmentMode={true}
       />
 
-      {/* Theme toggle — top-right corner */}
-      <button
-        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-        style={{
-          position: 'fixed',
-          top: '16px',
-          right: '16px',
-          zIndex: 9,
-          width: '48px',
-          height: '48px',
-          border: '4px solid currentColor',
-          borderRadius: '0',
-          background: 'transparent',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '20px',
-          fontWeight: 900,
-          boxShadow: '4px 4px 0 currentColor',
-          overflow: 'hidden'
-        }}
-        title="Toggle dark mode"
-      >
-        {theme === 'dark' ? '\u2600' : '\u263D'}
-      </button>
-
       <div style={{
         position: 'relative',
         zIndex: 1,
@@ -214,22 +187,6 @@ const DevLogin: React.FC = () => {
         width: '90%',
         padding: '20px 0'
       }}>
-        <span style={{
-          display: 'inline-block',
-          background: '#FF4B4B',
-          color: 'white',
-          padding: '4px 12px',
-          fontSize: '11px',
-          fontWeight: 'bold' as const,
-          letterSpacing: '0.1em',
-          border: '2px solid #000',
-          cursor: 'default',
-          userSelect: 'none' as const,
-          marginBottom: '16px',
-        }}>
-          DEMO
-        </span>
-
         <h1 style={{
           fontSize: '32px',
           fontWeight: 900,
@@ -441,43 +398,6 @@ const DevLogin: React.FC = () => {
           textTransform: 'uppercase' as const,
         }}>
           {selectedSubject}
-        </div>
-
-        {/* Dev toggle: Force MC */}
-        <div style={{ width: '100%', marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
-          <label
-            htmlFor="force-mc-toggle"
-            data-testid="force-mc-label"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '10px',
-              cursor: 'pointer',
-              userSelect: 'none' as const,
-              padding: '12px 24px',
-              border: `2px solid ${forceMC ? '#4f46e5' : '#a5b4fc'}`,
-              background: forceMC ? '#4f46e5' : '#eef2ff',
-              color: forceMC ? '#fff' : '#4338ca',
-              fontWeight: 800,
-              fontSize: '13px',
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase' as const,
-              transition: 'all 100ms',
-              minWidth: '260px',
-              boxShadow: forceMC ? '3px 3px 0 #312e81' : '2px 2px 0 #a5b4fc',
-            }}
-          >
-            <input
-              id="force-mc-toggle"
-              type="checkbox"
-              checked={forceMC}
-              onChange={e => setForceMC(e.target.checked)}
-              disabled={loading}
-              style={{ width: '18px', height: '18px', accentColor: '#4f46e5', cursor: 'pointer', flexShrink: 0 }}
-            />
-            Force Multiple Choice (QA)
-          </label>
         </div>
 
         {/* Age grid */}

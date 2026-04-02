@@ -46,6 +46,7 @@ export default function StreakCounter({ compact = false, onClick }: StreakCounte
         onClick={handleClick}
         className={`streak-counter ${intensity} ${isAnimating ? 'animating' : ''} ${compact ? 'compact' : ''}`}
         aria-label={`Current streak: ${streakData.currentStreak} days`}
+        title="Learning streak"
       >
         <span className="fire-container">
           <span className="fire-emoji" role="img" aria-hidden="true">

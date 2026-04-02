@@ -2734,13 +2734,58 @@ def start_adaptive_assessment(subject: str, request: Request, force_mc: bool = F
             )
             return q, ai_result
 
+        # Set initial difficulty based on student's grade level so young students
+        # start at an appropriate level and don't immediately see advanced content.
+        def _initial_difficulty_for_grade(grade: str) -> float:
+            grade_map = {
+                "K": 0.15,
+                "GRADE_1": 0.20,
+                "GRADE_2": 0.25,
+                "GRADE_3": 0.30,
+                "GRADE_4": 0.35,
+                "GRADE_5": 0.40,
+                "GRADE_6": 0.45,
+                "GRADE_7": 0.50,
+                "GRADE_8": 0.55,
+                "GRADE_9": 0.60,
+                "GRADE_10": 0.65,
+                "GRADE_11": 0.70,
+                "GRADE_12": 0.75,
+            }
+            return grade_map.get(grade, 0.50)
+
+        # Max difficulty cap per grade: even a perfect-scoring K student should never
+        # receive high-school algebra questions.
+        def _max_difficulty_for_grade(grade: str) -> float:
+            cap_map = {
+                "K": 0.40,
+                "GRADE_1": 0.45,
+                "GRADE_2": 0.50,
+                "GRADE_3": 0.55,
+                "GRADE_4": 0.60,
+                "GRADE_5": 0.65,
+                "GRADE_6": 0.70,
+                "GRADE_7": 0.75,
+                "GRADE_8": 0.80,
+                "GRADE_9": 0.85,
+                "GRADE_10": 0.90,
+                "GRADE_11": 0.95,
+                "GRADE_12": 1.00,
+            }
+            return cap_map.get(grade, 1.00)
+
+        student_grade = user_profile.current_grade  # e.g. "K", "GRADE_7"
+        initial_difficulty = _initial_difficulty_for_grade(student_grade)
+        max_difficulty_cap = _max_difficulty_for_grade(student_grade)
+
         # Create assessment session
         assessment_id = f"assess_{uuid.uuid4().hex[:12]}"
         session = {
             "assessment_id": assessment_id,
             "user_id": user_id,
             "subject": subject,
-            "current_difficulty": 0.5,
+            "current_difficulty": initial_difficulty,
+            "max_difficulty_cap": max_difficulty_cap,
             "questions_asked": 0,
             "max_questions": 10,
             "answers": [],
@@ -2929,7 +2974,8 @@ def start_adaptive_assessment(subject: str, request: Request, force_mc: bool = F
             "question_number": 1,
             "total_questions": 10,
             "question": q_data,
-            "current_difficulty": 0.5,
+            "current_difficulty": initial_difficulty,
+            "student_grade": student_grade,
         }
     except HTTPException:
         raise
@@ -3011,6 +3057,15 @@ def resume_assessment(
         if next_q.skill_ids:
             q_data["dash_metadata"]["skill_ids"] = next_q.skill_ids
 
+        # Include student_grade so the frontend can show the correct grade label
+        resume_grade = "GRADE_7"
+        try:
+            from managers.user_manager import calculate_grade_from_age
+            jwt_age_val = jwt_payload.get("age")
+            resume_grade = calculate_grade_from_age(jwt_age_val) if jwt_age_val else resume_grade
+        except Exception:
+            pass
+
         return {
             "assessment_id": assessment_id,
             "subject": subject,
@@ -3019,6 +3074,7 @@ def resume_assessment(
             "current_difficulty": round(current_diff, 3),
             "question": q_data,
             "resumed": True,
+            "student_grade": resume_grade,
         }
 
     except Exception as e:
@@ -3132,8 +3188,9 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
 
     # Record answer
     current_diff = session.get("current_difficulty", 0.5)
+    max_diff_cap = session.get("max_difficulty_cap", 1.0)
     new_diff = current_diff + (0.15 if payload.is_correct else -0.15)
-    new_diff = max(0.1, min(1.0, new_diff))  # 1.0 cap enables synthesis tier
+    new_diff = max(0.1, min(max_diff_cap, new_diff))  # Grade-appropriate upper bound
 
     answer_record = {
         "question_id": payload.question_id,

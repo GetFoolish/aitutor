@@ -37,6 +37,8 @@ interface Params {
 /* ----------------------------------------------------
    Main component
 ---------------------------------------------------- */
+const isDev = import.meta.env.DEV;
+
 const AssessmentFlow: React.FC = () => {
   const history = useHistory();
   const { subject } = useParams<Params>();
@@ -48,6 +50,7 @@ const AssessmentFlow: React.FC = () => {
   const [questionNumber, setQuestionNumber] = useState(0);
   const [totalQuestions, setTotalQuestions] = useState(10);
   const [currentDifficulty, setCurrentDifficulty] = useState(0.5);
+  const [studentGrade, setStudentGrade] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [completed, setCompleted] = useState(false);
   const [score, setScore] = useState(0);
@@ -142,7 +145,7 @@ const AssessmentFlow: React.FC = () => {
       // Check if there's an active session to resume
       let savedSession: string | null = null;
       try { savedSession = localStorage.getItem('active_assessment'); } catch { /* private browsing */ }
-      console.log('[AssessmentFlow] Recovery check:', { savedSession, assessmentId, subject });
+      if (isDev) console.log('[AssessmentFlow] Recovery check:', { savedSession, assessmentId, subject });
 
       if (savedSession && !assessmentId) {
         try {
@@ -151,7 +154,7 @@ const AssessmentFlow: React.FC = () => {
           const isRecent = Date.now() - session.started_at < 3600000;
           const matchesSubject = session.subject === subject;
 
-          console.log('[AssessmentFlow] Session validation:', {
+          if (isDev) console.log('[AssessmentFlow] Session validation:', {
             session_id: session.assessment_id,
             isRecent,
             matchesSubject,
@@ -159,14 +162,14 @@ const AssessmentFlow: React.FC = () => {
           });
 
           if (isRecent && matchesSubject) {
-            console.log('[AssessmentFlow] Attempting to resume session:', session.assessment_id);
+            if (isDev) console.log('[AssessmentFlow] Attempting to resume session:', session.assessment_id);
             const response = await apiUtils.get(`${DASH_API_URL}/assessment/resume/${session.assessment_id}`);
 
-            console.log('[AssessmentFlow] Resume response:', response.status, response.ok);
+            if (isDev) console.log('[AssessmentFlow] Resume response:', response.status, response.ok);
 
             if (response.ok) {
               const data = await response.json();
-              console.log('[AssessmentFlow] Session resumed successfully:', data);
+              if (isDev) console.log('[AssessmentFlow] Session resumed successfully:', data);
 
               // Restore state from resumed session
               setAssessmentId(data.assessment_id);
@@ -175,6 +178,7 @@ const AssessmentFlow: React.FC = () => {
               setQuestionNumber(data.question_number);
               setTotalQuestions(data.total_questions);
               setCurrentDifficulty(data.current_difficulty);
+              if (data.student_grade) setStudentGrade(data.student_grade);
               setLoading(false);
               return; // Successfully resumed
             } else {
@@ -182,7 +186,7 @@ const AssessmentFlow: React.FC = () => {
               console.warn('[AssessmentFlow] Resume failed with status', response.status, errorText);
             }
           } else {
-            console.log('[AssessmentFlow] Session not valid for resume:', { isRecent, matchesSubject });
+            if (isDev) console.log('[AssessmentFlow] Session not valid for resume:', { isRecent, matchesSubject });
           }
 
           // If resume failed or session too old, clear it
@@ -192,7 +196,7 @@ const AssessmentFlow: React.FC = () => {
           try { localStorage.removeItem('active_assessment'); } catch { /* private browsing */ }
         }
       } else {
-        console.log('[AssessmentFlow] No session to resume or assessmentId already set');
+        if (isDev) console.log('[AssessmentFlow] No session to resume or assessmentId already set');
       }
 
       // No session to resume or resume failed - start fresh
@@ -241,10 +245,14 @@ const AssessmentFlow: React.FC = () => {
     sessionStorage.removeItem('assessmentSubject');
     try { localStorage.removeItem('active_assessment'); } catch { /* private browsing */ }
     // Navigate to exit page with context
+    // Capture stats before state is cleared
+    const capturedCorrectCount = correctCount;
+    const capturedQuestionNumber = questionNumber;
     const encodedSubject = encodeURIComponent(subject);
+    const statsParams = `&questions_answered=${capturedQuestionNumber}&correct=${capturedCorrectCount}`;
     const exitUrl = currentAssessmentId
-      ? `/app/assessment-exit?subject=${encodedSubject}&assessment_id=${currentAssessmentId}`
-      : `/app/assessment-exit?subject=${encodedSubject}`;
+      ? `/app/assessment-exit?subject=${encodedSubject}&assessment_id=${currentAssessmentId}${statsParams}`
+      : `/app/assessment-exit?subject=${encodedSubject}${statsParams}`;
     history.replace(exitUrl);
   };
 
@@ -256,7 +264,7 @@ const AssessmentFlow: React.FC = () => {
     try {
       const controller = new AbortController();
       abortRef.current = controller;
-      const MAX_START_RETRIES = 2;
+      const MAX_START_RETRIES = 3;
       const START_HARD_TIMEOUT_MS = 50000; // Increased from 25s to 50s while backend optimizes
 
       // Progressive phase timers: keep UX honest and fail fast on stalls.
@@ -310,11 +318,21 @@ const AssessmentFlow: React.FC = () => {
           break;
         }
 
-        // Short backoff; avoid long frozen loading screens.
+        // Show soft retry message on first 503 retry instead of immediately failing
+        if (attempt === 0) {
+          setStartError('Still setting up your questions...');
+          setLoading(false);
+        }
+
+        // Progressive backoff: 1000ms, 2000ms, 3000ms per attempt
         await new Promise((resolve) => {
-          const timer = setTimeout(resolve, 500 * (attempt + 1));
+          const timer = setTimeout(resolve, 1000 * (attempt + 1));
           timersRef.current.push(timer);
         });
+
+        // Clear soft retry message and go back to loading state for next attempt
+        setStartError(null);
+        setLoading(true);
       }
 
       timersRef.current.forEach(clearTimeout);
@@ -373,6 +391,7 @@ const AssessmentFlow: React.FC = () => {
       setQuestionNumber(data.question_number);
       setTotalQuestions(data.total_questions);
       setCurrentDifficulty(data.current_difficulty);
+      if (data.student_grade) setStudentGrade(data.student_grade);
       setCorrectCount(0);
       setLoading(false);
 
@@ -388,8 +407,11 @@ const AssessmentFlow: React.FC = () => {
       // Stale request (user clicked Try Again) — ignore the error
       if (gen !== generationRef.current) return;
       console.error('Assessment start failed:', err);
+      const is503 = String(err?.message || '').includes('HTTP 503') || String(err?.message || '').includes('503');
       const msg = err?.name === 'AbortError'
         ? 'Assessment setup timed out. Please try again.'
+        : is503
+        ? "We're having trouble generating your questions. Please try again in a moment."
         : 'Failed to load assessment. Please try again.';
       setStartError(msg);
       setLoading(false);
@@ -529,7 +551,6 @@ const AssessmentFlow: React.FC = () => {
       force_mc: sessionStorage.getItem('dev_force_mc') === '1',
     };
     pendingAnswerRef.current = payload;
-    if (isCorrect) setCorrectCount(prev => prev + 1);
     setSubmitting(true);
     setQuestionNumber(prev => prev + 1);
     setShowSubmittingOverlay(false);
@@ -566,7 +587,7 @@ const AssessmentFlow: React.FC = () => {
   ---------------------------------------------------- */
   return (
     <div
-      className="assessment-container"
+      className="assessment-container dark:bg-neutral-900"
       style={{
         position: 'fixed',
         inset: 0,
@@ -801,7 +822,7 @@ const AssessmentFlow: React.FC = () => {
           )}
 
           {!completed && (
-            <div style={{ position: 'relative', flex: '1 1 auto', minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', backgroundColor: '#fff' }}>
+            <div className="dark:bg-neutral-900" style={{ position: 'relative', flex: '1 1 auto', minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', backgroundColor: '#fff' }}>
               {/* Assessment Mode Banner */}
               <div style={{
                 width: '100%',
@@ -847,7 +868,7 @@ const AssessmentFlow: React.FC = () => {
                       e.currentTarget.style.transform = 'translate(0, 0)';
                     }}
                   >
-                    Exit
+                    EXIT
                   </button>
                   {/* Running score badge */}
                   <div style={{
@@ -864,18 +885,29 @@ const AssessmentFlow: React.FC = () => {
                   }}>
                     ✓ {correctCount}
                   </div>
-                  <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: 0, overflow: 'hidden' }}>
                     <span style={{
                       fontSize: isMobile ? '12px' : '16px',
                       fontWeight: 900,
                       color: '#FFFFFF',
                       textTransform: 'uppercase',
                       letterSpacing: isMobile ? '0.05em' : '0.1em',
-                      fontFamily: 'system-ui, -apple-system, sans-serif'
+                      fontFamily: 'system-ui, -apple-system, sans-serif',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      maxWidth: '100%',
                     }}>
-                      {isMobile
-                        ? `GRADE ${currentDifficulty < 0.3 ? '3-4' : currentDifficulty < 0.5 ? '5-6' : currentDifficulty < 0.7 ? '7-8' : '9-10'} ${subject.toUpperCase()}`
-                        : `GRADE ${currentDifficulty < 0.3 ? '3-4' : currentDifficulty < 0.5 ? '5-6' : currentDifficulty < 0.7 ? '7-8' : '9-10'} ${subject.toUpperCase()} ASSESSMENT`}
+                      {(() => {
+                        const gradeLabel = studentGrade
+                          ? studentGrade === 'K'
+                            ? 'Kindergarten'
+                            : studentGrade.replace('GRADE_', 'Grade ')
+                          : `Grade ${currentDifficulty < 0.3 ? '3-4' : currentDifficulty < 0.5 ? '5-6' : currentDifficulty < 0.7 ? '7-8' : '9-10'}`;
+                        return isMobile
+                          ? `${gradeLabel} ${subject.toUpperCase()}`
+                          : `${gradeLabel} ${subject.toUpperCase()} ASSESSMENT`;
+                      })()}
                     </span>
                   </div>
                   {/* Right spacer to balance the Exit button — hidden on mobile */}
