@@ -33,7 +33,7 @@ export interface SetupResponse {
 }
 
 class AuthAPI {
-  async getGoogleAuthUrl(): Promise<{ authorization_url: string; state: string }> {
+  async getGoogleAuthUrl(): Promise<{ authorization_url: string }> {
     const response = await fetch(`${AUTH_SERVICE_URL}/auth/google`, {
       credentials: 'include',
     });

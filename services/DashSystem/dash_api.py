@@ -571,9 +571,6 @@ def log_question_displayed(request: Request, display_info: dict):
     # Get user_id from JWT token
     user_id = get_current_user(request)
     
-    # Get user_id from JWT token
-    user_id = get_current_user(request)
-    
     idx = display_info.get('question_index', 0)
     metadata = display_info.get('metadata', {})
     
