@@ -220,6 +220,19 @@ class TestPrefetchWorkerSignature:
             "Must not use meta skill name 'Math for Grade 5' in prefetch worker"
         )
 
+    def test_prefetch_worker_falls_back_to_session_values(self):
+        """When force_mc/student_context are not passed (e.g. /assessment/prefetch
+        endpoint), the worker must read them from the session document it loads."""
+        from services.DashSystem import dash_api
+        source = inspect.getsource(dash_api._assessment_prefetch_worker)
+        # Worker should fall back to session-stored values
+        assert 'session.get("student_context"' in source, (
+            "Worker must fall back to session student_context when not passed by caller"
+        )
+        assert 'session.get("force_mc"' in source, (
+            "Worker must fall back to session force_mc when not passed by caller"
+        )
+
 
 # ---------------------------------------------------------------------------
 # Import helper — needed because _difficulty_step_for_grade is at module level

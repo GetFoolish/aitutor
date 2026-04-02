@@ -3846,6 +3846,14 @@ def _assessment_prefetch_worker(assessment_id: str, user_id: str, current_diffic
         if not session:
             return
 
+        # Fall back to session-stored values when caller doesn't pass them
+        # (e.g. the /assessment/prefetch endpoint). This makes the worker
+        # self-sufficient regardless of how it's invoked.
+        if not student_context:
+            student_context = session.get("student_context", "")
+        if not force_mc:
+            force_mc = session.get("force_mc", False)
+
         questions_asked = session.get("questions_asked", 0)
         if questions_asked >= session.get("max_questions", 10) - 1:
             return  # Last question — no next to prefetch
