@@ -68,12 +68,15 @@ DIFFICULTY_DESCRIPTORS = {
 FORMAT_INSTRUCTIONS = {
     "radio_single": (
         "Format: SINGLE-SELECT multiple choice (radio_single).\n"
+        "CRITICAL: You MUST use a 'radio' widget — NOT a dropdown, NOT numeric-input, NOT expression.\n"
         "The 'question.widgets' must contain exactly one widget keyed 'radio 1' with type 'radio'.\n"
         "Set options.multipleSelect to false.\n"
-        "Provide exactly 4 choices. Exactly ONE choice must have 'correct': true; the rest 'correct': false.\n"
+        "Provide exactly 4 choices (rendered as clickable A/B/C/D buttons).\n"
+        "Exactly ONE choice must have 'correct': true; the rest 'correct': false.\n"
         "Include plausible distractors that reflect common student mistakes.\n"
         "For EACH choice, include a 'misconception' field (string, 5-15 words) describing the common "
-        "student error that choice targets. Set 'misconception': null for the correct choice."
+        "student error that choice targets. Set 'misconception': null for the correct choice.\n"
+        "NEVER use 'dropdown' or 'numeric-input' when this format is requested."
     ),
     "radio_multi": (
         "Format: MULTI-SELECT multiple choice (radio_multi).\n"

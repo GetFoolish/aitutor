@@ -237,11 +237,32 @@ class AIQuestionProvider:
         """
         effective_lesson = lesson_name or skill_name
 
-        # Determine preferred format for this request (used to filter tiers 1 & 2)
-        preferred_format: Optional[str] = None
+        # When force_format is explicitly set (e.g. force_mc=true), bypass cached tiers entirely.
+        # Cached questions may be wrong format; always generate fresh via Gemini.
         if force_format and force_format in SUPPORTED_FORMATS:
-            preferred_format = force_format
-        elif fast_mode:
+            logger.info(f"[AI_PROVIDER] force_format={force_format}: skipping cache tiers, going straight to JIT")
+            result = self._generate_jit(
+                skill_id, skill_name, effective_lesson, target_difficulty, grade_level, age, user_id,
+                fast_mode=fast_mode,
+                subject=subject,
+                student_context=student_context,
+                force_format=force_format,
+            )
+            if result:
+                logger.info(f"[AI_PROVIDER] FORCED JIT for skill={skill_name} fmt={force_format}")
+                self._trigger_background_refill(
+                    skill_id, skill_name, effective_lesson, target_difficulty, grade_level, age, user_id,
+                    subject=subject,
+                )
+                formatted = self._format_output(result, skill_id, skill_name, effective_lesson)
+                if formatted:
+                    return formatted
+            logger.warning(f"[AI_PROVIDER] FORCED JIT failed for skill={skill_name} fmt={force_format}")
+            return None
+
+        # Determine preferred format for soft-preference filtering of tiers 1 & 2
+        preferred_format: Optional[str] = None
+        if fast_mode:
             detected = _detect_subject(skill_id, subject or skill_name)
             fast_weights = list(FAST_MODE_WEIGHTS.get(detected, FAST_MODE_WEIGHTS["default"]))
             fmts, fw = _filter_formats_by_age(FAST_MODE_FORMATS, fast_weights, age)
@@ -280,13 +301,12 @@ class AIQuestionProvider:
             # Validation failed — fall through to next tier
 
         # Tier 3: generate just-in-time (with frozen student context for personalization)
-        # Pass preferred_format so JIT uses the same format decided at the top of this method
         result = self._generate_jit(
             skill_id, skill_name, effective_lesson, target_difficulty, grade_level, age, user_id,
             fast_mode=fast_mode,
             subject=subject,
             student_context=student_context,
-            force_format=preferred_format if preferred_format else force_format,
+            force_format=preferred_format,
         )
         if result:
             logger.info(f"[AI_PROVIDER] JIT GENERATED for skill={skill_name} diff={target_difficulty:.2f}")
