@@ -48,11 +48,36 @@ class FakeGreetingHandler:
 
 def test_teaching_assistant_orchestrates_session_flow(monkeypatch):
     fake_session_manager = FakeSessionManager()
-    monkeypatch.setattr(teaching_assistant, "MongoDBManager", lambda: object())
-    monkeypatch.setattr(teaching_assistant, "SessionManager", lambda mongo: fake_session_manager)
-    monkeypatch.setattr(teaching_assistant, "GreetingHandler", lambda: FakeGreetingHandler())
 
-    assistant = teaching_assistant.TeachingAssistant()
+    class FakeGreetingSkill:
+        name = "greeting"
+        def get_closing(self, duration_minutes, questions_answered):
+            return f"bye after {duration_minutes} / {questions_answered}"
+        def get_inactivity_prompt(self):
+            return "still there?"
+
+    class FakeSkillsManager:
+        skills = [FakeGreetingSkill()]
+        def execute_skills(self, context):
+            return []
+
+    fake_context_manager = SimpleNamespace(
+        create_context=lambda *a, **kw: None,
+        get_context=lambda *a, **kw: None,
+        sync_dirty_contexts=lambda: None,
+        cleanup_stale_contexts=lambda: None,
+    )
+    fake_memory_extractor = SimpleNamespace(
+        extract_memories_batch=lambda *a, **kw: {"memories": [], "emotions": [], "key_moments": [], "unfinished_topics": []},
+    )
+
+    monkeypatch.setattr(teaching_assistant, "MongoDBManager", lambda: SimpleNamespace(db=SimpleNamespace()))
+    monkeypatch.setattr(teaching_assistant, "SessionManager", lambda mongo, config=None: fake_session_manager)
+    monkeypatch.setattr(teaching_assistant, "ContextManager", lambda mongo, config=None: fake_context_manager)
+    monkeypatch.setattr(teaching_assistant, "MemoryExtractor", lambda: fake_memory_extractor)
+    monkeypatch.setattr(teaching_assistant, "SkillsManager", lambda skills_dir, config=None: FakeSkillsManager())
+
+    assistant = teaching_assistant.TeachingAssistant(session_manager=fake_session_manager)
 
     started = assistant.start_session("user-123")
     assistant.record_question_answered("sess-123", "question-1", True)
@@ -62,9 +87,10 @@ def test_teaching_assistant_orchestrates_session_flow(monkeypatch):
     ended = assistant.end_session("sess-123")
     missing_end = assistant.end_session("missing")
 
+    # start_session now returns empty prompt (greeting is delivered via ta.start())
     assert started == {
         "session_id": "sess-123",
-        "prompt": "hello user-123",
+        "prompt": "",
         "session_info": {"session_id": "sess-123", "session_active": True},
     }
     assert fake_session_manager.last_question == ("sess-123", True)

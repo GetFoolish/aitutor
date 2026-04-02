@@ -579,6 +579,28 @@ def health_check():
     }
 
 
+@app.get("/api/skill-scores")
+def get_skill_scores(request: Request):
+    """Return per-skill memory strength and practice stats for the current user."""
+    user_id = get_current_user(request)
+    ensure_dash_system()
+    current_time = time.time()
+    scores = dash_system.get_skill_scores(user_id, current_time)
+
+    skill_states = {}
+    for skill_id, data in scores.items():
+        state = dash_system.get_student_state(user_id, skill_id)
+        skill_states[skill_id] = {
+            "name": data["name"],
+            "memory_strength": data["memory_strength"],
+            "last_practice_time": state.last_practice_time,
+            "practice_count": data["practice_count"],
+            "correct_count": data["correct_count"],
+        }
+
+    return {"skill_states": skill_states}
+
+
 @app.post("/api/content-v1/onboarding")
 def content_v1_onboarding(request: Request, payload: ContentV1OnboardingRequest):
     """
