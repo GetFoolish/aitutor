@@ -844,7 +844,7 @@ const AssessmentQuestion: React.FC<Props> = ({
         ref={headerBlockRef}
         className={`${ultraCompactViewport ? 'mb-1' : compactViewport ? 'mb-2' : 'mb-3'} border border-gray-200 dark:border-gray-700 bg-white dark:bg-neutral-900 shadow-sm overflow-hidden`}
       >
-        <div className={`${ultraCompactViewport ? 'px-3 py-2' : compactViewport ? 'px-4 py-3' : 'px-6 py-5'} text-center border-b border-gray-200 dark:border-gray-700`}>
+        <div className={`${ultraCompactViewport ? 'px-3 py-1' : compactViewport ? 'px-4 py-2' : 'px-6 py-3'} text-center border-b border-gray-200 dark:border-gray-700`}>
           <div className={`${ultraCompactViewport ? 'text-lg mb-0.5' : compactViewport ? 'text-xl mb-1' : 'text-2xl mb-2'} font-black text-black dark:text-white uppercase tracking-wide font-sans`}>
             QUESTION {effectiveQuestionNumber || 1} OF {totalQuestions || '?'}
           </div>
@@ -899,7 +899,7 @@ const AssessmentQuestion: React.FC<Props> = ({
         <div ref={contentBlockRef} style={contentBlockStyle}>
           <div
             id="question-content-container"
-            className={`border border-gray-200 dark:border-gray-700 bg-white dark:bg-neutral-800 text-black dark:text-white ${ultraCompactViewport ? 'p-3 mb-2' : compactViewport ? 'p-4 mb-3' : 'p-5 md:p-6 lg:p-7 mb-4'} shadow-sm`}
+            className={`border border-gray-200 dark:border-gray-700 bg-white dark:bg-neutral-800 text-black dark:text-white ${ultraCompactViewport ? 'p-2 mb-1' : compactViewport ? 'p-3 mb-2' : 'p-4 md:p-5 lg:p-6 mb-3'} shadow-sm`}
             style={{
               overflow: 'visible',
               maxWidth: '100%',
@@ -955,7 +955,7 @@ const AssessmentQuestion: React.FC<Props> = ({
                   tabIndex={0}
                   disabled={isSubmitting}
                   onClick={() => setHintsShown(h => h + 1)}
-                  className={`${ultraCompactViewport ? 'py-3 px-5 text-sm' : 'py-4 px-6 text-base'} font-black uppercase tracking-wide bg-white dark:bg-neutral-900 text-black dark:text-white border border-gray-200 dark:border-gray-700 cursor-pointer shadow-none mb-3 hover:bg-[#FFFDF5] dark:hover:bg-neutral-800 transition-all duration-100`}
+                  className={`${ultraCompactViewport ? 'py-3 px-5 text-sm' : 'py-4 px-6 text-base'} font-black uppercase tracking-wide bg-white dark:bg-neutral-800 text-black dark:text-white border border-gray-200 dark:border-neutral-600 cursor-pointer shadow-none mb-3 hover:bg-[#FFFDF5] dark:hover:bg-neutral-700 transition-all duration-100`}
                 >
                   Show Hint ({hintsShown + 1}/{(question.hints || []).length})
                 </button>
@@ -1120,6 +1120,40 @@ const AssessmentQuestion: React.FC<Props> = ({
         }
         .perseus-radio .choice-icon__text { font-family: inherit; font-size: inherit; }
         .perseus-radio .perseus-renderer .paragraph { font-family: inherit; }
+
+        /* Dark mode: dropdown & select widgets */
+        .dark #question-content-container .perseus-dropdown button[role="combobox"],
+        .dark #question-content-container select,
+        .dark #question-content-container .perseus-widget-dropdown {
+          background-color: #262626 !important;
+          color: #f9fafb !important;
+          border-color: #4b5563 !important;
+        }
+        .dark #question-content-container .perseus-dropdown [role="listbox"],
+        .dark #question-content-container .perseus-dropdown [role="option"] {
+          background-color: #262626 !important;
+          color: #f9fafb !important;
+        }
+        .dark #question-content-container .perseus-dropdown [role="option"]:hover {
+          background-color: #374151 !important;
+        }
+
+        /* Dark mode: diagram / image wrappers */
+        .dark #question-content-container .perseus-image-container,
+        .dark #question-content-container img {
+          background-color: #262626 !important;
+          border-radius: 6px;
+          opacity: 0.92;
+        }
+
+        /* Mobile: diagram horizontal scroll */
+        #question-content-container .perseus-image-container,
+        #question-content-container .svg-image,
+        #question-content-container figure {
+          overflow-x: auto;
+          min-width: 300px;
+          max-width: 100%;
+        }
       `}</style>
     </div>
   );
