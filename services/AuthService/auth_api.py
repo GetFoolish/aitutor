@@ -144,6 +144,11 @@ async def dev_login(request: DevLoginRequest):
         if not user_profile:
             raise HTTPException(status_code=500, detail="Failed to create dev user")
 
+    # Always sync age and grade so dev-login age changes are reflected immediately
+    user_profile.age = request.age
+    user_profile.current_grade = calculate_grade_from_age(request.age)
+    user_manager.save_user(user_profile)
+
     jwt_token = create_jwt_token({
         "user_id": user_profile.user_id,
         "email": f"{user_id}@dev.teachr.live",

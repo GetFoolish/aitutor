@@ -32,6 +32,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 
 from services.DashSystem.dash_system import DASHSystem, Question, GradeLevel
 from services.DashSystem.content_v1 import ContentV1Engine
+from managers.user_manager import calculate_grade_from_age
 from shared.auth_middleware import get_current_user, get_jwt_payload, require_admin
 from shared.cache_middleware import CacheControlMiddleware
 from shared.cors_config import ALLOWED_ORIGINS, ALLOW_CREDENTIALS, ALLOWED_METHODS, ALLOWED_HEADERS
@@ -240,6 +241,10 @@ _SUBJECT_GRADE_SKILLS: dict = {
         "default": "solving basic arithmetic word problems",
     },
     "science": {
+        "K": "identifying the five senses and the body parts used for each",
+        "GRADE_1": "observing and describing properties of objects (color, size, shape, texture)",
+        "GRADE_2": "identifying the life cycle of plants and animals",
+        "GRADE_3": "explaining how weather changes through the seasons",
         "GRADE_4": "identifying the stages of the water cycle",
         "GRADE_5": "classifying producers, consumers, and decomposers in a food chain",
         "GRADE_6": "comparing plant and animal cells using basic cell structures (nucleus, membrane, cell wall)",
@@ -251,6 +256,10 @@ _SUBJECT_GRADE_SKILLS: dict = {
         "default": "identifying variables in a controlled scientific experiment",
     },
     "english": {
+        "K": "recognizing letters of the alphabet and their sounds",
+        "GRADE_1": "identifying rhyming words and reading simple sight words",
+        "GRADE_2": "reading short sentences and identifying nouns and verbs",
+        "GRADE_3": "identifying story characters, settings, and main events",
         "GRADE_4": "identifying the main idea and supporting details in a passage",
         "GRADE_5": "using correct subject-verb agreement in complex sentences",
         "GRADE_6": "identifying simile, metaphor, and personification in poetry",
@@ -262,6 +271,10 @@ _SUBJECT_GRADE_SKILLS: dict = {
         "default": "identifying context clues to determine word meaning",
     },
     "history": {
+        "K": "identifying family members and community helpers",
+        "GRADE_1": "understanding the difference between past and present",
+        "GRADE_2": "learning about national holidays and their meaning",
+        "GRADE_3": "identifying famous American leaders and their contributions",
         "GRADE_4": "identifying causes of the American Revolution",
         "GRADE_5": "explaining the purpose of the Bill of Rights",
         "GRADE_6": "comparing achievements of ancient Egyptian and Mesopotamian civilizations",
@@ -2797,7 +2810,7 @@ def start_adaptive_assessment(subject: str, request: Request, force_mc: bool = F
             }
             return cap_map.get(grade, 1.00)
 
-        student_grade = user_profile.current_grade  # e.g. "K", "GRADE_7"
+        student_grade = user_profile.current_grade or calculate_grade_from_age(user_profile.age or 10)  # e.g. "K", "GRADE_7"
         initial_difficulty = _initial_difficulty_for_grade(student_grade)
         max_difficulty_cap = _max_difficulty_for_grade(student_grade)
 

@@ -1121,6 +1121,24 @@ const AssessmentQuestion: React.FC<Props> = ({
         .perseus-radio .choice-icon__text { font-family: inherit; font-size: inherit; }
         .perseus-radio .perseus-renderer .paragraph { font-family: inherit; }
 
+        /* Dark mode: radio answer option cards */
+        .dark #question-content-container .perseus-widget-radio-fieldset .choice,
+        .dark #question-content-container li.perseus-radio-option,
+        .dark #question-content-container [class*="radio"] li,
+        .dark #question-content-container .perseus-radio-option {
+          background-color: #2d2d2d !important;
+          border-color: #4a4a4a !important;
+          color: #f0f0f0 !important;
+        }
+        .dark #question-content-container .perseus-widget-radio-fieldset .choice:hover,
+        .dark #question-content-container li.perseus-radio-option:hover {
+          background-color: #3a3a3a !important;
+        }
+        .dark #question-content-container label,
+        .dark #question-content-container .perseus-radio-option label {
+          color: #f0f0f0 !important;
+        }
+
         /* Dark mode: dropdown & select widgets */
         .dark #question-content-container .perseus-dropdown button[role="combobox"],
         .dark #question-content-container select,
