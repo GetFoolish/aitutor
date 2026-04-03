@@ -50,7 +50,42 @@ const AssessmentFlow: React.FC = () => {
   const [questionNumber, setQuestionNumber] = useState(0);
   const [totalQuestions, setTotalQuestions] = useState(10);
   const [currentDifficulty, setCurrentDifficulty] = useState(0.5);
-  const [studentGrade, setStudentGrade] = useState<string | null>(null);
+
+  // Helper: derive grade string from age (JWT 'age' field)
+  const gradeFromAge = (age: number): string => {
+    if (age <= 6) return 'K';
+    if (age === 7) return 'GRADE_1';
+    if (age === 8) return 'GRADE_2';
+    if (age === 9) return 'GRADE_3';
+    if (age === 10) return 'GRADE_4';
+    if (age === 11) return 'GRADE_5';
+    if (age === 12) return 'GRADE_6';
+    if (age === 13) return 'GRADE_7';
+    if (age === 14) return 'GRADE_8';
+    if (age === 15) return 'GRADE_9';
+    if (age === 16) return 'GRADE_10';
+    if (age === 17) return 'GRADE_11';
+    return 'GRADE_12';
+  };
+
+  // Initialise studentGrade from JWT token immediately (before API response)
+  const initStudentGradeFromJwt = (): string | null => {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const parts = token.split('.');
+        if (parts.length >= 2) {
+          const payload = JSON.parse(atob(parts[1]));
+          if (payload.age && typeof payload.age === 'number') {
+            return gradeFromAge(payload.age);
+          }
+        }
+      }
+    } catch { /* ignore parse errors */ }
+    return null;
+  };
+
+  const [studentGrade, setStudentGrade] = useState<string | null>(() => initStudentGradeFromJwt());
   const [loading, setLoading] = useState(true);
   const [completed, setCompleted] = useState(false);
   const [score, setScore] = useState(0);
@@ -77,6 +112,10 @@ const AssessmentFlow: React.FC = () => {
     }
     return () => { document.getElementById(id)?.remove(); };
   }, []);
+
+  // Ref to mirror correctCount for debugging stale closure issues
+  const correctCountRef = useRef(0);
+  useEffect(() => { correctCountRef.current = correctCount; }, [correctCount]);
 
   // Ref to track latest assessmentId for prefetch (avoids stale closures)
   const assessmentIdRef = useRef<string | null>(null);
@@ -391,7 +430,13 @@ const AssessmentFlow: React.FC = () => {
       setQuestionNumber(data.question_number);
       setTotalQuestions(data.total_questions);
       setCurrentDifficulty(data.current_difficulty);
-      if (data.student_grade) setStudentGrade(data.student_grade);
+      if (data.student_grade) {
+        setStudentGrade(data.student_grade);
+      } else {
+        // Fall back to JWT-derived grade if API didn't return one
+        const jwtGrade = initStudentGradeFromJwt();
+        if (jwtGrade) setStudentGrade(jwtGrade);
+      }
       setCorrectCount(0);
       setLoading(false);
 
@@ -827,7 +872,7 @@ const AssessmentFlow: React.FC = () => {
               <div style={{
                 width: '100%',
                 marginTop: isMobile ? '44px' : '56px',
-                marginBottom: '10px'
+                marginBottom: '4px'
               }}>
                 <div style={{
                   border: '1px solid rgba(255,255,255,0.15)',
@@ -838,6 +883,7 @@ const AssessmentFlow: React.FC = () => {
                   alignItems: 'center',
                   gap: isMobile ? '6px' : '12px',
                   margin: isMobile ? '0 0' : '0 10px',
+                  overflow: 'hidden',
                 }}>
                   {/* Exit assessment — regular flex child, no absolute positioning */}
                   <button
@@ -857,6 +903,9 @@ const AssessmentFlow: React.FC = () => {
                       letterSpacing: '0.05em',
                       minHeight: isMobile ? '40px' : '48px',
                       transition: 'transform 100ms ease, box-shadow 100ms ease',
+                      border: '1px solid rgba(255,255,255,0.3)',
+                      background: 'rgba(255,255,255,0.12)',
+                      color: '#fff',
                     }}
                     onMouseDown={(e) => {
                       e.currentTarget.style.transform = 'translate(2px, 2px)';
@@ -874,7 +923,7 @@ const AssessmentFlow: React.FC = () => {
                   <div style={{
                     flexShrink: 0,
                     background: 'rgba(255,255,255,0.15)',
-                    border: '2px solid rgba(255,255,255,0.5)',
+                    border: '1px solid rgba(255,255,255,0.25)',
                     color: '#fff',
                     fontSize: isMobile ? '11px' : '13px',
                     fontWeight: 900,
@@ -903,10 +952,15 @@ const AssessmentFlow: React.FC = () => {
                           ? studentGrade === 'K'
                             ? 'Kindergarten'
                             : studentGrade.replace('GRADE_', 'Grade ')
-                          : `Grade ${currentDifficulty < 0.3 ? '3-4' : currentDifficulty < 0.5 ? '5-6' : currentDifficulty < 0.7 ? '7-8' : '9-10'}`;
+                          : null;
+                        if (gradeLabel) {
+                          return isMobile
+                            ? `${gradeLabel} ${subject.toUpperCase()}`
+                            : `${gradeLabel} ${subject.toUpperCase()} ASSESSMENT`;
+                        }
                         return isMobile
-                          ? `${gradeLabel} ${subject.toUpperCase()}`
-                          : `${gradeLabel} ${subject.toUpperCase()} ASSESSMENT`;
+                          ? subject.toUpperCase()
+                          : `${subject.toUpperCase()} ASSESSMENT`;
                       })()}
                     </span>
                   </div>
@@ -992,7 +1046,10 @@ const AssessmentFlow: React.FC = () => {
                       questionNumber={questionNumber}
                       totalQuestions={totalQuestions}
                       onAnswer={handleAnswer}
-                      onCorrectAnswer={() => setCorrectCount(prev => prev + 1)}
+                      onCorrectAnswer={() => {
+                        if (isDev) console.log('[AssessmentFlow] onCorrectAnswer fired, prev correctCount:', correctCountRef.current);
+                        setCorrectCount(prev => prev + 1);
+                      }}
                     />
                     {submitting && showSubmittingOverlay && (
                       <div

@@ -403,6 +403,28 @@ def build_skill_question_prompt(
         f"{age_guidance}\n\n"
     )
 
+
+    # Hard topic constraint for young students — overrides skill complexity
+    if age <= 7:
+        prompt += (
+            "CRITICAL TOPIC OVERRIDE: This student is {age} years old (Kindergarten/Grade 1-2). "
+            "If the SKILL above involves topics beyond this age level (algebra, equations, percentages, "
+            "multi-digit multiplication, fractions beyond halves, complex word problems), "
+            "REPLACE the topic with an age-equivalent version of the same subject area. "
+            "For Math: use counting, addition/subtraction to 20, shapes, patterns. "
+            "For Science: use observation, senses, animals, weather. "
+            "Generate a question a 5-7 year old can answer with simple vocabulary.\n\n"
+        ).format(age=age)
+    elif age <= 9:
+        prompt += (
+            "TOPIC CONSTRAINT: This student is {age} years old (Grade 3-4). "
+            "If the skill involves high school topics (quadratic equations, trigonometry, "
+            "complex probability, advanced algebra), simplify to the equivalent concept "
+            "a {age}-year-old can grasp. Numbers max 1000, no variables, no abstract algebra.\n\n"
+        ).format(age=age)
+
+    prompt += "FORMATTING: Always use proper currency formatting with dollar signs (e.g., $50, $25/month, $3.99). Never write bare numbers for money amounts.\n\n"
+
     # ── Language-subject teaching rules ──────────────────────────────
     if language_target:
         prompt += (
