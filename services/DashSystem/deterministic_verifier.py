@@ -323,6 +323,13 @@ class MathVerifier(SubjectVerifier):
             if dp_fail:
                 failures.append(dp_fail)
 
+        # Check 4: Radio answer consistency — marked correct must match computed answer
+        if fmt in ("radio_single", "radio_multi"):
+            checks.append("radio_answer_consistency")
+            rac_fail = self._check_radio_answer_consistency(item, q_text)
+            if rac_fail:
+                failures.append(rac_fail)
+
         elapsed = (time.time() - t0) * 1000
         return VerificationResult(
             passed=len(failures) == 0,
@@ -411,6 +418,38 @@ class MathVerifier(SubjectVerifier):
             return parsed is not None
         except Exception:
             return True  # Don't block on parse errors
+
+    def _check_radio_answer_consistency(self, item: Dict, q_text: str) -> Optional[str]:
+        """For math radio questions: verify the correct choice matches the computed answer."""
+        widgets = item.get("question", {}).get("widgets", {})
+        for w in widgets.values():
+            if w.get("type") != "radio":
+                continue
+            choices = w.get("options", {}).get("choices", [])
+            correct_choice = next((c for c in choices if c.get("correct")), None)
+            if not correct_choice:
+                continue
+            # Extract numeric value from the correct choice
+            nums = re.findall(r"[-\u2212]?\d+(?:\.\d+)?", correct_choice.get("content", ""))
+            if not nums:
+                continue
+            correct_val = float(nums[0].replace("\u2212", "-"))
+
+            # Build a fake numeric-input widget and run _verify_numeric_input
+            fake_widget = {
+                "type": "numeric-input",
+                "options": {
+                    "answers": [{"status": "correct", "value": str(correct_val), "maxError": 0.5}]
+                },
+            }
+            ok = self._verify_numeric_input(fake_widget, q_text)
+            if not ok:
+                return (
+                    f"The marked correct answer ({correct_val}) does not match the computed answer "
+                    f"from the question. Re-check the arithmetic and ensure the correct choice "
+                    f"matches the actual mathematical result."
+                )
+        return None
 
     def _check_distractors(self, item: Dict, fmt: str) -> Optional[str]:
         """Check that radio/dropdown distractors are plausible for math."""

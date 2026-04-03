@@ -449,6 +449,15 @@ def build_skill_question_prompt(
 
     prompt += f"{format_instruction}\n\n"
 
+    # Math accuracy guard for radio/MC questions
+    if subject.lower() == "math" and fmt in ("radio_single", "radio_multi"):
+        prompt += (
+            "CRITICAL MATH ACCURACY: Before finalizing your answer choices, solve the problem yourself step by step. "
+            "The choice marked 'correct': true MUST equal your computed answer. "
+            "Common mistakes to avoid: using wrong formula, off-by-one errors, using width instead of length. "
+            "Double-check: solve → get number → find that exact number in your choices → mark it correct.\n\n"
+        )
+
     # Few-shot Khan example if available
     if khan_example:
         prompt += (
